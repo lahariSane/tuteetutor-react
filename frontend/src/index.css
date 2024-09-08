@@ -15,3 +15,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* div{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: space-between;
+} */
