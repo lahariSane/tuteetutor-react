@@ -142,7 +142,6 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                 </List>
             </DivFullWidth>
             <DivFullWidth>
-                <Divider />
                 <List>
                     {Object.entries(bottomIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding>
