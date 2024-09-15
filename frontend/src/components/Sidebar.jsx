@@ -11,7 +11,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
-import "../styles/Sidebar.css";
 
 // importing required icons from material ui
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
@@ -74,6 +73,17 @@ const SidebarListItemButton = styled(ListItemButton)(({ theme }) => ({
     },
 }));
 
+const SideMenu = styled('div')(({ theme }) => ({
+    backgroundColor: (theme.vars ?? theme).palette.primary.main,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    height: "100%",
+    width: "100%",
+    overflow: "hidden",
+}));
+
 function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd }) {
 
     const DivFullWidth = styled('div')({
@@ -97,7 +107,7 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
     const bottomIcons = { Settings: < SettingsIcon sx={{ color: "white" }} /> };
 
     const drawer = (
-        <Box className="drawer">
+        <SideMenu>
             <DivFullWidth>
                 <Toolbar >
                     <Stack direction="row" justifyContent="center" height="180px" paddingTop="30px" width="100%" border="None">
@@ -146,7 +156,7 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     ))}
                 </List>
             </DivFullWidth>
-        </Box >
+        </SideMenu >
     );
     return (
         <Box
