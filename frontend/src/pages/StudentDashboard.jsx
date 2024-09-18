@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme } from '@mui/material';
-import Typography from '@mui/material';
+import { Typography } from '@mui/material';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -47,7 +47,6 @@ const Room = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     width: "100%",
-    padding: "2px"
 }));
 
 const Subject = styled('div')(({ theme }) => ({
@@ -59,7 +58,6 @@ const Subject = styled('div')(({ theme }) => ({
     width: "100%",
     fontSize: "18px",
     fontWeight: "bold",
-    padding: "2px"
 }));
 
 const Time = styled('Typography')(({ theme }) => ({
@@ -70,7 +68,6 @@ const Time = styled('Typography')(({ theme }) => ({
     justifyContent: 'center',
     width: "100%",
     fontSize: "1rm",
-    padding: "2px"
 }));
 
 const Topic = styled('Typography')(({ theme }) => ({
@@ -82,10 +79,9 @@ const Topic = styled('Typography')(({ theme }) => ({
     width: "100%",
     fontSize: "25px",
     fontWeight: "bold",
-    padding: "2px"
 }));
 
-const Announcment = styled('Typography')(({ theme }) => ({
+const Announcment = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontSize: "20px",
     padding: theme.spacing(2),
@@ -114,6 +110,7 @@ export default function StudentDashboard({ drawerWidth }) {
         <Stack
             direction="row"
             sx={{
+                minHeight: "700px",
                 backgroundColor: "#f6f7f6",
                 width: `calc(100vw - ${drawerWidth}px)`,
                 left: drawerWidth,
@@ -255,6 +252,7 @@ export default function StudentDashboard({ drawerWidth }) {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "10px",
+                    minHeight: "350px",
                     maxHeight: "400px",
                     [theme.breakpoints.down('md')]: {
                         width: "45%",
@@ -281,6 +279,7 @@ export default function StudentDashboard({ drawerWidth }) {
                     height: "calc(60% - 10px)", width: "calc(100% - 30px)",
                     margin: "20px 10px 10px 10px",
                     borderRadius: "10px",
+                    minHeight: "350px",
                     maxHeight: "400px",
                     [theme.breakpoints.down('md')]: {
                         height: "90%",

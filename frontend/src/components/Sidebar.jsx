@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
 // importing required icons from material ui
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
@@ -122,13 +122,13 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
         width: "100%",
     })
 
-    const LogoContainer = styled('div')({
-        position: 'relative',
-        height: 40,
-        '& img': {
-            maxHeight: 40,
-        },
-    });
+    // const LogoContainer = styled('div')({
+    //     position: 'relative',
+    //     height: 40,
+    //     '& img': {
+    //         maxHeight: 40,
+    //     },
+    // });
 
     const topIcons = {
         Dashboard: <AutoAwesomeMosaicOutlinedIcon sx={{ color: "white" }} />,
@@ -159,7 +159,7 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     {Object.entries(topIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding width="100%">
                             <SidebarListItemButton
-                                selected={key == sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
+                                selected={key === sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
                                 onClick={() => setSidebarActive(key)}
                                 onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
                                 onMouseLeave={() => setIsHovered(false)}
@@ -183,7 +183,7 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     {Object.entries(bottomIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding>
                             <SidebarListItemButton
-                                selected={key == sidbarActive} // Set selected state to true if key matches active sidebar item
+                                selected={key === sidbarActive} // Set selected state to true if key matches active sidebar item
                                 onClick={() => setSidebarActive(key)}
                                 // onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
                                 // onMouseLeave={() => setIsHovered(false)}
