@@ -8,9 +8,9 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 // importing required icons from material ui
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
@@ -19,6 +19,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import SettingsIcon from '@mui/icons-material/Settings';
 
+const theme = createTheme({ breakpoints: { values: { md: 1380 } } });
 const SidebarListItemButton = styled(ListItemButton)(({ theme }) => ({
     borderRadius: "30px 0px 0px 30px",
     paddingRight: "0px",
@@ -26,50 +27,80 @@ const SidebarListItemButton = styled(ListItemButton)(({ theme }) => ({
     width: "100%",
     height: "60px",
     transition: "none",
+
+    // Hover and selected styles
     '&.Mui-selected': {
-        '& .MuiListItemIcon-root': {
-            color: (theme.vars ?? theme).palette.primary.dark,
+        backgroundColor: "#f6f7f6",
+        '&::before': {
+            content: '""',
+            position: "absolute",
+            top: "-50px",
+            right: "0px",
+            height: "50px",
+            width: "50px",
+            borderRadius: "50%",
+            backgroundColor: "transparent",
+            boxShadow: "35px 35px 0px 10px #f6f7f6",
         },
-        '& .MuiTypography-root': {
-            color: (theme.vars ?? theme).palette.primary.dark,
+        '&::after': {
+            content: '""',
+            position: "absolute",
+            top: "60px",
+            right: "0px",
+            height: "50px",
+            width: "50px",
+            borderRadius: "50%",
+            backgroundColor: "transparent",
+            boxShadow: "35px -35px 0px 10px #f6f7f6",
         },
-        '& .MuiSvgIcon-root': {
-            color: (theme.vars ?? theme).palette.primary.dark,
+        '& .MuiTypography-root, & .MuiSvgIcon-root': {
+            color: theme.palette.primary.main,
         },
-        '& .MuiTouchRipple-child': {
-            backgroundColor: (theme.vars ?? theme).palette.primary.dark,
+        '&:hover': {
+            backgroundColor: "#f6f7f6",
+            '& .MuiTypography-root, & .MuiSvgIcon-root': {
+                color: theme.palette.primary.main,
+            },
         },
     },
-    '& .MuiSvgIcon-root': {
-        color: "white" //(theme.vars ?? theme).palette.action.active,
-    },
+
+    // Default hover styles
     '&:hover': {
-        backgroundColor: "white",
-        '& .MuiListItemIcon-root, & .MuiTypography-root, & .MuiSvgIcon-root': {
-            color: (theme.vars ?? theme).palette.primary.main, // Change icon and text color on hover
+        backgroundColor: "#f6f7f6",
+        '& .MuiTypography-root, & .MuiSvgIcon-root': {
+            color: theme.palette.primary.main,
+        },
+        '&::before': {
+            content: '""',
+            position: "absolute",
+            top: "-50px",
+            right: "0px",
+            height: "50px",
+            width: "50px",
+            borderRadius: "50%",
+            backgroundColor: "transparent",
+            boxShadow: "35px 35px 0px 10px #f6f7f6",
+        },
+        '&::after': {
+            content: '""',
+            position: "absolute",
+            top: "60px",
+            right: "0px",
+            height: "50px",
+            width: "50px",
+            borderRadius: "50%",
+            backgroundColor: "transparent",
+            boxShadow: "35px -35px 0px 10px #f6f7f6",
         },
     },
-    '&:hover:before': {
-        content: '""',
-        position: "absolute",
-        top: "-50px",
-        right: "0px",
-        height: "50px",
-        width: "50px",
-        borderRadius: "50%",
-        backgroundColor: "transparent",
-        boxShadow: "35px 35px 0px 10px white",
-    },
-    '&:hover::after': {
-        content: '""',
-        position: "absolute",
-        top: "60px",
-        right: "0px",
-        height: "50px",
-        width: "50px",
-        borderRadius: "50%",
-        backgroundColor: "transparent",
-        boxShadow: "35px -35px 0px 10px #ffffff"
+
+    // Breakpoint adjustments for medium screens
+    [theme.breakpoints.down('md')]: {
+        margin: "0px 10px 0px 0px",
+        borderRadius: "10px",
+        '&::before, &::after': {
+            display: "none",
+        },
     },
 }));
 
@@ -84,7 +115,8 @@ const SideMenu = styled('div')(({ theme }) => ({
     overflow: "hidden",
 }));
 
-function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd }) {
+function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd, sidbarActive, setSidebarActive }) {
+    const [setHover, setIsHovered] = React.useState(false);
 
     const DivFullWidth = styled('div')({
         width: "100%",
@@ -126,7 +158,12 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                 <List>
                     {Object.entries(topIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding width="100%">
-                            <SidebarListItemButton>
+                            <SidebarListItemButton
+                                selected={key == sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
+                                onClick={() => setSidebarActive(key)}
+                                onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
+                                onMouseLeave={() => setIsHovered(false)}
+                            >
                                 <ListItemIcon sx={{ minWidth: 34 }}>
                                     {value}
                                 </ListItemIcon>
@@ -145,7 +182,12 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                 <List>
                     {Object.entries(bottomIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding>
-                            <SidebarListItemButton>
+                            <SidebarListItemButton
+                                selected={key == sidbarActive} // Set selected state to true if key matches active sidebar item
+                                onClick={() => setSidebarActive(key)}
+                                // onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
+                                // onMouseLeave={() => setIsHovered(false)}
+                            >
                                 <ListItemIcon sx={{ minWidth: 34, color: "white" }}>
                                     {value}
                                 </ListItemIcon>
@@ -160,7 +202,14 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
     return (
         <Box
             component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, backgroundColor: "white" }}
+            sx={{
+                // width: { md: drawerWidth }, flexShrink: { md: 0 },
+                backgroundColor: "white",
+                [theme.breakpoints.up('md')]: {
+                    width: drawerWidth,
+                    flexShrink: 0,
+                },
+            }}
             aria-label="mailbox folders"
         >
             <Drawer
@@ -174,7 +223,10 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                 }}
                 sx={{
                     border: 'none',
-                    display: { xs: 'block', sm: 'none' },
+                    display: 'block',
+                    [theme.breakpoints.up('md')]: {
+                        display: `none`,
+                    },
                     '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
                 }}
             >
@@ -183,7 +235,11 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
             <Drawer
                 variant="permanent"
                 sx={{
-                    display: { xs: 'none', sm: 'block' },
+                    // display: { xs: 'none', md: 'block' },
+                    display: 'none',
+                    [theme.breakpoints.up('md')]: {
+                        display: `block`,
+                    },
                     '& .MuiDrawer-paper': {
                         boxSizing: 'border-box', width: drawerWidth,   // Remove box-shadow
                         borderRight: 'none',

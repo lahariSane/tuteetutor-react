@@ -4,7 +4,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#6439FF', // Main color for primary
+      main: '#1976d2', // Main color for primary
+      // main: '#6439FF', // Main color for primary
       dark: '#115293', // Darker shade of primary
     },
     secondary: {
@@ -13,6 +14,7 @@ const theme = createTheme({
     },
   },
   // Add other theme customization here if needed
+  breakpoints: { values: { sm: 700, md: 1380 } },
 });
 
 export default theme;
