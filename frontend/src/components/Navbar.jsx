@@ -89,7 +89,7 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                         {sidbarActive}
                     </Typography>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
+                <Stack direction="row" alignItems="center" spacing={0.9} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
                     <IconButton color="primary">
                         <SearchIcon fontSize="medium" />
                     </IconButton>
