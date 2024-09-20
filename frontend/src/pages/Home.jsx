@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import StudentDashboard from './StudentDashboard';
 
 const drawerWidth = 250;
+const navBarHeight = 64;
 
 function Home(props) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -31,7 +32,11 @@ function Home(props) {
     return (
         <Box sx={{ display: 'flex', height: '100%', backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflow: "auto" }}>
             <CssBaseline />
-            <Navbar drawerWidth={drawerWidth} handleDrawerToggle={handleDrawerToggle} sidbarActive={sidbarActive} />
+            <Navbar
+                sx={{ position: 'fixed', width: '100%', height: `${navBarHeight}px` }}
+                drawerWidth={drawerWidth}
+                handleDrawerToggle={handleDrawerToggle}
+                sidbarActive={sidbarActive} />
             <StudentDashboard drawerWidth={drawerWidth} />
             <Sidebar
                 drawerWidth={drawerWidth}
