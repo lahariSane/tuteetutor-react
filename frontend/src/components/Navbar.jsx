@@ -7,6 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
+import { createTheme } from '@mui/material';
 
 import Typography from '@mui/material/Typography';
 
@@ -43,13 +46,20 @@ function stringAvatar(name) {
 }
 
 
-function Navbar({ drawerWidth, handleDrawerToggle }) {
+function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
+
+    const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
+
     return (
         <AppBar
             sx={{
-                width: { sm: `calc(100% - ${drawerWidth}px)` },
-                ml: { sm: `${drawerWidth}px` },
+                width: `calc(100% - ${drawerWidth}px)`,
+                ml: `${drawerWidth}px`,
                 boxShadow: "none",
+                [theme.breakpoints.down('md')]: {
+                    width: `calc(100%)`,
+                    ml: `0px`,
+                },
             }}
         >
             <Toolbar sx={{ justifyContent: "space-between", width: "100%", height: "100%", bgcolor: "white" }}>
@@ -59,9 +69,12 @@ function Navbar({ drawerWidth, handleDrawerToggle }) {
                         edge="start"
                         onClick={handleDrawerToggle}
                         sx={{
+                            display: 'none',
                             color: "black",// (theme) => (theme.vars ?? theme).palette.primary.main,
                             mr: 2,
-                            display: { sm: 'none' }
+                            [theme.breakpoints.down('md')]: {
+                                display: "block",
+                            },
                         }}
                     >
                         <MenuIcon />
@@ -73,18 +86,27 @@ function Navbar({ drawerWidth, handleDrawerToggle }) {
                             color: "black"// (theme) => (theme.vars ?? theme).palette.primary.main,
                         }}
                     >
-                        Dashboard
+                        {sidbarActive}
                     </Typography>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
-                    <SearchIcon sx={{ color: "#4F75FF" }} fontSize="medium" />
-                    <Badge color="secondary" variant="dot" invisible={false}>
-                        <NotificationsIcon sx={{ color: "#4F75FF" }} fontSize="medium" />
-                    </Badge>
-                    <Avatar {...stringAvatar('Naveen Kumar')} src="./log.png" />
+                <Stack direction="row" alignItems="center" spacing={0.9} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
+                    <IconButton color="primary">
+                        <SearchIcon fontSize="medium" />
+                    </IconButton>
+                    <IconButton color="primary" sx={{ display: { sm: "none" } }}>
+                        <CalendarMonthIcon fontSize="medium" />
+                    </IconButton>
+                    <IconButton color="primary">
+                        <Badge color="secondary" variant="dot" invisible={false}>
+                            <NotificationsIcon fontSize="medium" />
+                        </Badge>
+                    </IconButton>
+                    <IconButton>
+                        <Avatar {...stringAvatar('Naveen Kumar')} src="./log.png" />
+                    </IconButton>
                 </Stack>
             </Toolbar>
-        </AppBar>
+        </AppBar >
     );
 }
 
