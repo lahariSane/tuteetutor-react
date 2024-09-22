@@ -69,11 +69,13 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                         edge="start"
                         onClick={handleDrawerToggle}
                         sx={{
+                            width: "40px",
+                            height: "40px",
                             display: 'none',
                             color: "black",// (theme) => (theme.vars ?? theme).palette.primary.main,
                             mr: 2,
                             [theme.breakpoints.down('md')]: {
-                                display: "block",
+                                display: "flex",
                             },
                         }}
                     >
