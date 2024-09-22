@@ -19,34 +19,40 @@ function SignUpForm() {
   };
 
   return (
-    <div className="form-container sign-up-container">
-      <form onSubmit={handleOnSubmit}>
-        <h1>Create Account</h1>
-        <div className="social-container">
-          <a href="#" className="social">
-            <i className="fab fa-google" /> {}
-          </a>
-          <a href="#" className="social">
-            <i className="fab fa-github" /> {/* GitHub icon */}
-          </a>
+    <div class="box-container">
+      <div className="form-container sign-up-container">
+        <div class="logo">
+          <img src="/logo192.png" />
+          <div class="logo-name">TuteeTutor</div>
         </div>
-        <span>or use your email for registration</span>
-        <input
-          type="email"
-          placeholder="Email"
-          name="email"
-          value={state.email}
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          name="password"
-          value={state.password}
-          onChange={handleChange}
-        />
-        <button>Sign Up</button>
-      </form>
+        <form onSubmit={handleOnSubmit}>
+          <h1>Create Account</h1>
+          <div className="social-container">
+            <a href="#" className="social">
+              <i className="fab fa-google" />
+            </a>
+            <a href="#" className="social">
+              <i className="fab fa-github" />
+            </a>
+          </div>
+          <span class="additional-information">or use your email for registration</span>
+          <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            value={state.email}
+            onChange={handleChange}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={state.password}
+            onChange={handleChange}
+          />
+          <button>Sign Up</button>
+        </form>
+      </div>
     </div>
   );
 }
