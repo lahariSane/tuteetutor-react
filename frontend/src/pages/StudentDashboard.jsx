@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme } from '@mui/material';
 import { Typography } from '@mui/material';
+import { useOutletContext } from 'react-router-dom';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -91,9 +92,11 @@ const Announcment = styled(Typography)(({ theme }) => ({
     width: "100%",
 }));
 
-export default function StudentDashboard({ drawerWidth }) {
+export default function StudentDashboard() {
     const [value, setValue] = React.useState(0);
     const [subValue, setSubValue] = React.useState(0);
+    const data = useOutletContext(); 
+    const drawerWidth = data.drawerWidth;
 
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } }); // Access the Material-UI theme
 

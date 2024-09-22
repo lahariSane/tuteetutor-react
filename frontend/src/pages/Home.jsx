@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
-import StudentDashboard from './StudentDashboard';
+import { Outlet } from "react-router-dom";
 
 const drawerWidth = 250;
 const navBarHeight = 64;
@@ -37,7 +37,8 @@ function Home(props) {
                 drawerWidth={drawerWidth}
                 handleDrawerToggle={handleDrawerToggle}
                 sidbarActive={sidbarActive} />
-            <StudentDashboard drawerWidth={drawerWidth} />
+
+            <Outlet context={{drawerWidth: drawerWidth}} />
             <Sidebar
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
