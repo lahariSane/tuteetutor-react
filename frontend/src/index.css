@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +15,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff; /* Track (background) of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #dbd7d7c5; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Roundness of the thumb */
+  /* border: 3px solid #f1f1f1; Padding around the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a2a1a1; /* Color when hovering over the scrollbar thumb */
+}
+
+/* For Firefox */
+/* * {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+} */
