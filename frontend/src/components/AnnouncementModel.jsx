@@ -1,18 +1,5 @@
-import * as React from 'react';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import React from 'react';
 import { Modal, Box, Typography, TextField, Button, Stack } from '@mui/material';
-
-function CalendarCard() {
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateCalendar />
-    </LocalizationProvider>
-
-  );
-}
-
 
 const style = {
     position: 'absolute',
@@ -26,7 +13,7 @@ const style = {
     p: 4,
 };
 
-function calenderModel({ open, handleClose }) {
+function AnnouncementModel({ open, handleClose }) {
     return (
         <Modal
             open={open}
@@ -71,4 +58,4 @@ function calenderModel({ open, handleClose }) {
     );
 }
 
-export {CalendarCard, calenderModel};
+export default AnnouncementModel;
