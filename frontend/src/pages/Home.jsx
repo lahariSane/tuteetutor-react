@@ -4,32 +4,32 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { Outlet } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+
 
 const drawerWidth = 250;
 const navBarHeight = 64;
 
 function Home(props) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isClosing, setIsClosing] = React.useState(false);
-    const [sidbarActive, setSidebarActive] = React.useState("Dashboard");
+
+    const location = useLocation();
+    const [sidbarActive, setSidebarActive] = React.useState(location.pathname !== "/" ? location.pathname.slice(1) : "Dashboard");
 
     const handleDrawerClose = () => {
-        setIsClosing(true);
         setMobileOpen(false);
     };
 
     const handleDrawerTransitionEnd = () => {
-        setIsClosing(false);
     };
 
     const handleDrawerToggle = () => {
-        // if (!isClosing) {
-            setMobileOpen(!mobileOpen);
+        setMobileOpen(!mobileOpen);
         // }
     };
 
     return (
-        <Box sx={{ display: 'flex', height: `100%`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflowX: "auto", overflowY: "auto", width: "100vw" }}>
+        <Box sx={{ display: 'flex', height: `calc(100vh + 100px)`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflow: "scroll", width: "100vw" }}>
             <CssBaseline />
             <Navbar
                 sx={{ position: 'fixed', width: '100%', height: `${navBarHeight}px` }}
