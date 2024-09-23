@@ -8,6 +8,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { calenderModel } from '../components/CalanderCard';
+import { useState } from 'react';
 
 import { createTheme } from '@mui/material';
 
@@ -49,6 +51,7 @@ function stringAvatar(name) {
 function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
 
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
+    const [calendarModal, setCalendarModal] = useState(false);
 
     return (
         <AppBar
@@ -62,6 +65,8 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                 },
             }}
         >
+            <calenderModel open={calendarModal} handleClose={() => setCalendarModal(false)} />
+
             <Toolbar sx={{ justifyContent: "space-between", width: "100%", height: "100%", bgcolor: "white" }}>
                 <Stack direction="row" alignItems="center">
                     <IconButton
@@ -69,11 +74,13 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                         edge="start"
                         onClick={handleDrawerToggle}
                         sx={{
+                            width: "40px",
+                            height: "40px",
                             display: 'none',
                             color: "black",// (theme) => (theme.vars ?? theme).palette.primary.main,
                             mr: 2,
                             [theme.breakpoints.down('md')]: {
-                                display: "block",
+                                display: "flex",
                             },
                         }}
                     >

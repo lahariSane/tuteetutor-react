@@ -11,6 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Drawer from '@mui/material/Drawer';
 import Typography from '@mui/material/Typography';
 import { createTheme } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
 
 // importing required icons from material ui
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
@@ -118,6 +119,7 @@ const SideMenu = styled('div')(({ theme }) => ({
 function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd, sidbarActive, setSidebarActive }) {
     const [setHover, setIsHovered] = React.useState(false);
 
+    const navigate = useNavigate();
     const DivFullWidth = styled('div')({
         width: "100%",
     })
@@ -159,10 +161,15 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     {Object.entries(topIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding width="100%">
                             <SidebarListItemButton
-                                selected={key === sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
-                                onClick={() => setSidebarActive(key)}
+                                selected={key.toLowerCase() === sidbarActive.toLowerCase() && !setHover} // Set selected state to true if key matches active sidebar item
                                 onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
                                 onMouseLeave={() => setIsHovered(false)}
+                                onClick={() => {
+                                    handleDrawerClose();
+                                    setSidebarActive(key);
+                                    navigate(key.toLowerCase());
+                                    setIsHovered(false);
+                                }}
                             >
                                 <ListItemIcon sx={{ minWidth: 34 }}>
                                     {value}
@@ -183,10 +190,15 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     {Object.entries(bottomIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding>
                             <SidebarListItemButton
-                                selected={key === sidbarActive} // Set selected state to true if key matches active sidebar item
-                                onClick={() => setSidebarActive(key)}
-                                // onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
-                                // onMouseLeave={() => setIsHovered(false)}
+                                selected={key === sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
+                                onClick={() => {
+                                    setSidebarActive(key);
+                                    navigate(key.toLowerCase());
+                                    handleDrawerClose();
+                                    setIsHovered(false);
+                                }}
+                                onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
+                                onMouseLeave={() => setIsHovered(false)}
                             >
                                 <ListItemIcon sx={{ minWidth: 34, color: "white" }}>
                                     {value}
