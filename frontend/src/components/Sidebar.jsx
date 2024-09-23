@@ -161,10 +161,15 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                     {Object.entries(topIcons).map(([key, value]) => (
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding width="100%">
                             <SidebarListItemButton
-                                selected={key === sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
-                                onClick={() => { setSidebarActive(key); navigate(key.toLowerCase()); handleDrawerClose(); }}
+                                selected={key.toLowerCase() === sidbarActive.toLowerCase() && !setHover} // Set selected state to true if key matches active sidebar item
                                 onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
                                 onMouseLeave={() => setIsHovered(false)}
+                                onClick={() => {
+                                    handleDrawerClose();
+                                    setSidebarActive(key);
+                                    navigate(key.toLowerCase());
+                                    setIsHovered(false);
+                                }}
                             >
                                 <ListItemIcon sx={{ minWidth: 34 }}>
                                     {value}
@@ -186,7 +191,12 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                         <ListItem sx={{ pl: 2 }} key={key} disablePadding>
                             <SidebarListItemButton
                                 selected={key === sidbarActive && !setHover} // Set selected state to true if key matches active sidebar item
-                                onClick={() => {setSidebarActive(key); navigate(key.toLowerCase()); handleDrawerClose();} }
+                                onClick={() => {
+                                    setSidebarActive(key);
+                                    navigate(key.toLowerCase());
+                                    handleDrawerClose();
+                                    setIsHovered(false);
+                                }}
                                 onMouseEnter={() => setIsHovered(true)} // Set hover state to true on mouse enter
                                 onMouseLeave={() => setIsHovered(false)}
                             >

@@ -13,7 +13,6 @@ function Home(props) {
     const [isClosing, setIsClosing] = React.useState(false);
     const [sidbarActive, setSidebarActive] = React.useState("Dashboard");
 
-
     const handleDrawerClose = () => {
         setIsClosing(true);
         setMobileOpen(false);
@@ -24,13 +23,13 @@ function Home(props) {
     };
 
     const handleDrawerToggle = () => {
-        if (!isClosing) {
+        // if (!isClosing) {
             setMobileOpen(!mobileOpen);
-        }
+        // }
     };
 
     return (
-        <Box sx={{ display: 'flex', height: '100%', backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflow: "auto" }}>
+        <Box sx={{ display: 'flex', height: `100%`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflowX: "auto", overflowY: "auto", width: "100vw" }}>
             <CssBaseline />
             <Navbar
                 sx={{ position: 'fixed', width: '100%', height: `${navBarHeight}px` }}
@@ -38,7 +37,7 @@ function Home(props) {
                 handleDrawerToggle={handleDrawerToggle}
                 sidbarActive={sidbarActive} />
 
-            <Outlet context={{drawerWidth: drawerWidth}} />
+            <Outlet context={{ drawerWidth: drawerWidth }} />
             <Sidebar
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}

@@ -52,7 +52,6 @@ const Room = styled('div')(({ theme }) => ({
 
 const Subject = styled('div')(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -61,9 +60,8 @@ const Subject = styled('div')(({ theme }) => ({
     fontWeight: "bold",
 }));
 
-const Time = styled('Typography')(({ theme }) => ({
+const Time = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -71,9 +69,8 @@ const Time = styled('Typography')(({ theme }) => ({
     fontSize: "1rm",
 }));
 
-const Topic = styled('Typography')(({ theme }) => ({
+const Topic = styled(Typography)(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'left',
@@ -85,7 +82,7 @@ const Topic = styled('Typography')(({ theme }) => ({
 const Announcment = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontSize: "20px",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
@@ -95,7 +92,7 @@ const Announcment = styled(Typography)(({ theme }) => ({
 export default function StudentDashboard() {
     const [value, setValue] = React.useState(0);
     const [subValue, setSubValue] = React.useState(0);
-    const data = useOutletContext(); 
+    const data = useOutletContext();
     const drawerWidth = data.drawerWidth;
 
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } }); // Access the Material-UI theme
@@ -113,20 +110,22 @@ export default function StudentDashboard() {
         <Stack
             direction="row"
             sx={{
-                minHeight: "700px",
+                minHeight: "900px",
                 backgroundColor: "#f6f7f6",
                 width: `calc(100vw - ${drawerWidth}px)`,
                 left: drawerWidth,
-                position: "relative",
-                overflow: "hidden",
+                top: "64px",
+                position: "absolute",
                 [theme.breakpoints.down('md')]: {
+                    height: "700px",
                     width: "100%",
                     left: 0,
                     flexDirection: "column-reverse",
                     direction: "column",
                     alignItems: "center",
                 },
-                overflowY: "visible"
+                overflowY: "visible",
+                overflowX: "hidden"
             }}
             height="100vh"
         >
@@ -135,12 +134,12 @@ export default function StudentDashboard() {
                 sx={{
                     margin: "10px",
                     marginLeft: "20px",
-                    top: "70px",
                     position: "relative",
                     minHeight: "calc(100% - 90px)",
                     height: "calc(100% - 90px)",
                     [theme.breakpoints.down('md')]: {
                         width: "90%",
+                        minHeight: "900px",
                         maxWidth: "950px",
                         height: "auto",
                         display: "flex",
@@ -235,7 +234,7 @@ export default function StudentDashboard() {
             </Box>
             <Box sx={{
                 height: "calc(100% - 90px)",
-                top: "70px",
+                // top: "70px",
                 position: "relative",
                 width: "400px",
                 minWidth: "400px",
