@@ -3,8 +3,9 @@ import DbTables from "../components/DbTables";
 import { createTheme } from "@mui/material";
 import CollectionTables from "../components/CollectionTables";
 import styled from "styled-components";
+import { useOutletContext } from 'react-router-dom';
 
-const StyledBox = styled(Box)(({theme, navBarHeight, drawerWidth}) => ({
+const StyledBox = styled(Box)(({ theme, navBarHeight, drawerWidth }) => ({
     width: "75%",
     position: "absolute",
     left: `${drawerWidth}px`,
@@ -15,14 +16,16 @@ const StyledBox = styled(Box)(({theme, navBarHeight, drawerWidth}) => ({
         left: "0",
         alignItems: "center",
     },
-}   )        
+})
 );
 
-function AdminDashboard({ drawerWidth, navBarHeight }) {
+function AdminDashboard() {
+
+    const data = useOutletContext();
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
     return (
         <>
-            <StyledBox theme={theme} drawerWidth={drawerWidth} navBarHeight = {navBarHeight}>
+            <StyledBox theme={theme} drawerWidth={data.drawerWidth} navBarHeight={data.navBarHeight}>
                 <DbTables />
             </StyledBox>
         </>
