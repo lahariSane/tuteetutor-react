@@ -38,9 +38,22 @@ function DbTables() {
 
 
   // Step 2: Handle button click
-  const handleButtonClick = (row) => {
+  const handleButtonClick = async (row) => {
     setSelectedRow(row); // Set the clicked row (optional)
     setShowCollectionTables(true); // Show the CollectionTables component
+
+    try {
+      // Fetch data for the clicked collection
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/collections/${row.name}`
+      );
+      setSelectedRow({
+        ...row,
+        data: response.data, // Store the fetched collection data
+      });
+    } catch (err) {
+      setError("Error fetching collection data");
+    }
   };
 
   // Step 3: Handle closing the CollectionTables component
@@ -139,7 +152,7 @@ function DbTables() {
           </h2>
 
           {/* Render the CollectionTables component */}
-          <CollectionTables />
+          <CollectionTables data={selectedRow?.data}/>
         </div>
       )}
     </div>

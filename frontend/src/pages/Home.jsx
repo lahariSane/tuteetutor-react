@@ -38,8 +38,8 @@ function Home(props) {
                 drawerWidth={drawerWidth}
                 handleDrawerToggle={handleDrawerToggle}
                 sidbarActive={sidbarActive} />
-            <StudentDashboard drawerWidth={drawerWidth} />
-            {/* <AdminDashboard drawerWidth={drawerWidth} navBarHeight={navBarHeight} /> */}
+            {/* <StudentDashboard drawerWidth={drawerWidth} /> */}
+            <AdminDashboard drawerWidth={drawerWidth} navBarHeight={navBarHeight} />
             <Sidebar
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
