@@ -7,7 +7,7 @@ import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
 import DATABASE from './models/db.js';
 import mailRouter from "./routes/mailRouter.js";
-
+import mongoose from 'mongoose';
 
 dotenv.config();
 const app = express();
