@@ -17,24 +17,18 @@ class Database {
             });
             console.log("Database connected");
             this.connection = mongoose.connection;
-        } catch (error) {    
+        } catch (error) {
             console.log(`Error: ${error.message}`);
             process.exit(1);
         }
     }
 
-    async getCollections(){
-        try{
-            console.log(await mongoose.connection.listDatabases());
-            for(var database in await mongoose.connection.listDatabases()){
-                if(database.name == dbName){
-                    var collections = await mongoose.connection.database.listCollections().toArray();
-                }
-            }
-            console.log(collections);
+    async getCollections() {
+        try {
+            var collections = await mongoose.connection.client.db(dbName).listCollections().toArray();
             return collections;
         }
-        catch(error){
+        catch (error) {
             console.log(`Error: ${error.message}`);
             throw error;
         }
