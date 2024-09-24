@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import StudentDashboard from './StudentDashboard';
+import AdminDashboard from './AdminDashboard';
 
 const drawerWidth = 250;
 const navBarHeight = 64;
@@ -38,6 +39,7 @@ function Home(props) {
                 handleDrawerToggle={handleDrawerToggle}
                 sidbarActive={sidbarActive} />
             <StudentDashboard drawerWidth={drawerWidth} />
+            {/* <AdminDashboard drawerWidth={drawerWidth} navBarHeight={navBarHeight} /> */}
             <Sidebar
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
