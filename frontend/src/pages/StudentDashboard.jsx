@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import { Stack, styled } from '@mui/material';
 import Card from '@mui/material/Card';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme } from '@mui/material';
 import { Typography } from '@mui/material';
+import { useOutletContext } from 'react-router-dom';
+import { CalendarCard } from '../components/CalanderCard';
+import AnnouncementModel from '../components/AnnouncementModel';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -51,7 +53,6 @@ const Room = styled('div')(({ theme }) => ({
 
 const Subject = styled('div')(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -60,9 +61,8 @@ const Subject = styled('div')(({ theme }) => ({
     fontWeight: "bold",
 }));
 
-const Time = styled('Typography')(({ theme }) => ({
+const Time = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -70,9 +70,8 @@ const Time = styled('Typography')(({ theme }) => ({
     fontSize: "1rm",
 }));
 
-const Topic = styled('Typography')(({ theme }) => ({
+const Topic = styled(Typography)(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'left',
@@ -84,16 +83,23 @@ const Topic = styled('Typography')(({ theme }) => ({
 const Announcment = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontSize: "20px",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     width: "100%",
 }));
 
-export default function StudentDashboard({ drawerWidth }) {
+export default function StudentDashboard() {
     const [value, setValue] = React.useState(0);
     const [subValue, setSubValue] = React.useState(0);
+    const [modal, setModal] = React.useState(false);
+
+    const handleModalOpen = () => setModal(true);
+    const handleModalClose = () => setModal(false);
+
+    const data = useOutletContext();
+    const drawerWidth = data.drawerWidth;
 
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } }); // Access the Material-UI theme
 
@@ -110,34 +116,37 @@ export default function StudentDashboard({ drawerWidth }) {
         <Stack
             direction="row"
             sx={{
-                minHeight: "700px",
+                minHeight: "900px",
                 backgroundColor: "#f6f7f6",
                 width: `calc(100vw - ${drawerWidth}px)`,
                 left: drawerWidth,
-                position: "relative",
-                overflow: "hidden",
+                top: "64px",
+                position: "absolute",
                 [theme.breakpoints.down('md')]: {
+                    height: "700px",
                     width: "100%",
                     left: 0,
                     flexDirection: "column-reverse",
                     direction: "column",
                     alignItems: "center",
                 },
-                overflowY: "visible"
+                overflowY: "visible",
+                overflowX: "hidden"
             }}
             height="100vh"
         >
+            <AnnouncementModel open={modal} handleClose={handleModalClose} />
             <Box
                 width="75%"
                 sx={{
                     margin: "10px",
                     marginLeft: "20px",
-                    top: "70px",
                     position: "relative",
                     minHeight: "calc(100% - 90px)",
                     height: "calc(100% - 90px)",
                     [theme.breakpoints.down('md')]: {
                         width: "90%",
+                        minHeight: "900px",
                         maxWidth: "950px",
                         height: "auto",
                         display: "flex",
@@ -168,7 +177,7 @@ export default function StudentDashboard({ drawerWidth }) {
                             </Tabs>
                         </Box>
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 50px)" }}>
-                            <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px" }}>
+                            <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px", position: "relative" }}>
                                 <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
                                     <Stack direction="row">
                                         <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
@@ -196,7 +205,6 @@ export default function StudentDashboard({ drawerWidth }) {
                                 </Card>
                                 <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
                                     <Stack direction="row">
-
                                         <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed3.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
                                         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
                                             <Box>
@@ -219,6 +227,12 @@ export default function StudentDashboard({ drawerWidth }) {
                                         </Box>
                                     </Stack>
                                 </Card>
+                                <Box sx={{ position: "sticky", bottom: "20px", display: "flex", justifyContent: "flex-end" }}>
+                                    <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "sticky", zIndex: 1, bottom: "20px" }}>
+                                        <AddIcon sx={{ marginRight: "6px" }} />
+                                        New Announcment
+                                    </Fab>
+                                </Box>
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
                                 Item Two
@@ -232,7 +246,6 @@ export default function StudentDashboard({ drawerWidth }) {
             </Box>
             <Box sx={{
                 height: "calc(100% - 90px)",
-                top: "70px",
                 position: "relative",
                 width: "400px",
                 minWidth: "400px",
@@ -271,17 +284,17 @@ export default function StudentDashboard({ drawerWidth }) {
                         direction: "column",
                     },
                 }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar />
-                    </LocalizationProvider>
+                    <CalendarCard />
                 </Card>
                 <Card elevation={4} sx={{
-                    height: "calc(60% - 10px)", width: "calc(100% - 30px)",
+                    height: "calc(60% - 10px)",
+                    width: "calc(100% - 30px)",
                     margin: "20px 10px 10px 10px",
                     borderRadius: "10px",
-                    minHeight: "350px",
+                    minHeight: "calc(60% - 20px)",
                     maxHeight: "400px",
                     [theme.breakpoints.down('md')]: {
+                        minHeight: "350px",
                         height: "90%",
                         maxWidth: "450px",
                         margin: "10px",

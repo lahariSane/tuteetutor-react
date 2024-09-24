@@ -5,6 +5,7 @@ import ForgotPasswordForm from './components/ForgotPassword';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 
+
 import Home from './pages/Home';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Home />} >
           <Route path="" element={<StudentDashboard />} />
           <Route path="admin" element={<AdminDashboard />} />
+
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<></>} />
           <Route path="almanac" element={<></>} />

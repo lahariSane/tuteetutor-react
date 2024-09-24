@@ -36,6 +36,7 @@ function Home(props) {
                 drawerWidth={drawerWidth}
                 handleDrawerToggle={handleDrawerToggle}
                 sidbarActive={sidbarActive} />
+
             <Outlet context={{ drawerWidth: drawerWidth }} />
             <Sidebar
                 drawerWidth={drawerWidth}

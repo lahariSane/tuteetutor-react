@@ -35,7 +35,6 @@ const connectDB = async () => {
         process.exit();
     }
 };
-
 connectDB();
 
 app.listen(PORT, () => {
