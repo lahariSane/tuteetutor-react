@@ -116,7 +116,7 @@ const SideMenu = styled('div')(({ theme }) => ({
     overflow: "hidden",
 }));
 
-function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd, sidbarActive, setSidebarActive }) {
+function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, sidbarActive, setSidebarActive }) {
     const [setHover, setIsHovered] = React.useState(false);
 
     const navigate = useNavigate();
@@ -228,7 +228,6 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTrans
                 //   container={container}
                 variant="temporary"
                 open={mobileOpen}
-                onTransitionEnd={handleDrawerTransitionEnd}
                 onClose={handleDrawerClose}
                 ModalProps={{
                     keepMounted: true, // Better open performance on mobile.
