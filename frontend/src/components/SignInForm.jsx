@@ -22,13 +22,13 @@ function SignInForm() {
 
   return (
     <div class="box-container">
-      <div className="form-container sign-in-container">
+      <div className="form-container sign-in-container" >
         <div class="logo">
-          <img src="/logo192.png" />
+          <img src="/logo.png" />
           <div class="logo-name">TuteeTutor</div>
         </div>
-        <form onSubmit={handleOnSubmit}>
-          <h1>Sign in</h1>
+        <form onSubmit={handleOnSubmit} style={{height:"650px"}}>
+          <h1 className="heading">Sign in</h1>
           <div className="social-container">
             <a href="#" className="social">
               <i className="fab fa-google" />
