@@ -12,6 +12,7 @@ import { Typography } from '@mui/material';
 import { useOutletContext } from 'react-router-dom';
 import { CalendarCard } from '../components/CalanderCard';
 import AnnouncementModel from '../components/AnnouncementModel';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -95,6 +96,9 @@ export default function StudentDashboard() {
     const [subValue, setSubValue] = React.useState(0);
     const [modal, setModal] = React.useState(false);
 
+    const [announcementData, setAnnouncementData] = React.useState([]);
+    const [timetable, setTimetable] = React.useState([]);
+
     const handleModalOpen = () => setModal(true);
     const handleModalClose = () => setModal(false);
 
@@ -111,6 +115,55 @@ export default function StudentDashboard() {
         setSubValue(newValue);
     };
 
+    React.useEffect(() => {
+        async function fetchData() {
+            try {
+                let response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`);
+                setAnnouncementData(response.data);
+                response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`);
+                setTimetable(response.data);
+            } catch (error) {
+                console.error('Error fetching announcement data:', error);
+            }
+        }
+        fetchData();
+    }, []);
+
+    const imageList = ["/images/unnamed.jpg", "/images/unnamed2.jpg", "/images/unnamed3.jpg"];
+    const announcement = announcementData.map((announcement, index) => {
+        const image = imageList[Math.floor(Math.random() * imageList.length)];
+        return (
+            <Card key={index} elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
+                <Stack direction="row">
+                    <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url(${image})`, backgroundSize: "cover", marginRight: "50px" }} />
+                    <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
+                        <Box>
+                            <Topic>{announcement.course}</Topic>
+                            <Announcment>
+                                {announcement.title.split('\n').map((line, index) => (
+                                    <React.Fragment key={index}>
+                                        {line}
+                                        {index < announcement.title.split('\n').length - 1 && <br />}
+                                    </React.Fragment>
+                                ))}
+                            </Announcment>
+                        </Box>
+                        <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>{announcement.author}</b></Time>
+                    </Box>
+                </Stack>
+            </Card>
+        )
+    });
+
+    const timetableData = timetable.map((timetable, index) => {
+        return (
+            <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
+                <Subject>{timetable.subject} - {timetable.section}</Subject>
+                <Room>Room No: {timetable.roomNo}</Room>
+                <Time>{timetable.startTime} - {timetable.endTime}</Time>
+            </Card>
+        )
+    })
     return (
 
         <Stack
@@ -165,6 +218,7 @@ export default function StudentDashboard() {
                         height: "100%", width: "100%",
                         display: "flex",
                         flexDirection: "column",
+                        position: "relative",
                         [theme.breakpoints.down('md')]: {
                             height: "90%",
                             maxHeight: "calc(100vh - 200px)",
@@ -181,61 +235,12 @@ export default function StudentDashboard() {
                         </Box>
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 50px)" }}>
                             <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px", position: "relative" }}>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Operating System</Topic>
-                                                <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            </Box>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed2.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Artificial Intelligence</Topic>
-                                                <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                                <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                            </Box>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed3.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Machine Learning</Topic>
-                                                <Announcment>sdfc , eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            </Box>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Topic>Cloud computing</Topic>
-                                            <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Box sx={{ position: "sticky", bottom: "20px", display: "flex", justifyContent: "flex-end" }}>
-                                    <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "sticky", zIndex: 1, bottom: "20px" }}>
-                                        <AddIcon sx={{ marginRight: "6px" }} />
-                                        New Announcment
-                                    </Fab>
-                                </Box>
+                                {announcement}
+                                <Box sx={{ height: "50px" }} />
+                                <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "sticky", zIndex: 1, bottom: "20px", position: "absolute", bottom: "20px", right: "20px" }}>
+                                    <AddIcon sx={{ marginRight: "6px" }} />
+                                    New Announcment
+                                </Fab>
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
                                 Item Two
@@ -320,26 +325,7 @@ export default function StudentDashboard() {
                         </Box>
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 30px)" }}>
                             <CustomTabPanel value={subValue} index={0}>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>FDFED - 1</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>CC - 2</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>FDFED - 1</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>CC - 2</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
+                                {timetableData}
                             </CustomTabPanel>
                             <CustomTabPanel value={subValue} index={1}>
                                 <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>

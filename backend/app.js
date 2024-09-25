@@ -5,6 +5,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
+import announcementsRouter from "./routes/announcementsRouter.js";
+import timetableRouer from './routes/timetableRouter.js';
 import DATABASE from './models/db.js';
 import mailRouter from "./routes/mailRouter.js";
 import mongoose from 'mongoose';
@@ -22,6 +24,8 @@ app.use(express.json());
 
 app.use('/', userRouter)
 app.use('/', adminRouter) 
+app.use('/', announcementsRouter)
+app.use('/', timetableRouer)
 app.use('/api', mailRouter)
 
 db.connect();
