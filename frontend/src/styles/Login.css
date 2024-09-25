@@ -34,7 +34,12 @@ body {
 }
 
 .logo-name {
-    color: rgb(87, 199, 216)
+    color: #3299fc;
+    font-weight: bold;
+}
+
+.heading{
+    font-size: 1.9rem;
 }
 
 .additional-information {
@@ -67,18 +72,24 @@ body {
     box-sizing: border-box;
 }
 
-.sign-in-container {
+
+
+.sign-up-container {
     left: 0;
     z-index: 2;
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    opacity: 0;
+    transition: all 0.6s ease-in-out;
 }
 
+
 .container.right-panel-active .sign-in-container {
-    transform: translateX(100%);
     display: none;
+    opacity: 1;
+    transform: translateX(100%);
 }
 
 .social-container {
@@ -101,20 +112,23 @@ body {
     color:black;
 }
 
-.sign-up-container {
+.sign-in-container {
     left: 0;
     z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    opacity: 1;
+    transition: all 0.6s ease-in-out;
 }
 
 .container.right-panel-active .sign-up-container {
-    transform: translateX(100%);
+    display: flex;
     opacity: 1;
+    transform: translateX(100%);
     z-index: 5;
-    animation: show 0.6s;
+    animation: show 2s;
 }
 
 form {
@@ -260,7 +274,6 @@ span {
     display: inline-block;
     font-size: 14px;
     color: #1251bd;
-    /* A professional blue shade */
     text-decoration: none;
     transition: color 0.3s ease-in-out;
     margin-top: 15px;
@@ -277,3 +290,32 @@ span {
     transform: translateX(100%);
 }
 
+.send-otp{
+    border-radius: 10px;
+    border: 1px solid #00246B;
+    background-color: #3299fc;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    transition: transform 80ms ease-in;
+    margin-top: 10px;
+    width: 5rem;
+    height: 3rem;
+}
+
+
+/* When the panel is in the default position (Sign In) */
+.container:not(.right-panel-active) .sign-up-container {
+    display: none;
+    opacity: 0;
+    transform: translateX(0);
+}
+
+/* Make sure the Sign In form is fully visible when not active */
+.container:not(.right-panel-active) .sign-in-container {
+    display: flex;
+    opacity: 1;
+}
