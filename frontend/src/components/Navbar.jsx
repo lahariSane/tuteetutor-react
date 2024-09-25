@@ -8,10 +8,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { calenderModel } from '../components/CalanderCard';
 import { useState } from 'react';
 
 import { createTheme } from '@mui/material';
+import { CalenderModel } from '../components/CalanderCard';
 
 import Typography from '@mui/material/Typography';
 
@@ -59,13 +59,14 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                 width: `calc(100% - ${drawerWidth}px)`,
                 ml: `${drawerWidth}px`,
                 boxShadow: "none",
+                // height: "60px",
                 [theme.breakpoints.down('md')]: {
                     width: `calc(100%)`,
                     ml: `0px`,
                 },
             }}
         >
-            <calenderModel open={calendarModal} handleClose={() => setCalendarModal(false)} />
+            <CalenderModel open={calendarModal} handleClose={() => setCalendarModal(false)} />
 
             <Toolbar sx={{ justifyContent: "space-between", width: "100%", height: "100%", bgcolor: "white" }}>
                 <Stack direction="row" alignItems="center">
@@ -93,14 +94,14 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                             color: "black"// (theme) => (theme.vars ?? theme).palette.primary.main,
                         }}
                     >
-                        {sidbarActive}
+                        {sidbarActive.toUpperCase()}
                     </Typography>
                 </Stack>
                 <Stack direction="row" alignItems="center" spacing={0.9} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
                     <IconButton color="primary">
                         <SearchIcon fontSize="medium" />
                     </IconButton>
-                    <IconButton color="primary" sx={{ display: { sm: "none" } }}>
+                    <IconButton onClick={() => setCalendarModal(true)} color="primary" sx={{ display: { sm: "none" } }}>
                         <CalendarMonthIcon fontSize="medium" />
                     </IconButton>
                     <IconButton color="primary">
