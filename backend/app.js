@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
 import cors from 'cors';
-import nodemailer from 'nodemailer';
-import http from 'http';
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 import mailRouter from "./routes/mailRouter.js";
 
 
 dotenv.config();
 const app = express();
-const PORT = 2004;
+const PORT = process.env.PORT || 2004;
 
 app.use(cors());
 app.use(express.json());
@@ -30,6 +29,7 @@ const connectDB = async () => {
 connectDB();
 
 app.use('/api', mailRouter)
+
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)

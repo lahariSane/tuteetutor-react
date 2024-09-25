@@ -5,15 +5,17 @@ import ForgotPasswordForm from './components/ForgotPassword';
 
 import Home from './pages/Home';
 import About from './pages/About';
+import ResetPasswordForm from './components/ResetPasswordForm';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPasswordForm/>} />
-          <Route path="/home" element={<Home />} />
-        </Routes>
+        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
     </Router>
   );
 }
