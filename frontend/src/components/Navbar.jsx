@@ -8,8 +8,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import { useState } from 'react';
 
 import { createTheme } from '@mui/material';
+import { CalenderModel } from '../components/CalanderCard';
 
 import Typography from '@mui/material/Typography';
 
@@ -49,6 +51,7 @@ function stringAvatar(name) {
 function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
 
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
+    const [calendarModal, setCalendarModal] = useState(false);
 
     return (
         <AppBar
@@ -56,12 +59,15 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                 width: `calc(100% - ${drawerWidth}px)`,
                 ml: `${drawerWidth}px`,
                 boxShadow: "none",
+                // height: "60px",
                 [theme.breakpoints.down('md')]: {
                     width: `calc(100%)`,
                     ml: `0px`,
                 },
             }}
         >
+            <CalenderModel open={calendarModal} handleClose={() => setCalendarModal(false)} />
+
             <Toolbar sx={{ justifyContent: "space-between", width: "100%", height: "100%", bgcolor: "white" }}>
                 <Stack direction="row" alignItems="center">
                     <IconButton
@@ -69,11 +75,13 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                         edge="start"
                         onClick={handleDrawerToggle}
                         sx={{
+                            width: "40px",
+                            height: "40px",
                             display: 'none',
                             color: "black",// (theme) => (theme.vars ?? theme).palette.primary.main,
                             mr: 2,
                             [theme.breakpoints.down('md')]: {
-                                display: "block",
+                                display: "flex",
                             },
                         }}
                     >
@@ -86,14 +94,14 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                             color: "black"// (theme) => (theme.vars ?? theme).palette.primary.main,
                         }}
                     >
-                        {sidbarActive}
+                        {sidbarActive.toUpperCase()}
                     </Typography>
                 </Stack>
                 <Stack direction="row" alignItems="center" spacing={0.9} sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}>
                     <IconButton color="primary">
                         <SearchIcon fontSize="medium" />
                     </IconButton>
-                    <IconButton color="primary" sx={{ display: { sm: "none" } }}>
+                    <IconButton onClick={() => setCalendarModal(true)} color="primary" sx={{ display: { sm: "none" } }}>
                         <CalendarMonthIcon fontSize="medium" />
                     </IconButton>
                     <IconButton color="primary">
