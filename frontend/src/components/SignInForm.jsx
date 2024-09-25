@@ -24,7 +24,7 @@ function SignInForm() {
     setError("");
     try {
     // Fetch request to login API
-    const response = await fetch('http://localhost:2004/api/login', {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

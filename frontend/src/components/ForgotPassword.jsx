@@ -7,7 +7,7 @@ function ForgotPasswordForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:2004/api/forgot-password', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
