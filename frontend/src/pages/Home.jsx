@@ -10,22 +10,15 @@ const navBarHeight = 64;
 
 function Home(props) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isClosing, setIsClosing] = React.useState(false);
     const [sidbarActive, setSidebarActive] = React.useState("Dashboard");
 
     const handleDrawerClose = () => {
-        setIsClosing(true);
         setMobileOpen(false);
     };
 
-    const handleDrawerTransitionEnd = () => {
-        setIsClosing(false);
-    };
 
     const handleDrawerToggle = () => {
-        // if (!isClosing) {
             setMobileOpen(!mobileOpen);
-        // }
     };
 
     return (
@@ -42,7 +35,6 @@ function Home(props) {
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
                 handleDrawerClose={handleDrawerClose}
-                handleDrawerTransitionEnd={handleDrawerTransitionEnd}
                 sidbarActive={sidbarActive}
                 setSidebarActive={setSidebarActive}
             />
