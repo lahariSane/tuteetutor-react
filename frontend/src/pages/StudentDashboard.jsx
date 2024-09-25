@@ -1,20 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Fab from '@mui/material/Fab';
+import { Tabs, Tab, Box, Fab, Stack, styled, Card, Typography, createTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { Stack, styled } from '@mui/material';
-import Card from '@mui/material/Card';
-import { createTheme } from '@mui/material';
-import { Typography } from '@mui/material';
 import { useOutletContext } from 'react-router-dom';
+import axios from 'axios';
 import { CalendarCard } from '../components/CalanderCard';
 import AnnouncementModel from '../components/AnnouncementModel';
-import axios from 'axios';
 
-function CustomTabPanel(props) {
+const CustomTabPanel = React.memo(function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
 
     return (
@@ -28,7 +21,7 @@ function CustomTabPanel(props) {
             {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
         </div>
     );
-}
+});
 
 CustomTabPanel.propTypes = {
     children: PropTypes.node,
@@ -36,12 +29,10 @@ CustomTabPanel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
+const a11yProps = (index) => ({
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+});
 
 const Room = styled('div')(({ theme }) => ({
     color: theme.palette.text.secondary,
@@ -68,7 +59,7 @@ const Time = styled(Typography)(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
     width: "100%",
-    fontSize: "1rm",
+    fontSize: "1rem",
 }));
 
 const Topic = styled(Typography)(({ theme }) => ({
@@ -91,13 +82,13 @@ const Announcment = styled(Typography)(({ theme }) => ({
     width: "100%",
 }));
 
-export default function StudentDashboard() {
+const StudentDashboard = () => {
     const [value, setValue] = React.useState(0);
     const [subValue, setSubValue] = React.useState(0);
     const [modal, setModal] = React.useState(false);
-
     const [announcementData, setAnnouncementData] = React.useState([]);
     const [timetable, setTimetable] = React.useState([]);
+    const [holidays, setHolidays] = React.useState([]);
 
     const handleModalOpen = () => setModal(true);
     const handleModalClose = () => setModal(false);
@@ -105,33 +96,33 @@ export default function StudentDashboard() {
     const data = useOutletContext();
     const drawerWidth = data.drawerWidth;
 
-    const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } }); // Access the Material-UI theme
+    const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-
-    const handlesubChange = (event, newValue) => {
-        setSubValue(newValue);
-    };
+    const handleChange = (event, newValue) => setValue(newValue);
+    const handlesubChange = (event, newValue) => setSubValue(newValue);
 
     React.useEffect(() => {
-        async function fetchData() {
+        const fetchData = async () => {
             try {
-                let response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`);
-                setAnnouncementData(response.data);
-                response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`);
-                setTimetable(response.data);
+                const [announcements, timetable, holidays] = await Promise.all([
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`),
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`)
+                ]);
+                setAnnouncementData(announcements.data);
+                console.log(announcementData);
+                setTimetable(timetable.data);
+                setHolidays(holidays.data);
             } catch (error) {
-                console.error('Error fetching announcement data:', error);
+                console.error('Error fetching data:', error);
             }
-        }
+        };
         fetchData();
     }, []);
 
     const imageList = ["/images/unnamed.jpg", "/images/unnamed2.jpg", "/images/unnamed3.jpg"];
     const announcement = announcementData.map((announcement, index) => {
-        const image = imageList[Math.floor(Math.random() * imageList.length)];
+        const image = imageList[Math.floor(index % imageList.length)];
         return (
             <Card key={index} elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
                 <Stack direction="row">
@@ -148,24 +139,39 @@ export default function StudentDashboard() {
                                 ))}
                             </Announcment>
                         </Box>
-                        <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>{announcement.author}</b></Time>
+                        <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Announced By: <b>{announcement.author}</b></Time>
                     </Box>
                 </Stack>
             </Card>
         )
     });
 
-    const timetableData = timetable.map((timetable, index) => {
+    const timetableData = timetable.map((timetable, index) => (
+        <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
+            <Subject>{timetable.subject} - {timetable.section}</Subject>
+            <Room>Room No: {timetable.roomNo}</Room>
+            <Time>{timetable.startTime} - {timetable.endTime}</Time>
+        </Card>
+    ));
+
+    const holidayData = holidays.map((holiday, index) => {
+        const formattedDate = new Date(holiday.date).toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            weekday: 'long'
+        });
+
         return (
             <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                <Subject>{timetable.subject} - {timetable.section}</Subject>
-                <Room>Room No: {timetable.roomNo}</Room>
-                <Time>{timetable.startTime} - {timetable.endTime}</Time>
+                <Subject>{holiday.occasion}</Subject>
+                <Room>{formattedDate.split(',')[1].trim()}, {formattedDate.split(',')[2].trim()}</Room>
+                <Time>{formattedDate.split(',')[0]}</Time>
             </Card>
         )
-    })
-    return (
+    });
 
+    return (
         <Stack
             direction="row"
             sx={{
@@ -182,7 +188,6 @@ export default function StudentDashboard() {
                     width: "100%",
                     left: 0,
                     flexDirection: "column-reverse",
-                    direction: "column",
                     alignItems: "center",
                 },
                 overflowY: "auto",
@@ -207,7 +212,6 @@ export default function StudentDashboard() {
                         height: "auto",
                         display: "flex",
                         flexDirection: "row-reverse",
-                        direction: "column",
                     },
                 }}
             >
@@ -228,7 +232,7 @@ export default function StudentDashboard() {
                     <Box sx={{ height: "100%" }}>
                         <Box sx={{ marginLeft: "12px", borderBottom: 1, borderColor: 'transparent', backgroundColor: "white", borderRadius: "30px" }}>
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                                <Tab label="Announcments" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
+                                <Tab label="Announcements" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="Assignments" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="ToDo" {...a11yProps(2)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                             </Tabs>
@@ -237,9 +241,9 @@ export default function StudentDashboard() {
                             <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px", position: "relative" }}>
                                 {announcement}
                                 <Box sx={{ height: "50px" }} />
-                                <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "sticky", zIndex: 1, bottom: "20px", position: "absolute", bottom: "20px", right: "20px" }}>
+                                <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "absolute", zIndex: 1, bottom: "20px", right: "20px" }}>
                                     <AddIcon sx={{ marginRight: "6px" }} />
-                                    New Announcment
+                                    New Announcement
                                 </Fab>
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
@@ -261,7 +265,6 @@ export default function StudentDashboard() {
                     width: "100%",
                     display: "flex",
                     flexDirection: "row-reverse",
-                    direction: "column",
                     alignItems: "center",
                     justifyContent: "center"
                 },
@@ -281,15 +284,12 @@ export default function StudentDashboard() {
                         maxWidth: "450px",
                         display: "flex",
                         flexDirection: "row-reverse",
-                        direction: "column",
                         marginRight: "20px",
                     },
                     [theme.breakpoints.down('sm')]: {
                         width: "700px",
                         height: "90%",
                         display: "none",
-                        flexDirection: "row-reverse",
-                        direction: "column",
                     },
                 }}>
                     <CalendarCard />
@@ -299,7 +299,7 @@ export default function StudentDashboard() {
                     width: "calc(100% - 30px)",
                     margin: "20px 10px 10px 10px",
                     borderRadius: "10px",
-                    minHeight: "calc(60% - 20px)",
+                    minHeight: "calc(60% - 35px)",
                     maxHeight: "400px",
                     [theme.breakpoints.down('md')]: {
                         minHeight: "350px",
@@ -328,21 +328,14 @@ export default function StudentDashboard() {
                                 {timetableData}
                             </CustomTabPanel>
                             <CustomTabPanel value={subValue} index={1}>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>Maha Navami</Subject>
-                                    <Room>11 oct 2024</Room>
-                                    <Time>Friday</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>Dussehra</Subject>
-                                    <Room>12 oct 2024</Room>
-                                    <Time>Saturday</Time>
-                                </Card>
+                                {holidayData}
                             </CustomTabPanel>
                         </Box>
                     </Box>
                 </Card>
             </Box>
-        </Stack >
+        </Stack>
     );
-}
+};
+
+export default React.memo(StudentDashboard);
