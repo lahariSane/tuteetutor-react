@@ -110,7 +110,6 @@ const StudentDashboard = () => {
                     axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`)
                 ]);
                 setAnnouncementData(announcements.data);
-                console.log(announcementData);
                 setTimetable(timetable.data);
                 setHolidays(holidays.data);
             } catch (error) {
