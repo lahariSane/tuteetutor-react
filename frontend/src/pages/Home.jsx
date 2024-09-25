@@ -20,12 +20,9 @@ function Home(props) {
         setMobileOpen(false);
     };
 
-    const handleDrawerTransitionEnd = () => {
-    };
 
     const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-        // }
+            setMobileOpen(!mobileOpen);
     };
 
     return (
@@ -42,7 +39,6 @@ function Home(props) {
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
                 handleDrawerClose={handleDrawerClose}
-                handleDrawerTransitionEnd={handleDrawerTransitionEnd}
                 sidbarActive={sidbarActive}
                 setSidebarActive={setSidebarActive}
             />
