@@ -1,20 +1,43 @@
 import * as React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { Modal, Box, Typography, TextField, Button, Stack } from '@mui/material';
 
 function CalendarCard() {
-  return (
-    <Card variant="outlined" sx={{ display: 'inline-block' }}>
-      <CardContent>
+    return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateCalendar />
+            <DateCalendar />
         </LocalizationProvider>
-      </CardContent>
-    </Card>
-  );
+
+    );
 }
 
-export default CalendarCard;
+const style = {
+    position: 'absolute',
+    top: '64px',
+    right: '50px',
+    width: 400,
+    bgcolor: 'background.paper',
+    borderRadius: '8px',
+    boxShadow: 24,
+    p: 4,
+};
+
+function CalenderModel({ open, handleClose }) {
+    return (
+        <Modal
+            sx={{ display: { sm: "none" } }}
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+        >
+            <Box sx={style}>
+                <CalendarCard />
+            </Box>
+        </Modal>
+    );
+}
+
+export { CalendarCard, CalenderModel };

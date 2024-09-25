@@ -8,7 +8,7 @@
     "express": "^4.21.0",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.3",
+    "mongoose": "^8.6.3",
     "nodemailer": "^6.9.15",
     "react-router-dom": "^6.26.2"
   },
@@ -17,7 +17,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

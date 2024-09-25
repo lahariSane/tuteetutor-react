@@ -1,17 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import { Stack, styled } from '@mui/material';
-import Card from '@mui/material/Card';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { createTheme } from '@mui/material';
-import { Typography } from '@mui/material';
+import { Tabs, Tab, Box, Fab, Stack, styled, Card, Typography, createTheme } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { useOutletContext } from 'react-router-dom';
+import axios from 'axios';
+import { CalendarCard } from '../components/CalanderCard';
+import AnnouncementModel from '../components/AnnouncementModel';
 
-function CustomTabPanel(props) {
+const CustomTabPanel = React.memo(function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
 
     return (
@@ -25,7 +21,7 @@ function CustomTabPanel(props) {
             {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
         </div>
     );
-}
+});
 
 CustomTabPanel.propTypes = {
     children: PropTypes.node,
@@ -33,12 +29,10 @@ CustomTabPanel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
-}
+const a11yProps = (index) => ({
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+});
 
 const Room = styled('div')(({ theme }) => ({
     color: theme.palette.text.secondary,
@@ -51,7 +45,6 @@ const Room = styled('div')(({ theme }) => ({
 
 const Subject = styled('div')(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -60,19 +53,17 @@ const Subject = styled('div')(({ theme }) => ({
     fontWeight: "bold",
 }));
 
-const Time = styled('Typography')(({ theme }) => ({
+const Time = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     width: "100%",
-    fontSize: "1rm",
+    fontSize: "1rem",
 }));
 
-const Topic = styled('Typography')(({ theme }) => ({
+const Topic = styled(Typography)(({ theme }) => ({
     color: theme.palette.primary.main,
-    padding: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'left',
@@ -84,65 +75,143 @@ const Topic = styled('Typography')(({ theme }) => ({
 const Announcment = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.secondary,
     fontSize: "20px",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
     width: "100%",
 }));
 
-export default function StudentDashboard({ drawerWidth }) {
+const StudentDashboard = () => {
     const [value, setValue] = React.useState(0);
     const [subValue, setSubValue] = React.useState(0);
+    const [modal, setModal] = React.useState(false);
+    const [announcementData, setAnnouncementData] = React.useState([]);
+    const [timetable, setTimetable] = React.useState([]);
+    const [holidays, setHolidays] = React.useState([]);
 
-    const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } }); // Access the Material-UI theme
+    const handleModalOpen = () => setModal(true);
+    const handleModalClose = () => setModal(false);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+    const data = useOutletContext();
+    const drawerWidth = data.drawerWidth;
 
-    const handlesubChange = (event, newValue) => {
-        setSubValue(newValue);
-    };
+    const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
+
+    const handleChange = (event, newValue) => setValue(newValue);
+    const handlesubChange = (event, newValue) => setSubValue(newValue);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [announcements, timetable, holidays] = await Promise.all([
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`),
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`)
+                ]);
+                setAnnouncementData(announcements.data);
+                console.log(announcementData);
+                setTimetable(timetable.data);
+                setHolidays(holidays.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const imageList = ["/images/unnamed.jpg", "/images/unnamed2.jpg", "/images/unnamed3.jpg"];
+    const announcement = announcementData.map((announcement, index) => {
+        const image = imageList[Math.floor(index % imageList.length)];
+        return (
+            <Card key={index} elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
+                <Stack direction="row">
+                    <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url(${image})`, backgroundSize: "cover", marginRight: "50px" }} />
+                    <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
+                        <Box>
+                            <Topic>{announcement.course}</Topic>
+                            <Announcment>
+                                {announcement.title.split('\n').map((line, index) => (
+                                    <React.Fragment key={index}>
+                                        {line}
+                                        {index < announcement.title.split('\n').length - 1 && <br />}
+                                    </React.Fragment>
+                                ))}
+                            </Announcment>
+                        </Box>
+                        <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Announced By: <b>{announcement.author}</b></Time>
+                    </Box>
+                </Stack>
+            </Card>
+        )
+    });
+
+    const timetableData = timetable.map((timetable, index) => (
+        <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
+            <Subject>{timetable.subject} - {timetable.section}</Subject>
+            <Room>Room No: {timetable.roomNo}</Room>
+            <Time>{timetable.startTime} - {timetable.endTime}</Time>
+        </Card>
+    ));
+
+    const holidayData = holidays.map((holiday, index) => {
+        const formattedDate = new Date(holiday.date).toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            weekday: 'long'
+        });
+
+        return (
+            <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
+                <Subject>{holiday.occasion}</Subject>
+                <Room>{formattedDate.split(',')[1].trim()}, {formattedDate.split(',')[2].trim()}</Room>
+                <Time>{formattedDate.split(',')[0]}</Time>
+            </Card>
+        )
+    });
 
     return (
-
         <Stack
             direction="row"
             sx={{
-                minHeight: "700px",
+                minHeight: "900px",
                 backgroundColor: "#f6f7f6",
                 width: `calc(100vw - ${drawerWidth}px)`,
                 left: drawerWidth,
-                position: "relative",
-                overflow: "hidden",
+                top: "64px",
+                position: "absolute",
                 [theme.breakpoints.down('md')]: {
+                    // backgroundColor: theme.palette.primary.main,
+                    // height: "700px",
+                    height: "100%",
                     width: "100%",
                     left: 0,
                     flexDirection: "column-reverse",
-                    direction: "column",
                     alignItems: "center",
                 },
-                overflowY: "visible"
+                overflowY: "auto",
+                overflowX: "auto"
             }}
-            height="100vh"
+            height="calc(100% - 60px)"
         >
+            <AnnouncementModel open={modal} handleClose={handleModalClose} />
             <Box
                 width="75%"
                 sx={{
                     margin: "10px",
                     marginLeft: "20px",
-                    top: "70px",
                     position: "relative",
-                    minHeight: "calc(100% - 90px)",
+                    minHeight: "calc(100% - 65px)",
+                    // height: "calc(100% - 90px)",
                     height: "calc(100% - 90px)",
                     [theme.breakpoints.down('md')]: {
                         width: "90%",
+                        minHeight: "900px",
                         maxWidth: "950px",
                         height: "auto",
                         display: "flex",
                         flexDirection: "row-reverse",
-                        direction: "column",
                     },
                 }}
             >
@@ -153,6 +222,7 @@ export default function StudentDashboard({ drawerWidth }) {
                         height: "100%", width: "100%",
                         display: "flex",
                         flexDirection: "column",
+                        position: "relative",
                         [theme.breakpoints.down('md')]: {
                             height: "90%",
                             maxHeight: "calc(100vh - 200px)",
@@ -162,63 +232,19 @@ export default function StudentDashboard({ drawerWidth }) {
                     <Box sx={{ height: "100%" }}>
                         <Box sx={{ marginLeft: "12px", borderBottom: 1, borderColor: 'transparent', backgroundColor: "white", borderRadius: "30px" }}>
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                                <Tab label="Announcments" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
+                                <Tab label="Announcements" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="Assignments" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="ToDo" {...a11yProps(2)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                             </Tabs>
                         </Box>
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 50px)" }}>
-                            <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px" }}>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Operating System</Topic>
-                                                <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            </Box>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed2.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Artificial Intelligence</Topic>
-                                                <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                                <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                            </Box>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed3.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Box>
-                                                <Topic>Machine Learning</Topic>
-                                                <Announcment>sdfc , eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            </Box>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
-                                <Card elevation={4} sx={{ borderRadius: "20px", padding: "12px", marginBottom: "10px", background: "#fafafa", "&:hover": { boxShadow: 10 } }}>
-                                    <Stack direction="row">
-
-                                        <Box sx={{ height: "200px", minWidth: "200px", borderRadius: '10px', backgroundImage: `url("/images/unnamed.jpg")`, backgroundSize: "cover", marginRight: "50px" }} />
-
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "left", width: "calc(98% - 200px)" }}>
-                                            <Topic>Cloud computing</Topic>
-                                            <Announcment>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dolores soluta ipsa enim distinctio dolor exercitationem blanditiis ex, neque fuga, eum est vel veniam asperiores porro magni ut quisquam corporis?</Announcment>
-                                            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>Anonunced By: <b>Lahari Sane</b></Time>
-                                        </Box>
-                                    </Stack>
-                                </Card>
+                            <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px", position: "relative" }}>
+                                {announcement}
+                                <Box sx={{ height: "50px" }} />
+                                <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "absolute", zIndex: 1, bottom: "20px", right: "20px" }}>
+                                    <AddIcon sx={{ marginRight: "6px" }} />
+                                    New Announcement
+                                </Fab>
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
                                 Item Two
@@ -232,7 +258,6 @@ export default function StudentDashboard({ drawerWidth }) {
             </Box>
             <Box sx={{
                 height: "calc(100% - 90px)",
-                top: "70px",
                 position: "relative",
                 width: "400px",
                 minWidth: "400px",
@@ -240,7 +265,6 @@ export default function StudentDashboard({ drawerWidth }) {
                     width: "100%",
                     display: "flex",
                     flexDirection: "row-reverse",
-                    direction: "column",
                     alignItems: "center",
                     justifyContent: "center"
                 },
@@ -260,28 +284,25 @@ export default function StudentDashboard({ drawerWidth }) {
                         maxWidth: "450px",
                         display: "flex",
                         flexDirection: "row-reverse",
-                        direction: "column",
                         marginRight: "20px",
                     },
                     [theme.breakpoints.down('sm')]: {
                         width: "700px",
                         height: "90%",
                         display: "none",
-                        flexDirection: "row-reverse",
-                        direction: "column",
                     },
                 }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar />
-                    </LocalizationProvider>
+                    <CalendarCard />
                 </Card>
                 <Card elevation={4} sx={{
-                    height: "calc(60% - 10px)", width: "calc(100% - 30px)",
+                    height: "calc(60% - 10px)",
+                    width: "calc(100% - 30px)",
                     margin: "20px 10px 10px 10px",
                     borderRadius: "10px",
-                    minHeight: "350px",
+                    minHeight: "calc(60% - 35px)",
                     maxHeight: "400px",
                     [theme.breakpoints.down('md')]: {
+                        minHeight: "350px",
                         height: "90%",
                         maxWidth: "450px",
                         margin: "10px",
@@ -291,7 +312,7 @@ export default function StudentDashboard({ drawerWidth }) {
                     [theme.breakpoints.down('sm')]: {
                         width: "100%",
                         maxWidth: "900px",
-                        maxHeight: "350px",
+                        // maxHeight: "350px",
                         marginRight: "30px",
                     },
                 }}>
@@ -304,43 +325,17 @@ export default function StudentDashboard({ drawerWidth }) {
                         </Box>
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 30px)" }}>
                             <CustomTabPanel value={subValue} index={0}>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>FDFED - 1</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>CC - 2</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>FDFED - 1</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>CC - 2</Subject>
-                                    <Room>Room No: G06</Room>
-                                    <Time>10:00 PM - 11:00 PM</Time>
-                                </Card>
+                                {timetableData}
                             </CustomTabPanel>
                             <CustomTabPanel value={subValue} index={1}>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>Maha Navami</Subject>
-                                    <Room>11 oct 2024</Room>
-                                    <Time>Friday</Time>
-                                </Card>
-                                <Card elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
-                                    <Subject>Dussehra</Subject>
-                                    <Room>12 oct 2024</Room>
-                                    <Time>Saturday</Time>
-                                </Card>
+                                {holidayData}
                             </CustomTabPanel>
                         </Box>
                     </Box>
                 </Card>
             </Box>
-        </Stack >
+        </Stack>
     );
-}
+};
+
+export default React.memo(StudentDashboard);
