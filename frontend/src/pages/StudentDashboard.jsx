@@ -182,16 +182,18 @@ const StudentDashboard = () => {
                 top: "64px",
                 position: "absolute",
                 [theme.breakpoints.down('md')]: {
-                    height: "700px",
+                    // backgroundColor: theme.palette.primary.main,
+                    // height: "700px",
+                    height: "100%",
                     width: "100%",
                     left: 0,
                     flexDirection: "column-reverse",
                     alignItems: "center",
                 },
-                overflowY: "visible",
-                overflowX: "hidden"
+                overflowY: "auto",
+                overflowX: "auto"
             }}
-            height="100vh"
+            height="calc(100% - 60px)"
         >
             <AnnouncementModel open={modal} handleClose={handleModalClose} />
             <Box
@@ -200,7 +202,8 @@ const StudentDashboard = () => {
                     margin: "10px",
                     marginLeft: "20px",
                     position: "relative",
-                    minHeight: "calc(100% - 90px)",
+                    minHeight: "calc(100% - 65px)",
+                    // height: "calc(100% - 90px)",
                     height: "calc(100% - 90px)",
                     [theme.breakpoints.down('md')]: {
                         width: "90%",
@@ -309,7 +312,7 @@ const StudentDashboard = () => {
                     [theme.breakpoints.down('sm')]: {
                         width: "100%",
                         maxWidth: "900px",
-                        maxHeight: "350px",
+                        // maxHeight: "350px",
                         marginRight: "30px",
                     },
                 }}>
