@@ -29,7 +29,7 @@ function Home(props) {
     };
 
     return (
-        <Box sx={{ display: 'flex', height: `100%`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflowX: "auto", overflowY: "auto", width: "100vw" }}>
+        <Box sx={{ display: 'flex', height: `100vh`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflowX: "auto", overflowY: "auto", width: "100vw" }}>
             <CssBaseline />
             <Navbar
                 sx={{ position: 'fixed', width: '100%', height: `${navBarHeight}px` }}
