@@ -14,6 +14,15 @@ class Collections {
             res.status(404).json({ message: error.message });
         }
     };
+
+    getCollectionByName = async (req, res) => {
+        try {
+            const collection = await this.db.getCollectionByName(req.params.name);
+            res.json(collection);
+        } catch (error) {
+            res.status(404).json({ message: error.message });
+        }
+    };
 }
 
 export default Collections;

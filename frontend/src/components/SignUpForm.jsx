@@ -67,6 +67,7 @@ function SignUpForm() {
             name="name"
             value={state.name}
             onChange={handleChange}
+            required
           />
           <input
             type="email"
@@ -74,6 +75,7 @@ function SignUpForm() {
             name="email"
             value={state.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -81,6 +83,7 @@ function SignUpForm() {
             name="password"
             value={state.password}
             onChange={handleChange}
+            required
           />
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "calc(100% - 36px)" }}>
             <input
@@ -90,6 +93,7 @@ function SignUpForm() {
               value={state.otp}
               onChange={handleChange}
               style={{ width: "13rem" }}
+              required
             />
             <button type="button" className="send-otp" onClick={handleSendOtp}>Send OTP</button>
           </div>
