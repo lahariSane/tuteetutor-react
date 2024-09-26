@@ -10,7 +10,10 @@ const announcementSchema = mongoose.Schema({
     date: {
         type: Date,
         default: new Date()
-    }
+    },
+    file: {
+        type: String
+    },
 });
 
 const Announcements = mongoose.model('Announcements', announcementSchema);

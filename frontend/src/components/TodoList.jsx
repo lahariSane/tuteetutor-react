@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -132,59 +131,46 @@ function TodoList() {
 
   return (
     <div>
-      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-between">
-        <div>
-          <ArrowBackIcon className="hover:text-blue-500 hover:scale-110 transition-transform duration-200" />
-        </div>
-        <div className="space-x-2">
-          <PendingActionsIcon className="hover:text-green-500 transition-transform duration-200" />
-          <AddIcon
-            className="hover:text-purple-500 hover:scale-125 transition-transform duration-200 cursor-pointer"
-            onClick={() => setShowForm(!showForm)} // Toggle form visibility
-          />
-          <MoreVertIcon className="hover:text-red-500 hover:translate-y-1 transition-transform duration-200" />
-        </div>
-      </div>
-
-      <div className="flex flex-row px-5 mx-5 space-x-3 text-2xl">
-        <img
-          src={`${process.env.PUBLIC_URL}/home_icon.png`}
-          alt="image_not_found"
+      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-between items-center">
+        <PendingActionsIcon className="hover:text-green-500 transition-transform duration-200" />
+        <AddIcon
+          className="hover:text-purple-500 hover:scale-125 transition-transform duration-200 cursor-pointer"
+          onClick={() => setShowForm(!showForm)} // Toggle form visibility
         />
-        <h1 className="font-bold">Home</h1>
+        <MoreVertIcon className="hover:text-red-500 hover:translate-y-1 transition-transform duration-200" />
       </div>
 
       {/* Form to add a new to-do */}
       {showForm && (
-        <div className="mx-5 my-5 p-5 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-5">
+        <div className="mx-5 my-5 p-8 bg-white shadow-lg rounded-lg">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Add a New To-Do
           </h2>
           <form onSubmit={handleAddTodo}>
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-6">
               <input
                 type="text"
                 placeholder="Enter To-Do Title"
-                className="p-4 border border-gray-300 rounded-lg"
-                value={newTodo.title} // Controlled input field
+                className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={newTodo.title}
                 onChange={(e) =>
                   setNewTodo({ ...newTodo, title: e.target.value })
-                } // Update newTodo title on input change
+                }
                 required
               />
               <input
                 type="date"
-                className="p-4 border border-gray-300 rounded-lg"
-                value={newTodo.dueDate} // Controlled input field
+                className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={newTodo.dueDate}
                 onChange={(e) =>
                   setNewTodo({ ...newTodo, dueDate: e.target.value })
-                } // Update newTodo dueDate on input change
+                }
                 required
               />
               {error && <p className="text-red-500">{error}</p>}
               <button
                 type="submit"
-                className="p-4 bg-blue-500 text-white rounded-lg"
+                className="p-4 bg-blue-500 text-white rounded-lg w-full hover:bg-blue-600 transition-all duration-200 ease-in-out"
               >
                 Add To-Do
               </button>

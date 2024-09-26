@@ -13,6 +13,7 @@ import { useOutletContext } from 'react-router-dom';
 import { CalendarCard } from '../components/CalanderCard';
 import AnnouncementModel from '../components/AnnouncementModel';
 import axios from 'axios';
+import TodoList from '../components/TodoList';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -246,7 +247,7 @@ export default function StudentDashboard() {
                                 Item Two
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={2}>
-                                Item Three
+                                <TodoList/>
                             </CustomTabPanel>
                         </Box>
                     </Box>
