@@ -37,7 +37,7 @@ function SignUpForm() {
 
     if (response.ok) {
       const data = await response.json();
-      window.location.href = '/home';
+      window.location.href = '/';
     } else {
       alert('Error in signup');
     }

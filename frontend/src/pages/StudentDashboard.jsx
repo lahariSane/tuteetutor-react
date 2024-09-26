@@ -96,7 +96,6 @@ const StudentDashboard = () => {
     const data = useOutletContext();
     const drawerWidth = data.drawerWidth;
     const user = data.user;
-    console.log(user);
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
 
     const handleChange = (event, newValue) => setValue(newValue);
@@ -195,7 +194,7 @@ const StudentDashboard = () => {
             }}
             height="calc(100% - 60px)"
         >
-            <AnnouncementModel open={modal} handleClose={handleModalClose} />
+            <AnnouncementModel open={modal} handleClose={handleModalClose} user={user} />
             <Box
                 width="75%"
                 sx={{
@@ -203,7 +202,6 @@ const StudentDashboard = () => {
                     marginLeft: "20px",
                     position: "relative",
                     minHeight: "calc(100% - 65px)",
-                    // height: "calc(100% - 90px)",
                     height: "calc(100% - 90px)",
                     [theme.breakpoints.down('md')]: {
                         width: "90%",
