@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import "../styles/ForgotPassword.css";
 
 function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -8,7 +7,7 @@ function ForgotPasswordForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:2004/api/forgot-password', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -38,10 +37,10 @@ function ForgotPasswordForm() {
         }}>
         <div class="logo"
           style={{ marginBottom: "3rem" }}>
-          <img src="/logo192.png" />
+          <img src="/logo.png" />
           <div class="logo-name">TuteeTutor</div>
         </div>
-        <h1 style={{ marginBottom: "3rem" }}>Forgot Password</h1>
+        <h1 style={{ marginBottom: "2.7rem", fontSize:"1.9rem" }}>Forgot Password</h1>
         <input
           style={{ marginBottom: "3rem" }}
           placeholder="Enter your email"

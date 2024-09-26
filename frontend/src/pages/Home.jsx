@@ -1,48 +1,85 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { Outlet } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+
 
 const drawerWidth = 250;
 const navBarHeight = 64;
 
 function Home(props) {
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const [isClosing, setIsClosing] = React.useState(false);
-    const [sidbarActive, setSidebarActive] = React.useState("Dashboard");
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        if (token) {
+            try {
+                // Decode the JWT and extract the role
+                const decodedToken = jwtDecode(token);
+                setUser(decodedToken);
+
+                // Check token expiration (optional)
+                if (decodedToken.exp * 1000 < Date.now()) {
+                    console.log("Token has expired");
+                    localStorage.removeItem('token'); // Remove expired token
+                    navigate('/login'); // Redirect to login if token is expired
+                }
+            } catch (error) {
+                console.error("Invalid token");
+            }
+        }
+        else {
+            navigate('/login'); // Redirect to login if token is not present
+        }
+    }, [navigate]);
+
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const location = useLocation();
+    const [sidbarActive, setSidebarActive] = useState(location.pathname !== "/" ? location.pathname.slice(1) : "Dashboard");
 
     const handleDrawerClose = () => {
-        setIsClosing(true);
         setMobileOpen(false);
     };
 
-    const handleDrawerTransitionEnd = () => {
-        setIsClosing(false);
-    };
 
     const handleDrawerToggle = () => {
-        // if (!isClosing) {
-            setMobileOpen(!mobileOpen);
-        // }
+        setMobileOpen(!mobileOpen);
     };
 
     return (
-        <Box sx={{ display: 'flex', height: `100%`, backgroundColor: "#f6f7f6", alignItems: "center", justifyContent: "center", overflowX: "auto", overflowY: "auto", width: "100vw" }}>
+        <Box sx={{
+            display: 'flex',
+            height: `calc(100vh + 100px)`,
+            backgroundColor: "#f6f7f6",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "scroll",
+            width: "100vw"
+        }}>
             <CssBaseline />
             <Navbar
-                sx={{ position: 'fixed', width: '100%', height: `${navBarHeight}px` }}
+                sx={{
+                    position: 'fixed',
+                    width: '100%',
+                    height: `${navBarHeight}px`
+                }}
                 drawerWidth={drawerWidth}
                 handleDrawerToggle={handleDrawerToggle}
+                user={user}
                 sidbarActive={sidbarActive} />
 
-            <Outlet context={{ drawerWidth: drawerWidth }} />
+            <Outlet context={{ drawerWidth, user }} />
             <Sidebar
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
                 handleDrawerClose={handleDrawerClose}
-                handleDrawerTransitionEnd={handleDrawerTransitionEnd}
                 sidbarActive={sidbarActive}
                 setSidebarActive={setSidebarActive}
             />

@@ -6,6 +6,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Home from './pages/Home';
 import Test from './pages/Test';
+import ResetPasswordForm from './components/ResetPasswordForm';
+
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
         <Route path="/" element={<Home />} >
           <Route path="" element={<StudentDashboard />} />
           <Route path="admin" element={<AdminDashboard />} />
