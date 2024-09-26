@@ -33,6 +33,17 @@ class Database {
             throw error;
         }
     }
+
+    async getCollection(collectionName) {
+        try {
+            var collection = await mongoose.connection.client.db(dbName).collection(collectionName).find().toArray();
+            return collection;
+        }
+        catch (error) {
+            console.log(`Error: ${error.message}`);
+            throw error;
+        }
+    }
 }
 
 export default Database;
