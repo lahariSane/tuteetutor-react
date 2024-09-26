@@ -2,12 +2,13 @@ import * as React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { Modal, Box, Typography, TextField, Button, Stack } from '@mui/material';
+import { Modal, Box } from '@mui/material';
+import dayjs from 'dayjs';
 
 function CalendarCard() {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar />
+            <DateCalendar value={dayjs()} />
         </LocalizationProvider>
 
     );

@@ -165,7 +165,7 @@ mailRouter.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Update user with name and password
         user.name = name;
@@ -175,6 +175,7 @@ mailRouter.post('/signup', async (req, res) => {
         await user.save();
         res.status(200).json({ message: 'Signup successful', token });
     } catch (error) {
+        console.error('Error signing up:', error);
         res.status(500).send('Error signing up');
     }
 });
@@ -198,7 +199,7 @@ mailRouter.post('/login', async (req, res) => {
         }
 
         // Create JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
