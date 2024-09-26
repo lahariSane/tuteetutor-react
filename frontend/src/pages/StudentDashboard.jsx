@@ -107,7 +107,7 @@ const StudentDashboard = () => {
             try {
                 const [announcements, timetable, holidays] = await Promise.all([
                     axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`),
-                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
+                    axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable?userId=${user.id}`),
                     axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`)
                 ]);
                 setAnnouncementData(announcements.data);
