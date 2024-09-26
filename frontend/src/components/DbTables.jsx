@@ -26,10 +26,10 @@ function DbTables() {
     const fetchCollections = async () => {
       try {
         setLoading(true);
+
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/collections`
         );
-        console.log(response.data);
         setCollections(response.data);
         setLoading(false);
       } catch (err) {

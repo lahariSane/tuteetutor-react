@@ -8,7 +8,6 @@ const courseSchema = new mongoose.Schema({
     code: {
         type: String,
         required: true,
-        unique: true
     },
     section: {
         type: String,

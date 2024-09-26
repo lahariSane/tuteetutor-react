@@ -9,7 +9,8 @@ import timetableRouer from './routes/timetableRouter.js';
 import DATABASE from './models/db.js';
 import mailRouter from "./routes/mailRouter.js";
 import courseRouter from "./routes/courseRouter.js";
-import mongoose from 'mongoose';
+import userCourseRouter from "./routes/userCourseRoute.js";
+import leaveRequestRoutes from './routes/LeaveRequestRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -26,7 +27,9 @@ app.use('/', announcementsRouter);
 app.use('/', timetableRouer);
 app.use('/', holidaysRouter);
 app.use('/', courseRouter);
+app.use('/', userCourseRouter);
 app.use('/api', mailRouter);
+app.use('/leaveRequest', leaveRequestRoutes);
 
 db.connect();
 
