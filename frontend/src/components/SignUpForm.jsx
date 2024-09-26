@@ -36,7 +36,6 @@ function SignUpForm() {
     });
 
     if (response.ok) {
-      const data = await response.json();
       window.location.href = '/';
     } else {
       alert('Error in signup');
@@ -47,16 +46,16 @@ function SignUpForm() {
     <div class="box-container">
       <div className="form-container sign-up-container">
         <div class="logo">
-          <img src="/logo.png" />
+          <img src="/logo.png" alt="logo"/>
           <div class="logo-name">TuteeTutor</div>
         </div>
         <form onSubmit={handleOnSubmit}>
           <h1 className="heading">Create Account</h1>
           <div className="social-container">
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-google" />
             </a>
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-github" />
             </a>
           </div>

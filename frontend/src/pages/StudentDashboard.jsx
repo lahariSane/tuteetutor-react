@@ -6,8 +6,7 @@ import { useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { CalendarCard } from '../components/CalanderCard';
 import LeaveRequest from '../components/LeaveRequest';
-import AnnouncementModel from '../components/AnnouncementModel
-import axios from 'axios';
+import AnnouncementModel from '../components/AnnouncementModel';
 import TodoList from '../components/TodoList';
 
 

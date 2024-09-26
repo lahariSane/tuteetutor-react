@@ -37,7 +37,7 @@ function ForgotPasswordForm() {
         }}>
         <div class="logo"
           style={{ marginBottom: "3rem" }}>
-          <img src="/logo.png" />
+          <img src="/logo.png" alt="logo" />
           <div class="logo-name">TuteeTutor</div>
         </div>
         <h1 style={{ marginBottom: "2.7rem", fontSize:"1.9rem" }}>Forgot Password</h1>

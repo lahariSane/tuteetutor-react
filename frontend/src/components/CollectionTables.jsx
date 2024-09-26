@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
 // Automatically generate IDs for rows
 const generateRowsWithId = (rows) => {
