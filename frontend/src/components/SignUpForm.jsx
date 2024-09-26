@@ -12,7 +12,7 @@ function SignUpForm() {
   };
 
   const handleSendOtp = async () => {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/send-otp`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: state.email }),

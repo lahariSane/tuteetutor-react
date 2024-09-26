@@ -8,6 +8,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 
 import { createTheme } from '@mui/material';
@@ -47,11 +49,24 @@ function stringAvatar(name) {
     };
 }
 
+const logout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+}
 
-function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
-
+function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
     const [calendarModal, setCalendarModal] = useState(false);
+
+    // menu related code for the user profile button
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <AppBar
@@ -109,9 +124,22 @@ function Navbar({ drawerWidth, handleDrawerToggle, sidbarActive }) {
                             <NotificationsIcon fontSize="medium" />
                         </Badge>
                     </IconButton>
-                    <IconButton>
-                        <Avatar {...stringAvatar('Naveen Kumar')} src="./log.png" />
+                    <IconButton onClick={handleClick}>
+                        <Avatar {...stringAvatar(user?.name ? user.name : "guest")} src="./log.png" />
                     </IconButton>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <MenuItem onClick={handleClose}>Profile</MenuItem>
+                        <MenuItem onClick={handleClose}>My account</MenuItem>
+                        <MenuItem onClick={logout}>Logout</MenuItem>
+                    </Menu>
                 </Stack>
             </Toolbar>
         </AppBar >

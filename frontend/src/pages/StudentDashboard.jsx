@@ -95,7 +95,8 @@ const StudentDashboard = () => {
 
     const data = useOutletContext();
     const drawerWidth = data.drawerWidth;
-
+    const user = data.user;
+    console.log(user);
     const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
 
     const handleChange = (event, newValue) => setValue(newValue);
@@ -110,7 +111,6 @@ const StudentDashboard = () => {
                     axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`)
                 ]);
                 setAnnouncementData(announcements.data);
-                console.log(announcementData);
                 setTimetable(timetable.data);
                 setHolidays(holidays.data);
             } catch (error) {
@@ -240,11 +240,26 @@ const StudentDashboard = () => {
                         <Box sx={{ overflowY: "auto", height: "calc(100% - 50px)" }}>
                             <CustomTabPanel value={value} index={0} sx={{ paddingTop: "300px", position: "relative" }}>
                                 {announcement}
-                                <Box sx={{ height: "50px" }} />
-                                <Fab onClick={handleModalOpen} color="primary" variant="extended" aria-label="add" sx={{ position: "absolute", zIndex: 1, bottom: "20px", right: "20px" }}>
-                                    <AddIcon sx={{ marginRight: "6px" }} />
-                                    New Announcement
-                                </Fab>
+                                {user && user.role !== "student" && (
+                                    <>
+                                        <Box sx={{ height: "50px" }} />
+                                        <Fab
+                                            onClick={handleModalOpen}
+                                            color="primary"
+                                            variant="extended"
+                                            aria-label="add"
+                                            sx={{
+                                                position: "absolute",
+                                                zIndex: 1,
+                                                bottom: "20px",
+                                                right: "20px"
+                                            }}
+                                        >
+                                            <AddIcon sx={{ marginRight: "6px" }} />
+                                            New Announcement
+                                        </Fab>
+                                    </>
+                                )}
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
                                 Item Two
