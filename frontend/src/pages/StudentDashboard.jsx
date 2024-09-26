@@ -239,7 +239,7 @@ const StudentDashboard = () => {
                         <Box sx={{ marginLeft: "12px", borderBottom: 1, borderColor: 'transparent', backgroundColor: "white", borderRadius: "30px" }}>
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                                 <Tab label="Announcements" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
-                                <Tab label="Attendance" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
+                                <Tab label="Leave Request" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="ToDo" {...a11yProps(2)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                             </Tabs>
                         </Box>

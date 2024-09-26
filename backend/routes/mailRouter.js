@@ -118,23 +118,22 @@ mailRouter.post('/send-otp', async (req, res) => {
             { new: true, upsert: true }
         );
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
+        // const transporter = nodemailer.createTransport({
+        //     service: 'gmail',
+        //     auth: {
+        //         user: process.env.EMAIL,
+        //         pass: process.env.EMAIL_PASSWORD
+        //     }
+        // });
 
-        console.log('Generated OTP:', otp);
 
-        // Send email with OTP
-        await transporter.sendMail({
-            from: process.env.EMAIL,
-            to: email,
-            subject: 'Your OTP Code',
-            text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
-        });
+        // // Send email with OTP
+        // await transporter.sendMail({
+        //     from: process.env.EMAIL,
+        //     to: email,
+        //     subject: 'Your OTP Code',
+        //     text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
+        // });
         res.status(200).send('OTP sent successfully');
     } catch (error) {
         console.error('Error sending OTP:', error); // Log the error for debugging
@@ -146,7 +145,6 @@ mailRouter.post('/send-otp', async (req, res) => {
 
 mailRouter.post('/signup', async (req, res) => {
     const { name, email, password, otp } = req.body;
-    console.log("tan");
 
     try {
         const user = await User.findOne({ email });
@@ -164,15 +162,15 @@ mailRouter.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a JWT token
-        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         // Update user with name and password
         user.name = name;
         user.password = hashedPassword;
         user.otp = null; // Clear OTP
         user.otpExpires = null;
+        user.role = 'faculty';
         await user.save();
-        console.log("5");
         res.status(200).json({ message: 'Signup successful', token });
     } catch (error) {
         console.error('Error signing up:', error);
@@ -199,7 +197,7 @@ mailRouter.post('/login', async (req, res) => {
         }
 
         // Create JWT token
-        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {

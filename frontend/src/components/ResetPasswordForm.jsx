@@ -8,9 +8,7 @@ function ResetPasswordForm() {
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    console.log("hel");
     event.preventDefault();
-    console.log("1");
 
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/reset-password/${token}`, {
