@@ -12,7 +12,7 @@ function SignUpForm() {
   };
 
   const handleSendOtp = async () => {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/send-otp`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: state.email }),
@@ -37,7 +37,7 @@ function SignUpForm() {
 
     if (response.ok) {
       const data = await response.json();
-      window.location.href = '/home';
+      window.location.href = '/';
     } else {
       alert('Error in signup');
     }
@@ -67,6 +67,7 @@ function SignUpForm() {
             name="name"
             value={state.name}
             onChange={handleChange}
+            required
           />
           <input
             type="email"
@@ -74,6 +75,7 @@ function SignUpForm() {
             name="email"
             value={state.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -81,6 +83,7 @@ function SignUpForm() {
             name="password"
             value={state.password}
             onChange={handleChange}
+            required
           />
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "calc(100% - 36px)" }}>
             <input
@@ -90,6 +93,7 @@ function SignUpForm() {
               value={state.otp}
               onChange={handleChange}
               style={{ width: "13rem" }}
+              required
             />
             <button type="button" className="send-otp" onClick={handleSendOtp}>Send OTP</button>
           </div>

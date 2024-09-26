@@ -52,6 +52,7 @@ mailRouter.post('/forgot-password', async (req, res) => {
             text: `You requested a password reset. Please click the following link to reset your password: 
         http://localhost:3000/reset-password/${token}`
         };
+        
         //${req.headers.host}
         await transporter.sendMail(mailOptions);
 
@@ -104,6 +105,7 @@ mailRouter.post('/send-otp', async (req, res) => {
         if (existingUser) {
             return res.status(400).send('User already exists');
         }
+        console.log(existingUser);
 
         // Generate OTP
         const otp = crypto.randomInt(100000, 999999).toString();
@@ -111,7 +113,7 @@ mailRouter.post('/send-otp', async (req, res) => {
 
 
         const otpExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
-        // Create a user with the OTP and expiry, or update existing one (in case of resend)
+        // Create a user with the OTP and expiry, or update existing one 
         const user = await User.findOneAndUpdate(
             { email },
             { otp, otpExpires },
@@ -146,7 +148,6 @@ mailRouter.post('/send-otp', async (req, res) => {
 
 mailRouter.post('/signup', async (req, res) => {
     const { name, email, password, otp } = req.body;
-    console.log("tan");
 
     try {
         const user = await User.findOne({ email });
@@ -172,7 +173,6 @@ mailRouter.post('/signup', async (req, res) => {
         user.otp = null; // Clear OTP
         user.otpExpires = null;
         await user.save();
-        console.log("5");
         res.status(200).json({ message: 'Signup successful', token });
     } catch (error) {
         res.status(500).send('Error signing up');
