@@ -12,7 +12,7 @@ function SignUpForm() {
   };
 
   const handleSendOtp = async () => {
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/send-otp`, {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: state.email }),
@@ -29,7 +29,7 @@ function SignUpForm() {
     evt.preventDefault();
     const { name, email, password, otp } = state;
 
-    const response = await fetch('http://localhost:2004/api/signup', {
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password, otp }),
