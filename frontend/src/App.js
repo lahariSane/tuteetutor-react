@@ -4,10 +4,10 @@ import Login from './pages/Login';
 import ForgotPasswordForm from './components/ForgotPassword';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import Home from './pages/Home';
-import Test from './pages/Test';
-import ResetPasswordForm from './components/ResetPasswordForm';
 
+
+import Home from './pages/Home';
+import ResetPasswordForm from './components/ResetPasswordForm';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} >
           <Route path="" element={<StudentDashboard />} />
           <Route path="admin" element={<AdminDashboard />} />
-          <Route path='test'  element={<Test />} />
+
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<></>} />
           <Route path="almanac" element={<></>} />
