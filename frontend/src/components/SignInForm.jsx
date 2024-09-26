@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-// import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function SignInForm() {
   const [state, setState] = useState({ email: "", password: "" });
+  const [error, setError] = useState(""); // State to hold error messages
+  const navigate = useNavigate();
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -11,24 +13,54 @@ function SignInForm() {
       ...state,
       [evt.target.name]: value,
     });
+    setError("");
   };
 
-  const handleOnSubmit = (evt) => {
+  const handleOnSubmit = async (evt) => {
     evt.preventDefault();
     const { email, password } = state;
-    alert(`You are logged in with email: ${email} and password: ${password}`);
-    setState({ email: "", password: "" });
+
+    // Reset error state before new login attempt
+    setError("");
+    try {
+    // Fetch request to login API
+    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    // Handle response
+    if (response.ok) {
+      const data = await response.json();
+      if (data.token) {
+        // Save token in localStorage
+        localStorage.setItem('token', data.token);
+        // Redirect to /home
+        navigate('/');
+      } else {
+        setError('Login failed: ' + (data.message || 'Unknown error')); // Set error message if token is not present
+      }
+    } else {
+      const errorData = await response.json();
+      setError('Login failed: ' + (errorData.message || 'Unknown error'));// Set error message for non-200 responses
+    }} catch (error) {
+      console.error("Fetch error:", error); // Log any fetch errors
+      setError('Login failed: An unexpected error occurred.'); // General error message for fetch failures
+    }
   };
 
   return (
     <div class="box-container">
-      <div className="form-container sign-in-container">
+      <div className="form-container sign-in-container" >
         <div class="logo">
-          <img src="/logo192.png" />
+          <img src="/logo.png" />
           <div class="logo-name">TuteeTutor</div>
         </div>
-        <form onSubmit={handleOnSubmit}>
-          <h1>Sign in</h1>
+        <form onSubmit={handleOnSubmit} style={{ height: "650px" }}>
+          <h1 className="heading">Sign in</h1>
           <div className="social-container">
             <a href="#" className="social">
               <i className="fab fa-google" />
@@ -45,6 +77,7 @@ function SignInForm() {
             name="email"
             value={state.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -52,11 +85,13 @@ function SignInForm() {
             placeholder="Password"
             value={state.password}
             onChange={handleChange}
+            required
           />
 
           <a href="/forgot-password" className="forgot-password">
             Forgot your password?
           </a>
+          {error && <div style={{ color: 'red', marginBottom: '10px', textAlign: 'center' }}>{error}</div>}
           <button>Sign In</button>
         </form>
       </div>

@@ -11,10 +11,7 @@ class Database {
     }
     async connect() {
         try {
-            await mongoose.connect(this.uri, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            });
+            await mongoose.connect(this.uri);
             console.log("Database connected");
             this.connection = mongoose.connection;
         } catch (error) {
@@ -27,6 +24,17 @@ class Database {
         try {
             var collections = await mongoose.connection.client.db(dbName).listCollections().toArray();
             return collections;
+        }
+        catch (error) {
+            console.log(`Error: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async getCollectionByName(name) {
+        try {
+            var collection = await mongoose.connection.client.db(dbName).listCollections({ name: name }).toArray();
+            return collection;
         }
         catch (error) {
             console.log(`Error: ${error.message}`);

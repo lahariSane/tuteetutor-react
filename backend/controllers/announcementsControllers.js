@@ -1,4 +1,6 @@
 import Announcements from "../models/announcementModel.js";
+import User from "../models/userModule.js";
+import Course from "../models/courseModel.js";
 
 const getAnnouncements = async (req, res) => {
     try {
@@ -10,8 +12,21 @@ const getAnnouncements = async (req, res) => {
 };
 
 const createAnnouncement = async (req, res) => {
-    const announcement = req.body;
-    const newAnnouncement = new Announcements(announcement);
+    const { title, description, authorId } = req.body;
+    
+    const user = await User.findById(authorId);
+    if (!user) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
+    
+    const course = await Course.findOne({ instructor: authorId });
+    if (!course) {
+        // Send an error if the user is not an instructor of any course
+        return res.status(403).json({ message: 'User is not an instructor of any course' });
+    }
+
+    const newAnnouncement = new Announcements({ title, description, authorId, author: user.name, course: course.name, section: course.section });
     try {
         await newAnnouncement.save();
         res.status(201).json(newAnnouncement);

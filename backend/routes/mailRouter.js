@@ -2,9 +2,21 @@ import express from 'express';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
-import User from '../models/forgotpasswordModule.js';
+import User from '../models/userModule.js';
+import jwt from 'jsonwebtoken';
+
 
 const mailRouter = express.Router();
+
+// Create a nodemailer transport
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
+
 
 mailRouter.post('/forgot-password', async (req, res) => {
     try {
@@ -24,9 +36,8 @@ mailRouter.post('/forgot-password', async (req, res) => {
 
         await user.save();
 
-        // Create a nodemailer transport
         const transporter = nodemailer.createTransport({
-            service: 'Gmail',
+            service: 'gmail',
             auth: {
                 user: process.env.EMAIL,
                 pass: process.env.EMAIL_PASSWORD
@@ -35,13 +46,14 @@ mailRouter.post('/forgot-password', async (req, res) => {
 
         // Create an email message
         const mailOptions = {
-            to: user.email,
+            to: email,
             from: process.env.EMAIL,
             subject: 'Password Reset Request',
             text: `You requested a password reset. Please click the following link to reset your password: 
-      http://${req.headers.host}/reset-password/${token}`
+        http://localhost:3000/reset-password/${token}`
         };
-
+        
+        //${req.headers.host}
         await transporter.sendMail(mailOptions);
 
         res.status(200).send('A password reset email has been sent.');
@@ -65,6 +77,7 @@ mailRouter.post('/reset-password/:token', async (req, res) => {
         if (!user) {
             return res.status(400).send('Password reset token is invalid or has expired.');
         }
+        console.log(password);
 
         // Hash the new password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -82,6 +95,117 @@ mailRouter.post('/reset-password/:token', async (req, res) => {
 });
 
 
+// Generate OTP and send email
+mailRouter.post('/send-otp', async (req, res) => {
+    const { email } = req.body;
 
+    try {
+        // Check if the user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).send('User already exists');
+        }
+        console.log(existingUser);
+
+        // Generate OTP
+        const otp = crypto.randomInt(100000, 999999).toString();
+        console.log('Generated OTP:', otp); // Debugging
+
+
+        const otpExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+        // Create a user with the OTP and expiry, or update existing one 
+        const user = await User.findOneAndUpdate(
+            { email },
+            { otp, otpExpires },
+            { new: true, upsert: true }
+        );
+
+        // const transporter = nodemailer.createTransport({
+        //     service: 'gmail',
+        //     auth: {
+        //         user: process.env.EMAIL,
+        //         pass: process.env.EMAIL_PASSWORD
+        //     }
+        // });
+
+
+        // // Send email with OTP
+        // await transporter.sendMail({
+        //     from: process.env.EMAIL,
+        //     to: email,
+        //     subject: 'Your OTP Code',
+        //     text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
+        // });
+        res.status(200).send('OTP sent successfully');
+    } catch (error) {
+        console.error('Error sending OTP:', error); // Log the error for debugging
+        res.status(500).send(`Error sending OTP: ${error.message}`); // Return the error message
+    }
+
+});
+
+
+mailRouter.post('/signup', async (req, res) => {
+    const { name, email, password, otp } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        console.log(user);
+
+        if (!user) {
+            return res.status(400).send('Invalid email or OTP');
+        }
+        // Check if OTP is valid and not expired
+        if (user.otp !== otp || user.otpExpires < Date.now()) {
+            return res.status(400).send('Invalid or expired OTP');
+        }
+
+        // Hash the password using bcrypt with a salt factor of 10
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a JWT token
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+        // Update user with name and password
+        user.name = name;
+        user.password = hashedPassword;
+        user.otp = null; // Clear OTP
+        user.otpExpires = null;
+        user.role = 'faculty';
+        await user.save();
+        res.status(200).json({ message: 'Signup successful', token });
+    } catch (error) {
+        console.error('Error signing up:', error);
+        res.status(500).send('Error signing up');
+    }
+});
+
+
+// Login with OTP verification
+mailRouter.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send('Invalid email or password');
+        }
+
+        // Check if the password matches
+        // Compare the provided password with the hashed password in the database
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send('Invalid email or password');
+        }
+
+        // Create JWT token
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+        res.status(200).json({ message: 'Login successful', token });
+    } catch (error) {
+        res.status(500).send('Error logging in');
+    }
+});
+    
 
 export default mailRouter;
