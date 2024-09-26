@@ -39,7 +39,7 @@ function SignInForm() {
         // Save token in localStorage
         localStorage.setItem('token', data.token);
         // Redirect to /home
-        navigate('/home');
+        navigate('/');
       } else {
         setError('Login failed: ' + (data.message || 'Unknown error')); // Set error message if token is not present
       }
