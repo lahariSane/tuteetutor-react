@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import Almanac from './components/Almanac';
 import TimeTable from './components/TimeTable';
+import Courses from './pages/Courses';
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
         <Route path="/" element={<Home />} >
           <Route path="" element={<StudentDashboard />} />
           <Route path="admin" element={<AdminDashboard />} />
-
+          <Route path='coursesSelection' element={<Courses />} />
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<TimeTable/>} />
           <Route path="almanac" element={<Almanac/>} /> 

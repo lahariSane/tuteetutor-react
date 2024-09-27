@@ -2,7 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
 import userRouter from "./routes/user.js";
-import adminRouter from "./routes/admin.js";
+// import adminRouter from "./routes/admin.js";
 import announcementsRouter from "./routes/announcementsRouter.js";
 import holidaysRouter from "./routes/holidayRouter.js";
 import timetableRouer from './routes/timetableRouter.js';
@@ -24,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/', userRouter);
-app.use('/', adminRouter);
+// app.use('/', adminRouter);
 app.use('/', announcementsRouter);
 app.use('/', timetableRouer);
 app.use('/', holidaysRouter);

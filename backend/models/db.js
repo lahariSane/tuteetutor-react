@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-const dbName = 'TuteeTutor';
+// const dbName = 'TuteeTutorReact';
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ class Database {
 
     async getCollections() {
         try {
-            var collections = await mongoose.connection.client.db(dbName).listCollections().toArray();
+            var collections = await mongoose.connection.client.db().listCollections().toArray();
             return collections;
         }
         catch (error) {
@@ -33,7 +33,7 @@ class Database {
 
     async getCollectionByName(name) {
         try {
-            var collection = await mongoose.connection.client.db(dbName).listCollections({ name: name }).toArray();
+            var collection = await mongoose.connection.client.db().listCollections({ name: name }).toArray();
             return collection;
         }
         catch (error) {
