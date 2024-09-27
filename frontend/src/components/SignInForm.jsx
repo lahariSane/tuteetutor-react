@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 
 function SignInForm() {
@@ -39,7 +40,13 @@ function SignInForm() {
           // Save token in localStorage
           localStorage.setItem('token', data.token);
           // Redirect to /home
-          navigate('/coursesSelection');
+          const user = jwtDecode(data.token)
+          if (user.role === "student"){
+            navigate('/coursesSelection');
+          }
+          else {
+            navigate('/');
+          }
         } else {
           setError('Login failed: ' + (data.message || 'Unknown error')); // Set error message if token is not present
         }
