@@ -3,7 +3,7 @@ import userCourseSchema from "../models/userCourseModel.js";
 
 const getTimetable = async (req, res) => {
     try {
-
+        const { userId } = req.query;
         const userCourses = await userCourseSchema.findOne().populate({ path: 'courseRegistered', select: "code section" });
         const query = userCourses.courseRegistered.map(course => {
             return { day: new Date().getDay(), subject: course.code, section: course.section }

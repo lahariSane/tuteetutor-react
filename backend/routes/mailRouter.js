@@ -120,22 +120,22 @@ mailRouter.post('/send-otp', async (req, res) => {
             { new: true, upsert: true }
         );
 
-        // const transporter = nodemailer.createTransport({
-        //     service: 'gmail',
-        //     auth: {
-        //         user: process.env.EMAIL,
-        //         pass: process.env.EMAIL_PASSWORD
-        //     }
-        // });
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
 
 
-        // // Send email with OTP
-        // await transporter.sendMail({
-        //     from: process.env.EMAIL,
-        //     to: email,
-        //     subject: 'Your OTP Code',
-        //     text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
-        // });
+        // Send email with OTP
+        await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: email,
+            subject: 'Your OTP Code',
+            text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
+        });
         res.status(200).send('OTP sent successfully');
     } catch (error) {
         console.error('Error sending OTP:', error); // Log the error for debugging
@@ -171,7 +171,6 @@ mailRouter.post('/signup', async (req, res) => {
         user.password = hashedPassword;
         user.otp = null; // Clear OTP
         user.otpExpires = null;
-        user.role = 'faculty';
         await user.save();
         res.status(200).json({ message: 'Signup successful', token });
     } catch (error) {
