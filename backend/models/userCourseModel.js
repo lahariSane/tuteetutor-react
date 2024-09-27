@@ -6,17 +6,13 @@ const userCourseSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    courseRegistered: [{
-        courseId: {
+    courseRegistered: [
+        {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'Course'
-        },
-        section: {
-            type: String,
-            required: true,
-        },
-    }],
+            ref: 'Course',
+            required: true
+        }
+    ],
 });
 
 const Course = mongoose.model('UserCourse', userCourseSchema);

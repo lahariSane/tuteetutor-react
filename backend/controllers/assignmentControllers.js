@@ -21,6 +21,23 @@ class AssignmentsController {
             res.status(409).json({ message: error.message });
         }
     }
+
+    async updateAssignment(req, res) {
+        const { id } = req.params;
+        const assignment = req.body;
+    
+        try {
+            const existingAssignment = await Assignments.findOne({ id });
+            if (!existingAssignment) {
+                return res.status(404).send("No assignment with that id");
+            }
+            const updatedAssignment = await Assignments.findOneAndUpdate({ id }, { ...assignment }, { new: true });
+            res.json(updatedAssignment);
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    }
     
     async deleteAssignment(req, res) {
         const { id } = req.params;

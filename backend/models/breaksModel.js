@@ -21,6 +21,7 @@ const timeSchema = new mongoose.Schema({
   });
 
 const breaksSchema = mongoose.Schema({
+    id: { type: String, required: true, unique: true },
     startTime: timeSchema,
     endTime: timeSchema,
     break: { type: String, required: [true, "Description is required"] },

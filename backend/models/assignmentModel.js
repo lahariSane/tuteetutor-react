@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const assignmentSchema = mongoose.Schema({
+    id: { type: String, required: true, unique: true },
     description : { type: String, required: [true, "Description is required"] },
     marks : { type: Number },
     course: { type: String},

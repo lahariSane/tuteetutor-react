@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import DbTables from "../components/DbTables";
 import { createTheme } from "@mui/material";
-import CollectionTables from "../components/CollectionTables";
 import styled from "styled-components";
 import { useOutletContext } from 'react-router-dom';
 

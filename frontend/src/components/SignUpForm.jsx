@@ -36,7 +36,6 @@ function SignUpForm() {
     });
 
     if (response.ok) {
-      const data = await response.json();
       window.location.href = '/';
     } else {
       alert('Error in signup');
@@ -47,16 +46,16 @@ function SignUpForm() {
     <div class="box-container">
       <div className="form-container sign-up-container">
         <div class="logo">
-          <img src="/logo.png" />
+          <img src="/logo.png" alt="logo"/>
           <div class="logo-name">TuteeTutor</div>
         </div>
         <form onSubmit={handleOnSubmit}>
           <h1 className="heading">Create Account</h1>
           <div className="social-container">
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-google" />
             </a>
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-github" />
             </a>
           </div>
@@ -67,6 +66,7 @@ function SignUpForm() {
             name="name"
             value={state.name}
             onChange={handleChange}
+            required
           />
           <input
             type="email"
@@ -74,6 +74,7 @@ function SignUpForm() {
             name="email"
             value={state.email}
             onChange={handleChange}
+            required
           />
           <input
             type="password"
@@ -81,6 +82,7 @@ function SignUpForm() {
             name="password"
             value={state.password}
             onChange={handleChange}
+            required
           />
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "calc(100% - 36px)" }}>
             <input
@@ -90,6 +92,7 @@ function SignUpForm() {
               value={state.otp}
               onChange={handleChange}
               style={{ width: "13rem" }}
+              required
             />
             <button type="button" className="send-otp" onClick={handleSendOtp}>Send OTP</button>
           </div>
