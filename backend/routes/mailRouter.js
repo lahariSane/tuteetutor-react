@@ -128,7 +128,6 @@ mailRouter.post('/send-otp', async (req, res) => {
             }
         });
 
-        console.log('Generated OTP:', otp);
 
         // Send email with OTP
         await transporter.sendMail({
@@ -165,7 +164,7 @@ mailRouter.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a JWT token
-        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         // Update user with name and password
         user.name = name;
@@ -199,7 +198,7 @@ mailRouter.post('/login', async (req, res) => {
         }
 
         // Create JWT token
-        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id, role: user.role, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {

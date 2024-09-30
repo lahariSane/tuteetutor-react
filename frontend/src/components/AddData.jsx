@@ -12,6 +12,15 @@ function AddData({ open, onClose, onSave }) {
   const [age, setAge] = React.useState('');
 
   const handleSave = () => {
+    if (!firstName || !lastName || !age) {
+      alert('All fields are required.');
+      return;
+    }
+    if (age <= 0) {
+      alert('Age must be a positive number.');
+      return;
+    }
+
     const data = { firstName, lastName, age };
     onSave(data);
     handleClose();
@@ -51,6 +60,7 @@ function AddData({ open, onClose, onSave }) {
           type="number"
           fullWidth
           variant="outlined"
+          inputProps={{ min: 1 }} // Age must be at least 1
           value={age}
           onChange={(e) => setAge(e.target.value)}
         />

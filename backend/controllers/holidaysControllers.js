@@ -2,7 +2,7 @@ import Holiday from "../models/holidayModel.js";
 
 const getHolidays = async (req, res) => {
     try {
-        const holidays = await Holiday.find();
+        const holidays = await Holiday.find({ date: { $gte: new Date() } }).sort({ date: 1 });
         res.status(200).json(holidays);
     } catch (error) {
         res.status(404).json({ message: error.message });
@@ -15,7 +15,7 @@ const createHoliday = async (req, res) => {
     try {
         const data = {
             date: holiday.date,
-            occation: holiday.occation
+            occasion: holiday.occasion
         };
         const existingHoliday = await Holiday.findOne(data);
 

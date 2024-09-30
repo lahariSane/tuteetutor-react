@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 
 function SignInForm() {
@@ -23,30 +24,37 @@ function SignInForm() {
     // Reset error state before new login attempt
     setError("");
     try {
-    // Fetch request to login API
-    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+      // Fetch request to login API
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Handle response
-    if (response.ok) {
-      const data = await response.json();
-      if (data.token) {
-        // Save token in localStorage
-        localStorage.setItem('token', data.token);
-        // Redirect to /home
-        navigate('/');
+      // Handle response
+      if (response.ok) {
+        const data = await response.json();
+        if (data.token) {
+          // Save token in localStorage
+          localStorage.setItem('token', data.token);
+          // Redirect to /home
+          const user = jwtDecode(data.token)
+          if (user.role === "student"){
+            navigate('/coursesSelection');
+          }
+          else {
+            navigate('/');
+          }
+        } else {
+          setError('Login failed: ' + (data.message || 'Unknown error')); // Set error message if token is not present
+        }
       } else {
-        setError('Login failed: ' + (data.message || 'Unknown error')); // Set error message if token is not present
+        const errorData = await response.json();
+        setError('Login failed: ' + (errorData.message || 'Unknown error'));// Set error message for non-200 responses
       }
-    } else {
-      const errorData = await response.json();
-      setError('Login failed: ' + (errorData.message || 'Unknown error'));// Set error message for non-200 responses
-    }} catch (error) {
+    } catch (error) {
       console.error("Fetch error:", error); // Log any fetch errors
       setError('Login failed: An unexpected error occurred.'); // General error message for fetch failures
     }
@@ -56,16 +64,16 @@ function SignInForm() {
     <div class="box-container">
       <div className="form-container sign-in-container" >
         <div class="logo">
-          <img src="/logo.png" />
+          <img src="/logo.png" alt="logo" />
           <div class="logo-name">TuteeTutor</div>
         </div>
         <form onSubmit={handleOnSubmit} style={{ height: "650px" }}>
           <h1 className="heading">Sign in</h1>
           <div className="social-container">
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-google" />
             </a>
-            <a href="#" className="social">
+            <a href="/" className="social">
               <i className="fab fa-github" />
             </a>
           </div>

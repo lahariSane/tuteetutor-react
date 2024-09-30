@@ -1,10 +1,29 @@
 import Timetable from "../models/timetableModel.js";
+import userCourseSchema from "../models/userCourseModel.js";
 
 const getTimetable = async (req, res) => {
     try {
-        const timetable = await Timetable.find();
+        const { userId } = req.query;
+        const userCourses = await userCourseSchema.findOne().populate({ path: 'courseRegistered', select: "code section" });
+        const query = userCourses.courseRegistered.map(course => {
+            return { day: new Date().getDay(), subject: course.code, section: course.section }
+        })
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const timetable = await Timetable.find({
+            $or: query.map(q => ({
+                ...q,
+                $or: [
+                    { date: today },     // Match today's date
+                    { date: "null" }       // Or date is null
+                ]
+            }))
+        });
         res.status(200).json(timetable);
     } catch (error) {
+        console.error(error);
         res.status(404).json({ message: error.message });
     }
 }
@@ -23,7 +42,6 @@ const createTimetable = async (req, res) => {
             roomNo: timetable.roomNo
         };
         const existingTimetable = await Timetable.findOne(data);
-
         if (existingTimetable) {
             return res.status(409).json({ message: 'Duplicate timetable entry: A timetable with the same day, start time, and end time already exists.' });
         }

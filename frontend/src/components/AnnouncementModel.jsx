@@ -29,6 +29,7 @@ function AnnouncementModel({ open, handleClose, user }) {
                 setSnackbarSecurity("success");
                 setBreifAnnouncement("");
                 setMainAnnouncement("");
+                handleClose();
             } else {
                 setSnackbarOpen(true);
                 setSnackbarMessage("Failed to create announcement.");

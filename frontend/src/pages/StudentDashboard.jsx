@@ -5,7 +5,10 @@ import AddIcon from '@mui/icons-material/Add';
 import { useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { CalendarCard } from '../components/CalanderCard';
+import LeaveRequest from '../components/LeaveRequest';
 import AnnouncementModel from '../components/AnnouncementModel';
+import TodoList from '../components/TodoList';
+
 
 const CustomTabPanel = React.memo(function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -117,7 +120,7 @@ const StudentDashboard = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [modal]);
 
     const imageList = ["/images/unnamed.jpg", "/images/unnamed2.jpg", "/images/unnamed3.jpg"];
     const announcement = announcementData.map((announcement, index) => {
@@ -130,10 +133,10 @@ const StudentDashboard = () => {
                         <Box>
                             <Topic>{announcement.course}</Topic>
                             <Announcment>
-                                {announcement.title.split('\n').map((line, index) => (
+                                {announcement.description.split('\n').map((line, index) => (
                                     <React.Fragment key={index}>
                                         {line}
-                                        {index < announcement.title.split('\n').length - 1 && <br />}
+                                        {index < announcement.description.split('\n').length - 1 && <br />}
                                     </React.Fragment>
                                 ))}
                             </Announcment>
@@ -144,12 +147,19 @@ const StudentDashboard = () => {
             </Card>
         )
     });
+    
+    const formatTime = (time24) => {
+        const [hours, minutes] = time24.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const hours12 = hours % 12 || 12; // Convert 0 hours to 12 for AM/PM
+        return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    };
 
     const timetableData = timetable.map((timetable, index) => (
         <Card key={index} elevation={1} sx={{ padding: "12px", marginBottom: "10px" }}>
             <Subject>{timetable.subject} - {timetable.section}</Subject>
             <Room>Room No: {timetable.roomNo}</Room>
-            <Time>{timetable.startTime} - {timetable.endTime}</Time>
+            <Time>{formatTime(timetable.startTime)} - {formatTime(timetable.endTime)}</Time>
         </Card>
     ));
 
@@ -231,7 +241,7 @@ const StudentDashboard = () => {
                         <Box sx={{ marginLeft: "12px", borderBottom: 1, borderColor: 'transparent', backgroundColor: "white", borderRadius: "30px" }}>
                             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                                 <Tab label="Announcements" {...a11yProps(0)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
-                                <Tab label="Assignments" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
+                                <Tab label="Leave Request" {...a11yProps(1)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                                 <Tab label="ToDo" {...a11yProps(2)} sx={{ color: "black", fontSize: "16px", fontWeight: "bold" }} />
                             </Tabs>
                         </Box>
@@ -260,10 +270,10 @@ const StudentDashboard = () => {
                                 )}
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
-                                Item Two
+                                <LeaveRequest />
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={2}>
-                                Item Three
+                                <TodoList/>
                             </CustomTabPanel>
                         </Box>
                     </Box>

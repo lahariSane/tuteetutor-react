@@ -5,7 +5,6 @@ import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import { Outlet } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,10 +13,10 @@ const drawerWidth = 250;
 const navBarHeight = 64;
 
 function Home(props) {
-    const token = localStorage.getItem('token');
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     useEffect(() => {
+        const token = localStorage.getItem('token');
         if (token) {
             try {
                 // Decode the JWT and extract the role
