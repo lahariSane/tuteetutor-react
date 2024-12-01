@@ -21,14 +21,13 @@ mailRouter.post("/auth/google-login", async (req, res) => {
   try {
     // Get the token from the request body
     const { access_token } = req.body;
-    console.log(req.body)
+
     // Verify the token
     const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
         headers: {
           Authorization: `Bearer ${access_token}`, // Pass the access token as a Bearer token
         },
       });
-    console.log(response.data)
     const data = response.data;
     // Get the user's email from the token
     const email = data.email;
@@ -39,14 +38,14 @@ mailRouter.post("/auth/google-login", async (req, res) => {
     if (user) {
       // User exists, log them in
       const token = jwt.sign(
-        { id: user._id, role: user.role, name: user.name, email: user.email },
+        { id: user._id, role: user.role, name: user.name, email: user.email, profileImage: user.profileImage },
         process.env.JWT_SECRET,
         { expiresIn: "24h" }
       );
       res.status(200).json({ message: "Login successful", token });
     } else {
       // User doesn't exist, create a new user
-      const newUser = new User({ email, name: name, role: "student" });
+      const newUser = new User({ email, name: name, role: "student", profileImage: data.picture });
       await newUser.save();
       const token = jwt.sign(
         {
@@ -54,6 +53,7 @@ mailRouter.post("/auth/google-login", async (req, res) => {
           role: newUser.role,
           name: newUser.name,
           email: newUser.email,
+          profileImage: newUser.profileImage,
         },
         process.env.JWT_SECRET,
         { expiresIn: "24h" }
