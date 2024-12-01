@@ -45,10 +45,10 @@ function ResetPasswordForm() {
           borderRadius: "1rem",
           boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
         }}>
-        <div class="logo"
+        <div className="logo"
           style={{ marginBottom: "3rem" }}>
           <img src="/logo.png" alt="TuteeTutor Logo"/>
-          <div class="logo-name">TuteeTutor</div>
+          <div className="logo-name">TuteeTutor</div>
         </div>
         <h1 style={{ marginBottom: "2.7rem", fontSize: "1.9rem" }}>Reset Password</h1>
         <input

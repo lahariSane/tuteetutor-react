@@ -43,11 +43,11 @@ function SignUpForm() {
   };
 
   return (
-    <div class="box-container">
+    <div className="box-container">
       <div className="form-container sign-up-container">
-        <div class="logo">
+        <div className="logo">
           <img src="/logo.png" alt="logo"/>
-          <div class="logo-name">TuteeTutor</div>
+          <div className="logo-name">TuteeTutor</div>
         </div>
         <form onSubmit={handleOnSubmit}>
           <h1 className="heading">Create Account</h1>
@@ -59,7 +59,7 @@ function SignUpForm() {
               <i className="fab fa-github" />
             </a>
           </div>
-          <span class="additional-information">or use your email for registration</span>
+          <span className="additional-information">or use your email for registration</span>
           <input
             type="text"
             placeholder="Name"
