@@ -18,6 +18,9 @@ import { CalenderModel } from "../components/CalanderCard";
 import Typography from "@mui/material/Typography";
 
 function stringToColor(string) {
+  if (!string) {
+    return "#000000";
+  }
   let hash = 0;
   let i;
 
@@ -37,25 +40,13 @@ function stringToColor(string) {
   return color;
 }
 
-function stringAvatar(name) {
-  const splittedName = name.split(" ");
-  return {
-    sx: {
-      width: "30px",
-      height: "30px",
-      bgcolor: stringToColor(name),
-      fontSize: "12px",
-    },
-    children: `${splittedName[0][0]}`,
-  };
-}
-
 const logout = () => {
   localStorage.removeItem("token");
   window.location.href = "/login";
 };
 
 function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
+  document.title = "TuteeTutor - " + sidbarActive;
   const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
   const [calendarModal, setCalendarModal] = useState(false);
 
@@ -152,9 +143,9 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
                 width: "30px",
                 height: "30px",
                 fontSize: "12px",
-                bgcolor: stringToColor(user.name),
+                bgcolor: stringToColor(user?.name),
               }}
-              children={`${user.name[0]}`}
+              children={`${user?.name[0]}`}
             />
           </IconButton>
           <Menu
