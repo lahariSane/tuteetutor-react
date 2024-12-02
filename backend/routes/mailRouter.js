@@ -1,259 +1,268 @@
 import express from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
-import User from "../models/userModule.js";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 import axios from "axios";
+import User from "../models/userModule.js";
+
+// Utility Functions
+const generateJwtToken = (payload) =>
+  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
+
+const sendEmail = async (to, subject, text) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  return transporter.sendMail({ from: process.env.EMAIL, to, subject, text });
+};
+
+// Middleware
+const validateRequest = (fields) => {
+  return (req, res, next) => {
+    for (const field of fields) {
+      if (!req.body[field]) {
+        return res.status(400).json({ error: `${field} is required` });
+      }
+    }
+    next();
+  };
+};
 
 const mailRouter = express.Router();
 
-// Create a nodemailer transport
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
-
+// Routes
 mailRouter.post("/auth/google-login", async (req, res) => {
   try {
-    // Get the token from the request body
     const { access_token } = req.body;
+    const { data } = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }
+    );
 
-    // Verify the token
-    const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: {
-          Authorization: `Bearer ${access_token}`, // Pass the access token as a Bearer token
-        },
-      });
-    const data = response.data;
-    // Get the user's email from the token
-    const email = data.email;
-    const name = data.name;
+    const { email, name, picture } = data;
+    let user = await User.findOne({ email });
 
-    // Check if the user already exists
-    const user = await User.findOne({ email });
-    if (user) {
-      // User exists, log them in
-      const token = jwt.sign(
-        { id: user._id, role: user.role, name: user.name, email: user.email, profileImage: user.profileImage },
-        process.env.JWT_SECRET,
-        { expiresIn: "24h" }
-      );
-      res.status(200).json({ message: "Login successful", token });
-    } else {
-      // User doesn't exist, create a new user
-      const newUser = new User({ email, name: name, role: "student", profileImage: data.picture });
-      await newUser.save();
-      const token = jwt.sign(
-        {
-          id: newUser._id,
-          role: newUser.role,
-          name: newUser.name,
-          email: newUser.email,
-          profileImage: newUser.profileImage,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "24h" }
-      );
-      res.status(200).json({ message: "Signup successful", token });
+    if (!user) {
+      user = new User({ email, name, role: "student", profileImage: picture });
+      await user.save();
     }
+
+    const token = generateJwtToken({
+      id: user._id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      profileImage: user.profileImage,
+    });
+
+    res
+      .status(200)
+      .json({
+        message: user ? "Login successful" : "Signup successful",
+        token,
+      });
   } catch (error) {
-    console.error(error);
+    console.error("Google login error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-mailRouter.post("/forgot-password", async (req, res) => {
+mailRouter.post("/auth/github-login", async (req, res) => {
+  try {
+    const { code } = req.body;
+    const tokenResponse = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+      },
+      { headers: { Accept: "application/json" } }
+    );
+    const accessToken = tokenResponse.data.access_token;
+    const { data } = await axios.get(
+      "https://api.github.com/user",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    
+    const { name, avatar_url } = data;
+    const email = data.email || data.login + "@github.com";
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({ email, name, role: "student", profileImage: avatar_url });
+      await user.save();
+    }
+
+    const token = generateJwtToken({
+      id: user._id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      profileImage: user.profileImage,
+    });
+
+    res
+      .status(200)
+      .json({
+        message: user ? "Login successful" : "Signup successful",
+        token,
+      });
+  } catch (error) {
+    console.error("Github login error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+mailRouter.post(
+  "/forgot-password",
+  validateRequest(["email"]),
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      const token = crypto.randomBytes(20).toString("hex");
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+      await user.save();
+
+      const resetLink = `http://localhost:3000/reset-password/${token}`;
+      await sendEmail(
+        email,
+        "Password Reset Request",
+        `Reset your password: ${resetLink}`
+      );
+
+      res.status(200).json({ message: "Password reset email sent" });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+mailRouter.post(
+  "/reset-password/:token",
+  validateRequest(["password"]),
+  async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+      if (!user)
+        return res.status(400).json({ error: "Invalid or expired token" });
+
+      user.password = await bcrypt.hash(password, 10);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+mailRouter.post("/send-otp", validateRequest(["email"]), async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    // Generate a reset token
-    const token = crypto.randomBytes(20).toString("hex");
-
-    // Save the token and expiration time in the user's document
-    user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
-
-    await user.save();
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    // Create an email message
-    const mailOptions = {
-      to: email,
-      from: process.env.EMAIL,
-      subject: "Password Reset Request",
-      text: `You requested a password reset. Please click the following link to reset your password: 
-        http://localhost:3000/reset-password/${token}`,
-    };
-
-    //${req.headers.host}
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).send("A password reset email has been sent.");
-  } catch (err) {
-    res.status(500).send("An error occurred");
-  }
-});
-
-mailRouter.post("/reset-password/:token", async (req, res) => {
-  try {
-    const { token } = req.params;
-    const { password } = req.body;
-
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      return res
-        .status(400)
-        .send("Password reset token is invalid or has expired.");
-    }
-    console.log(password);
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-
-    await user.save();
-
-    res.status(200).send("Password has been reset successfully.");
-  } catch (err) {
-    res.status(500).send("An error occurred");
-  }
-});
-
-// Generate OTP and send email
-mailRouter.post("/send-otp", async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).send("User already exists");
-    }
-    console.log(existingUser);
-
-    // Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
-    console.log("Generated OTP:", otp); // Debugging
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-    const otpExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
-    // Create a user with the OTP and expiry, or update existing one
-    const user = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { email },
       { otp, otpExpires },
       { new: true, upsert: true }
     );
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    // Send email with OTP
-    await transporter.sendMail({
-      from: process.env.EMAIL,
-      to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
-    });
-    res.status(200).send("OTP sent successfully");
-  } catch (error) {
-    console.error("Error sending OTP:", error); // Log the error for debugging
-    res.status(500).send(`Error sending OTP: ${error.message}`); // Return the error message
-  }
-});
-
-mailRouter.post("/signup", async (req, res) => {
-  const { name, email, password, otp } = req.body;
-
-  try {
-    const user = await User.findOne({ email });
-    console.log(user);
-
-    if (!user) {
-      return res.status(400).send("Invalid email or OTP");
-    }
-    // Check if OTP is valid and not expired
-    if (user.otp !== otp || user.otpExpires < Date.now()) {
-      return res.status(400).send("Invalid or expired OTP");
-    }
-
-    // Hash the password using bcrypt with a salt factor of 10
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a JWT token
-    const token = jwt.sign(
-      { id: user._id, role: user.role, name: user.name, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+    await sendEmail(
+      email,
+      "Your OTP Code",
+      `Your OTP is ${otp}. It expires in 10 minutes.`
     );
-
-    // Update user with name and password
-    user.name = name;
-    user.password = hashedPassword;
-    user.otp = null; // Clear OTP
-    user.otpExpires = null;
-    await user.save();
-    res.status(200).json({ message: "Signup successful", token });
+    res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
-    console.error("Error signing up:", error);
-    res.status(500).send("Error signing up");
+    console.error("Send OTP error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Login with OTP verification
-mailRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+mailRouter.post(
+  "/signup",
+  validateRequest(["name", "email", "password", "otp"]),
+  async (req, res) => {
+    try {
+      const { name, email, password, otp } = req.body;
+      const user = await User.findOne({ email });
+      if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
+        return res.status(400).json({ error: "Invalid or expired OTP" });
+      }
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).send("Invalid email or password");
+      user.name = name;
+      user.password = await bcrypt.hash(password, 10);
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      await user.save();
+
+      const token = generateJwtToken({
+        id: user._id,
+        role: user.role,
+        name: user.name,
+        email: user.email,
+      });
+      res.status(200).json({ message: "Signup successful", token });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    // Check if the password matches
-    // Compare the provided password with the hashed password in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).send("Invalid email or password");
-    }
-
-    // Create JWT token
-    const token = jwt.sign(
-      { id: user._id, role: user.role, name: user.name, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
-
-    res.status(200).json({ message: "Login successful", token });
-  } catch (error) {
-    res.status(500).send("Error logging in");
   }
-});
+);
+
+mailRouter.post(
+  "/login",
+  validateRequest(["email", "password"]),
+  async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+      if (!user){
+        return res.status(400).json({ error: "Invalid email" });
+      }
+        
+      if (!(await bcrypt.compare(password, user.password))) {
+        return res.status(400).json({ error: "Incorrect password" });
+      }
+
+      const token = generateJwtToken({
+        id: user._id,
+        role: user.role,
+        name: user.name,
+        email: user.email,
+      });
+      res.status(200).json({ message: "Login successful", token });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
 
 export default mailRouter;
