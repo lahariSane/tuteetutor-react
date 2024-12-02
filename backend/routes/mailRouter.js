@@ -94,7 +94,7 @@ mailRouter.post("/auth/github-login", async (req, res) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       }
     );
-    
+
     const { name, avatar_url } = data;
     const email = data.email || data.login + "@github.com";
 
@@ -184,57 +184,61 @@ mailRouter.post(
 mailRouter.post("/send-otp", validateRequest(["email"]), async (req, res) => {
   try {
     const { email } = req.body;
-    const otp = crypto.randomInt(100000, 999999).toString();
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.status(200).json({ exists: true });
+    } else {
+      const otp = crypto.randomInt(100000, 999999).toString();
+      const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-    await User.findOneAndUpdate(
-      { email },
-      { otp, otpExpires },
-      { new: true, upsert: true }
-    );
+      await User.findOneAndUpdate(
+        { email },
+        { otp, otpExpires },
+        { new: true, upsert: true }
+      );
 
-    await sendEmail(
-      email,
-      "Your OTP Code",
-      `Your OTP is ${otp}. It expires in 10 minutes.`
-    );
-    res.status(200).json({ message: "OTP sent successfully" });
+      await sendEmail(
+        email,
+        "Your OTP Code",
+        `Your OTP is ${otp}. It expires in 10 minutes.`
+      );
+      res.status(200).json({ message: "OTP sent successfully" });
+    }
   } catch (error) {
     console.error("Send OTP error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+}); 
+
+mailRouter.post("/verify-otp", async (req, res) => {
+  try {
+    const { name, email, password, otp } = req.body;
+    const user = await User.findOne({ email });
+    
+    if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    user.name = name;
+    user.password = await bcrypt.hash(password, 10);
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    const token = generateJwtToken({
+      id: user._id,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+    });
+    
+    res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    console.error("Verify OTP error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
-mailRouter.post(
-  "/signup",
-  validateRequest(["name", "email", "password", "otp"]),
-  async (req, res) => {
-    try {
-      const { name, email, password, otp } = req.body;
-      const user = await User.findOne({ email });
-      if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
-        return res.status(400).json({ error: "Invalid or expired OTP" });
-      }
-
-      user.name = name;
-      user.password = await bcrypt.hash(password, 10);
-      user.otp = undefined;
-      user.otpExpires = undefined;
-      await user.save();
-
-      const token = generateJwtToken({
-        id: user._id,
-        role: user.role,
-        name: user.name,
-        email: user.email,
-      });
-      res.status(200).json({ message: "Signup successful", token });
-    } catch (error) {
-      console.error("Signup error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-);
 
 mailRouter.post(
   "/login",
@@ -243,13 +247,26 @@ mailRouter.post(
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
-      if (!user){
+
+
+      console.log("Email:", email);
+      console.log("Password:", password);
+
+
+
+      console.log(user);
+      if (!user) {
         return res.status(400).json({ error: "Invalid email" });
       }
-        
+
+      if (!user.password){
+        return res.status(400).json({ error: "Invalid password" });
+      }
+
       if (!(await bcrypt.compare(password, user.password))) {
         return res.status(400).json({ error: "Incorrect password" });
       }
+
 
       const token = generateJwtToken({
         id: user._id,

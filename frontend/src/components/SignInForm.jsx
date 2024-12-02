@@ -15,7 +15,7 @@ function SignInForm() {
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
     const token = localStorage.getItem("token");
     if (token) {
       const user = jwtDecode(token);

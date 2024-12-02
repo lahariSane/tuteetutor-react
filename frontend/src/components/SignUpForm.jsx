@@ -16,17 +16,52 @@ function SignUpForm() {
 
   const [loading, setLoading] = useState(false); // Loading state for API calls
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [step, setStep] = useState("signup");
 
   const handleChange = (evt) => {
-    const value = evt.target.value;
+    const { name: fieldName, value } = evt.target; // Rename "name" to "fieldName"
     setState({
       ...state,
-      [evt.target.name]: value,
+      [fieldName]: value,
     });
+  
+    // Validate password on change
+    if (fieldName === "password") {
+      validatePassword(value);
+    }
+  };
+
+  const validatePassword = (password) => {
+    // Check length between 8 and 35
+    if (password.length < 8 || password.length > 31) {
+      setPasswordError("Password must be between 8 and 31 characters.");
+      return;
+    }
+
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError("Password must include at least one uppercase letter.");
+      return;
+    }
+
+    // Check for exactly one underscore and no other special characters
+    if (!/^([^_]*_){1}[^_]*$/.test(password)) {
+      setPasswordError(
+        "Password must include exactly one underscore and no other special characters."
+      );
+      return;
+    }
+
+    // Clear error if all conditions are met
+    setPasswordError("");
   };
 
   const handleSendOtp = async () => {
+    if (passwordError) {
+      alert("Please fix the errors in the password before proceeding.");
+      return;
+    }
     try {
       setLoading(true);
       const response = await axios.post(
@@ -36,7 +71,7 @@ function SignUpForm() {
       );
 
       if (response.data.exists) {
-        setError("User already exists. Please login instead.");
+        alert("User already exists. Please login instead.");
         setLoading(false);
         return;
       }
@@ -52,40 +87,17 @@ function SignUpForm() {
     }
   };
 
-  const handleOnSubmit = async (evt) => {
-    evt.preventDefault();
-    setError("");
-    try {
-      setLoading(true);
-      const { name, email, password, otp } = state;
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/signup`,
-        { name, email, password, otp },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      alert("Signup successful!");
-      window.location.href = "/";
-    } catch (error) {
-      const message = error.response?.data?.message || "Error in signup.";
-      setError(message);
-      alert(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleVerifyOtp = async (evt) => {
     evt.preventDefault();
     try {
       setLoading(true);
+
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/verify-otp`,
-        { email: state.email, otp: state.otp },
+        { name: state.name, email: state.email, password: state.password, otp: state.otp },
         { headers: { "Content-Type": "application/json" } }
       );
-      alert("OTP verified successfully and successfully signed up!"); 
+      alert("OTP verified successfully and successfully signed up!");
       window.location.href = "/";
 
     } catch (error) {
@@ -142,7 +154,7 @@ function SignUpForm() {
           <div className="logo-name">TuteeTutor</div>
         </div>
         {step === "signup" ? (
-          <form onSubmit={handleOnSubmit}>
+          <form>
             <h1 className="heading">Create Account</h1>
             <div className="social-container">
               <span type="button" className="auth-button" onClick={googleLogin}>
@@ -180,12 +192,17 @@ function SignUpForm() {
               onChange={handleChange}
               required
             />
-              <button
-                onClick={handleSendOtp}
-                disabled={loading}
-              >
-                {loading ? "Sending..." : "Send OTP"}
-              </button>
+            {passwordError && (
+              <div className="inline-error">
+                <i className="fas fa-exclamation-circle" /> {passwordError}
+              </div>
+            )}  
+            <button
+              onClick={handleSendOtp}
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Send OTP"}
+            </button>
           </form>
         ) : (
           <form onSubmit={handleVerifyOtp}>
@@ -198,7 +215,7 @@ function SignUpForm() {
               onChange={handleChange}
               required
             />
-            <button type="submit"  disabled={loading}>
+            <button type="submit" disabled={loading}>
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </form>
