@@ -1,0 +1,239 @@
+.inner-container-1{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 20em;
+}
+
+.outer-container{
+    margin-top: 5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: 10em;
+    width: 100vw;
+}
+
+.box-1{
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem;
+
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+
+/* Profile Container */
+.profile-container {
+    width: 40em;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    height: 24em;
+}
+
+/* Header with Background */
+.header {
+    position: relative;
+    background-color: #007bff;
+    height: 7em;
+    position: relative;
+}
+
+/* Edit Icon */
+.edit-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile Content */
+.profile-content {
+    padding: 20px;
+}
+
+/* Profile Photo */
+.profile-photo {
+    position: relative; /* Makes the profile photo positionable */
+    top: 50%; /* Adjusts its position vertically */
+    left: 50%; /* Centers it horizontally */
+    transform: translate(-50%, -50%); /* Centers the profile photo exactly */
+    z-index: 2; /* Ensures it is displayed above the header */
+    width: 9em;
+    height: 9em;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+/* Headings and Text */
+h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+p {
+    color: #555;
+    font-size: 14px;
+    margin: 5px 0 20px;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    top: -3em;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.upload-button {
+    background-color: #007bff;
+    color: #fff;
+    margin-right: 1em;
+}
+
+.save-button {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.personal-info {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    width: 40em;    
+    padding-bottom: 0.3em;
+    
+}
+
+/* Container */
+.personal-info-container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form */
+.personal-info-form {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Input Wrapper */
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: border-color 0.2s ease;
+}
+
+.input-wrapper:hover {
+    border-color: #aaa;
+}
+
+.icon {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Input Fields */
+input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #333;
+    padding: 5px;
+    width: 36em;
+    height: 1em;
+}
+
+input::placeholder {
+    color: #aaa;
+    font-size: 14px;
+}
+
+form{
+    margin-bottom: 0;
+}
+
+.bio{
+    width: 40em;
+    padding: 20px;
+    background-color: #007bff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    margin-left: 2em;
+}
+
+.bio-content{
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2px;
+    margin-top: 1em;
+}
