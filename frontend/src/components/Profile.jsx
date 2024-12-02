@@ -3,10 +3,6 @@ import React from 'react'
 
 export default function Profile() {
     return (
-
-
-
-
         <div className='outer-container'>
             <div className='inner-container-1'>
                 <div className='box-1'>
@@ -51,15 +47,6 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="mobileNumber"><b>Mobile number</b></label>
-                                <div className="input-wrapper">
-                                    <span className="icon">📱</span>
-                                    <input type="text" id="mobileNumber" placeholder="+91 0000000000" />
-                                </div>
-                            </div>
-
-                            {/* Role */}
                             <div className="form-group">
                                 <label htmlFor="role"><b>Role</b></label>
                                 <div className="input-wrapper">

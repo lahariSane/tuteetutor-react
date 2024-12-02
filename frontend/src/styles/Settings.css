@@ -11,7 +11,7 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-left: 10em;
+    margin-left: 13em;
     width: 100vw;
 }
 
@@ -29,7 +29,7 @@
 
 /* Profile Container */
 .profile-container {
-    width: 40em;
+    width: 37em;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -136,7 +136,7 @@ button {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-top: 20px;
-    width: 40em;    
+    width: 37em;    
     padding-bottom: 0.3em;
     
 }
@@ -208,7 +208,7 @@ input {
     font-size: 14px;
     color: #333;
     padding: 5px;
-    width: 36em;
+    width: 33em;
     height: 1em;
 }
 
@@ -222,7 +222,7 @@ form{
 }
 
 .bio{
-    width: 40em;
+    width: 37em;
     padding: 20px;
     background-color: #007bff;
     border-radius: 10px;
