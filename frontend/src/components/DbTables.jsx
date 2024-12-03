@@ -51,6 +51,7 @@ function DbTables() {
     setShowCollectionTables(true);
 
     try {
+      console.log('entered');
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/collections/${row.name}`
       );
@@ -59,7 +60,6 @@ function DbTables() {
         ...row,
         data: response.data
       })
-      console.log(selectedRows);
     } catch (err) {
       setError("Error fetching collection data");
     }
@@ -200,7 +200,7 @@ function DbTables() {
           </div>
           <AddData open={open} onClose={handleClose} onSave={handleClose} />
 
-          {selectedRows?.data && <CollectionTables rows={selectedRows?.data} columns={Object.keys(selectedRows?.data[0])} />}
+          {selectedRows?.data && <CollectionTables name={selectedRows?.name} rows={selectedRows?.data} columns={Object.keys(selectedRows?.data[0])} />}
 
         </div>
       )}

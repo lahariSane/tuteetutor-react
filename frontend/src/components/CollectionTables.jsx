@@ -10,7 +10,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 const generateRowsWithId = (rows) => {
   return rows.map((row, index) => ({
     id: index + 1, // Generate a unique ID based on the index
-    ...row,        // Spread the rest of the row data
+    ...row, // Spread the rest of the row data
   }));
 };
 
@@ -23,38 +23,63 @@ const getColumns = (columnNames) => {
   }));
 };
 
-const paginationModel = { page: 0, pageSize: 15 };
+const formatDate = (isoDate) => {
+  const options = {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  };
 
-export default function CollectionTables({ rows, columns }) {
-  console.log(rows)
+  const dateObj = new Date(isoDate);
+
+  // Check if the time is 00:00:00
+  if (
+    dateObj.getUTCHours() === 0 &&
+    dateObj.getUTCMinutes() === 0 &&
+    dateObj.getUTCSeconds() === 0
+  ) {
+    options.hour = undefined;
+    options.minute = undefined;
+  }
+
+  return new Intl.DateTimeFormat("en-US", options).format(dateObj);
+};
+
+
+const paginationModel = { page: 0, pageSize: 10 };
+
+export default function CollectionTables({ name, rows, columns }) {
   const [searchText, setSearchText] = useState("");
 
   // Generate unique IDs for each row
   const rowsWithId = generateRowsWithId(rows);
-  const formattedColumns = getColumns(columns);
-
-  // Remove '_id' key from the columns (if needed)
-  const filteredKeys = formattedColumns.filter((key) => key.field !== "_id");
+  const filteredColumns = columns.filter(
+    (col) => col !== "_id" && col !== "__v" && !(name === "timetables" && col === "date")
+  );
+  const formattedColumns = getColumns(filteredColumns);
 
   // Filtered rows based on search text
-  const filteredRows = rowsWithId.filter((row) => {
-    // const firstName = row.firstName ?? "";
-    // const lastName = row.lastName ?? "";
-    // return (
-    //   firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-    //   lastName.toLowerCase().includes(searchText.toLowerCase())
-    // );
-    if (row._id) {
-      delete row._id; // Or simply avoid using '_id' in the filtering process
+  const filteredRows = rowsWithId.map((row) => {
+    const { _id, __v, date, ...rest } = row;
+    if (name === "timetables") {
+      // Exclude the `date` field for timetables rows
+      return rest;
     }
-    return row;
+    return { ...rest, date: date ? formatDate(date) : null };
   });
 
+  const searchFilteredRows = filteredRows.filter((row) => {
+    return Object.values(row).some((value) =>
+      value?.toString().toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
 
-  console.log(filteredKeys)
-  console.log(filteredRows)
   return (
-    <Paper sx={{ width: "100%", color: "black"}}>
+    <Paper sx={{ width: "100%", color: "black" }}>
       <TextField
         variant="standard"
         placeholder="Search by First or Last Name..."
@@ -67,14 +92,14 @@ export default function CollectionTables({ rows, columns }) {
                 <SearchIcon />
               </InputAdornment>
             ),
-          }
+          },
         }}
         style={{ margin: "20px", width: "40%" }}
       />
 
       <DataGrid
-        rows={filteredRows} // Use filtered rows with auto-generated IDs
-        columns={filteredKeys}
+        rows={searchFilteredRows} // Use filtered rows with auto-generated IDs
+        columns={formattedColumns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
         checkboxSelection

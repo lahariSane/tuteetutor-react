@@ -23,6 +23,16 @@ class Collections {
             res.status(404).json({ message: error.message });
         }
     };
+
+    updateLeaveRequestStatus = async (req, res) => {
+        try {
+            const { status } = req.body;
+            const response = await this.db.updateLeaveRequestStatus(req.params.id, status);
+            res.json(response);
+        } catch (error) {
+            res.status(404).json({ message: error.message });
+        }
+    };
 }
 
 export default Collections;
