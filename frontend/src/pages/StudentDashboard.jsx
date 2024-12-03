@@ -116,8 +116,11 @@ const StudentDashboard = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("token");
         const [announcements, timetable, holidays] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`),
         ]);
@@ -171,7 +174,7 @@ const StudentDashboard = () => {
             }}
           >
             <Box>
-              <Topic>{announcement.course}</Topic>
+              <Topic>{announcement.title}</Topic>
               <Announcment>
                 {announcement.description.split("\n").map((line, index) => (
                   <React.Fragment key={index}>
