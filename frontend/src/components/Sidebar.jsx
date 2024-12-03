@@ -238,6 +238,7 @@ function Sidebar({
     <Box
       component="nav"
       sx={{
+        zIndex: 1,
         // width: { md: drawerWidth }, flexShrink: { md: 0 },
         backgroundColor: "white",
         [theme.breakpoints.up("md")]: {
