@@ -13,6 +13,7 @@ import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
 import Settings from "./pages/Settings";
+import HodList from "./components/Hod";
 
 function App() { 
   document.title = "TuteeTutor";
@@ -32,6 +33,7 @@ function App() {
           <Route path="support" element={<></>} />
           <Route path="faculty" element={<FacultyList/>} />
           <Route path="settings" element={<Settings/>} />
+          <Route path="hod" element={<HodList />} />
         </Route>
       </Routes>
     </Router>
