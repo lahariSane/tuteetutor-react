@@ -34,7 +34,13 @@ function AddData({ open, onClose, onSave }) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose}
+      PaperProps={{
+        style: {
+          borderRadius: '30px',
+        },
+      }}
+    >
       <DialogTitle>Edit Details</DialogTitle>
       <DialogContent>
         <TextField
@@ -66,10 +72,24 @@ function AddData({ open, onClose, onSave }) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary"
+          sx={{
+            "&:hover": {
+              variant: "contained",
+              color: "white",
+              backgroundColor: (theme) => theme.palette.primary.main,
+            }
+          }}>
           Cancel
         </Button>
-        <Button onClick={handleSave} color="primary">
+        <Button onClick={handleSave} color="primary"
+          sx={{
+            "&:hover": {
+              variant: "contained",
+              color: "white",
+              backgroundColor: (theme) => theme.palette.primary.main,
+            }
+          }}>
           Save
         </Button>
       </DialogActions>

@@ -3,6 +3,8 @@ import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 // Automatically generate IDs for rows
 const generateRowsWithId = (rows) => {
@@ -52,13 +54,22 @@ export default function CollectionTables({ rows, columns }) {
   console.log(filteredKeys)
   console.log(filteredRows)
   return (
-    <Paper sx={{ width: "100%", color: "black" }}>
+    <Paper sx={{ width: "100%", color: "black"}}>
       <TextField
-        variant="outlined"
+        variant="standard"
         placeholder="Search by First or Last Name..."
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
-        style={{ marginBottom: "20px", width: "100%" }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }
+        }}
+        style={{ margin: "20px", width: "40%" }}
       />
 
       <DataGrid
