@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import "../styles/Faculty.css";
 import { useOutletContext } from "react-router-dom";
 import { Box, createTheme } from "@mui/material";
@@ -95,7 +95,7 @@ const FacultyList = () => {
   const token = localStorage.getItem("token");
 
   const [facultyList, setFacultyList] = React.useState([]);
-  const fetchFaculty = async () => {
+  const fetchFaculty = useCallback(async () => {
     try {
       const res = await axios("http://localhost:5000/faculty", {
         headers: { Authorization: `Bearer ${token}` },
@@ -118,10 +118,10 @@ const FacultyList = () => {
     } catch (error) {
       console.error("Error fetching faculty list:", error);
     }
-  };
+  }, [token, navigate]);
   useEffect(() => {
     fetchFaculty();
-  }, []);
+  }, [fetchFaculty]);
 
   const data = useOutletContext();
   const user = data.user;
@@ -134,7 +134,6 @@ const FacultyList = () => {
       prevList.filter((faculty) => faculty._id !== facultyId)
     );
   };
-
 
   return (
     <>

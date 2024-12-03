@@ -25,10 +25,11 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false); // Loading state
   const token = localStorage.getItem("token");
-
+  
   // Fetch courses from the backend
   useEffect(() => {
     const fetchCourses = async () => {
+      const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/hod-course`,
