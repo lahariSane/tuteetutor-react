@@ -27,14 +27,14 @@ function Home(props) {
                 if (decodedToken.exp * 1000 < Date.now()) {
                     console.log("Token has expired");
                     localStorage.removeItem('token'); // Remove expired token
-                    navigate('/login'); // Redirect to login if token is expired
+                    navigate('/landing-page'); // Redirect to login if token is expired
                 }
             } catch (error) {
                 console.error("Invalid token");
             }
         }
         else {
-            navigate('/login'); // Redirect to login if token is not present
+            navigate('/landing-page'); // Redirect to login if token is not present
         }
     }, [navigate]);
 
