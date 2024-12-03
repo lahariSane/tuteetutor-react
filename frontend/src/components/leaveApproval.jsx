@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, CardContent, Typography, Box } from "@mui/material";
+import { Button, Typography, Box } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import axios from "axios";
 
 const LeaveApproval = () => {
@@ -56,60 +57,49 @@ const LeaveApproval = () => {
   }
 
   return (
-    <Box sx={{ width: "100%", padding: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "row", paddingBottom: "10px", borderBottom: "2px solid #ddd", margin:"10px 20%", width:"90%" }}>
-         <Box sx={{ flex: 3 }}>
-          <Typography variant="h6" fontWeight="bold">Student Name</Typography>
-        </Box>
-        <Box sx={{ flex: 3 }}>
-          <Typography variant="h6" fontWeight="bold">From Date</Typography>
-        </Box>
-        <Box sx={{ flex: 3 }}>
-          <Typography variant="h6" fontWeight="bold">To Date</Typography>
-        </Box>
-        <Box sx={{ flex: 3 }}>
-          <Typography variant="h6" fontWeight="bold">Reason</Typography>
-        </Box>
-        <Box sx={{ flex: 2 }}>
-          <Typography variant="h6" fontWeight="bold">Status</Typography>
-        </Box>
-        <Box sx={{ flex: 1 }}></Box> {/* Empty box for action buttons */}
-        <Box sx={{ flex: 1 }}></Box> {/* Empty box for action buttons */}
-      </Box>
-      {leaveRequests.map((request) => (
-        <Card
-          key={request.id}
-          sx={{
-            margin: "10px 20%",
-            border: request.status === "Accepted" ? "2px solid green" : request.status === "Declined" ? "2px solid red" : "none",
-            display: "flex",
-            flexDirection: "row",
-            padding: "10px",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "90%", // Ensure full width
-            boxSizing: "border-box", // Account for padding and borders
-          }}
-        >
-          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
-            <Box sx={{ flex: 3 }}>
-              <Typography variant="body1"><strong>{request.studentName}</strong></Typography>
-            </Box>
-            <Box sx={{ flex: 3 }}>
-              <Typography variant="body1">{formatDate(request.fromDate)}</Typography>
-            </Box>
-            <Box sx={{ flex: 3 }}>
-              <Typography variant="body1">{formatDate(request.toDate)}</Typography>
-            </Box>
-            <Box sx={{ flex: 3 }}>
-              <Typography variant="body1">{request.reason}</Typography>
-            </Box>
-            <Box sx={{ flex: 2 }}>
-              <Typography variant="body1" color="text.secondary">{request.status || "Pending"}</Typography>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              {request.status && (
-                <Box display="flex" justifyContent="space-between">
+    <Box sx={{ width: "100vw", padding: 2, height: "50vh", overflowY: "auto" }}>
+      <TableContainer component={Paper} sx={{width:"85vw"}}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><Typography variant="h6" fontWeight="bold">Student Name</Typography></TableCell>
+              <TableCell><Typography variant="h6" fontWeight="bold">From Date</Typography></TableCell>
+              <TableCell><Typography variant="h6" fontWeight="bold">To Date</Typography></TableCell>
+              <TableCell><Typography variant="h6" fontWeight="bold">Reason</Typography></TableCell>
+              <TableCell><Typography variant="h6" fontWeight="bold">Status</Typography></TableCell>
+              <TableCell colSpan={2}><Typography variant="h6" fontWeight="bold">Actions</Typography></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {leaveRequests.map((request) => (
+              <TableRow
+                key={request.id}
+                sx={{
+                  backgroundColor:
+                    request.status === "Accepted"
+                      ? "rgba(0, 255, 0, 0.1)"
+                      : request.status === "Declined"
+                      ? "rgba(255, 0, 0, 0.1)"
+                      : "inherit",
+                }}
+              >
+                <TableCell>{request.studentName}</TableCell>
+                <TableCell>{formatDate(request.fromDate)}</TableCell>
+                <TableCell>{formatDate(request.toDate)}</TableCell>
+                <TableCell>{request.reason}</TableCell>
+                <TableCell
+                  sx={{
+                    color:
+                      request.status === "Accepted"
+                        ? "green"
+                        : request.status === "Declined"
+                        ? "red"
+                        : "grey",
+                  }}
+                >
+                  {request.status || "Pending"}
+                </TableCell>
+                <TableCell>
                   <Button
                     variant="contained"
                     color="success"
@@ -118,6 +108,8 @@ const LeaveApproval = () => {
                   >
                     Accept
                   </Button>
+                </TableCell>
+                <TableCell>
                   <Button
                     variant="contained"
                     color="error"
@@ -125,12 +117,12 @@ const LeaveApproval = () => {
                   >
                     Decline
                   </Button>
-                </Box>
-              )}
-            </Box>
-          </Box>
-        </Card>
-      ))}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
