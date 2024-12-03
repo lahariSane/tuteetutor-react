@@ -90,7 +90,7 @@ const Announcment = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(1),
   display: "flex",
   alignItems: "flex-start",
-  justifyContent: "flex-start",
+  justifyContent: "flex-start", 
   width: "100%",
 }));
 
@@ -109,6 +109,8 @@ const StudentDashboard = () => {
   const drawerWidth = data.drawerWidth;
   const user = data.user;
   const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
+
+  const userId = user?.id;
 
   const handleChange = (event, newValue) => setValue(newValue);
   const handlesubChange = (event, newValue) => setSubValue(newValue);

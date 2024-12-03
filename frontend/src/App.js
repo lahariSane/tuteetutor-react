@@ -14,7 +14,7 @@ import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
 import Settings from "./pages/Settings";
 
-function App() {
+function App() { 
   document.title = "TuteeTutor";
   return (
     <Router>
