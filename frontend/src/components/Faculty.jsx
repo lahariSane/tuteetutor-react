@@ -107,6 +107,13 @@ const FacultyList = () => {
         navigate("/coursesSelection");
         return;
       }
+      if (
+        res?.data?.message &&
+        res?.data?.message === "No registered courses found for the faculty."
+      ) {
+        navigate("/");
+        return;
+      }
       setFacultyList(res.data);
     } catch (error) {
       console.error("Error fetching faculty list:", error);
