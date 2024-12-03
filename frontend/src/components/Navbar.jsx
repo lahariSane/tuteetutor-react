@@ -17,6 +17,8 @@ import { CalenderModel } from "../components/CalanderCard";
 
 import Typography from "@mui/material/Typography";
 
+import NotificationModal from "./NotificationModal";
+import NotificationDashboard from "./NotificationDashboard";
 
 function stringToColor(string) {
   if (!string) {
@@ -52,6 +54,36 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
   const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
   const [calendarModal, setCalendarModal] = useState(false);
 
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const notifications = [
+    {
+      id: 1,
+      title: "New Message from John Doe",
+      message:
+        "Hey! I've just reviewed your latest project submission. Great work! Let's discuss the feedback in our next meeting.",
+      time: new Date(Date.now() - 5 * 60000).toISOString(),
+      isRead: false,
+      type: "info",
+    },
+    {
+      id: 2,
+      title: "System Update Available",
+      message:
+        "A new system update is available with important security patches. Please save your work and restart the application.",
+      time: new Date(Date.now() - 60 * 60000).toISOString(),
+      isRead: true,
+      type: "warning",
+    },
+    {
+      id: 3,
+      title: "Project Milestone Achieved! 🎉",
+      message:
+        "Congratulations! Your team has successfully completed the Q1 objectives ahead of schedule.",
+      time: new Date(Date.now() - 2 * 60 * 60000).toISOString(),
+      isRead: false,
+      type: "success",
+    },
+  ];
   // menu related code for the user profile button
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -133,11 +165,22 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
           >
             <CalendarMonthIcon fontSize="medium" />
           </IconButton>
-          <IconButton color="primary">
+          <IconButton
+            color="primary"
+            onClick={() => setIsNotificationOpen(true)}
+          >
             <Badge color="secondary" variant="dot" invisible={false}>
               <NotificationsIcon fontSize="medium" />
             </Badge>
           </IconButton>
+
+          <NotificationModal
+            isOpen={isNotificationOpen}
+            onClose={() => setIsNotificationOpen(false)}
+          >
+            <NotificationDashboard notifications={notifications} />
+          </NotificationModal>
+
           <IconButton onClick={handleClick}>
             <Avatar
               src={user?.profileImage}
