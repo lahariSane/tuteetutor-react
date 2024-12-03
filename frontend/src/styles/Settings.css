@@ -90,17 +90,6 @@
     z-index: 1;
 }
 
-/* Headings and Text */
-h2 {
-    font-size: 20px;
-    margin: 0;
-}
-
-p {
-    color: #555;
-    font-size: 14px;
-    margin: 5px 0 20px;
-}
 
 /* Buttons */
 .buttons {
@@ -111,7 +100,10 @@ p {
     top: -3em;
 }
 
-button {
+.upload-button {
+    background-color: #007bff;
+    color: #fff;
+    margin-right: 1em;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -119,15 +111,14 @@ button {
     font-size: 14px;
 }
 
-.upload-button {
-    background-color: #007bff;
-    color: #fff;
-    margin-right: 1em;
-}
-
 .save-button {
     background-color: #28a745;
     color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .personal-info {
@@ -152,11 +143,6 @@ button {
     font-family: Arial, sans-serif;
 }
 
-h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #333;
-}
 
 /* Form */
 .personal-info-form {
@@ -178,7 +164,6 @@ label {
     color: #555;
 }
 
-/* Input Wrapper */
 .input-wrapper {
     display: flex;
     align-items: center;
@@ -200,7 +185,7 @@ label {
 }
 
 /* Input Fields */
-input {
+.profile-input {
     flex: 1;
     border: none;
     outline: none;
@@ -212,7 +197,7 @@ input {
     height: 1em;
 }
 
-input::placeholder {
+.profile-input::placeholder {
     color: #aaa;
     font-size: 14px;
 }
