@@ -19,6 +19,7 @@ import EditCalendarOutlinedIcon from '@mui/icons-material/EditCalendarOutlined';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 const theme = createTheme({ breakpoints: { values: { md: 1380 } } });
 const SidebarListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -136,7 +137,8 @@ function Sidebar({ drawerWidth, mobileOpen, handleDrawerClose, sidbarActive, set
         Dashboard: <AutoAwesomeMosaicOutlinedIcon sx={{ color: "white" }} />,
         TimeTable: <EditCalendarOutlinedIcon sx={{ color: "white" }} />,
         Almanac: <CalendarMonthIcon sx={{ color: "white" }} />,
-        Support: <SupportAgentIcon sx={{ color: "white" }} />
+        Support: <SupportAgentIcon sx={{ color: "white" }} />,
+        Faculty: <AssignmentIndIcon sx={{ color: "white" }} />
     };
     const bottomIcons = { Settings: < SettingsIcon sx={{ color: "white" }} /> };
 

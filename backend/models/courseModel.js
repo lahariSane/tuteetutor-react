@@ -18,6 +18,11 @@ const courseSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
+    department: {
+        type: String,
+        required: true,
+        default: 'CSE',
+    },
 });
 
 const Course = mongoose.model('Course', courseSchema);

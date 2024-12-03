@@ -6,7 +6,9 @@ import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
 import Home from "./pages/Home";
+
 import ResetPasswordForm from "./components/ResetPasswordForm";
+import FacultyList from "./components/Faculty";
 import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
@@ -27,6 +29,7 @@ function App() {
           <Route path="timetable" element={<TimeTable />} />
           <Route path="almanac" element={<Almanac />} />
           <Route path="support" element={<></>} />
+          <Route path="faculty" element={<FacultyList/>} />
           <Route path="settings" element={<></>} />
         </Route>
       </Routes>
