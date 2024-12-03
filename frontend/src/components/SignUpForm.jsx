@@ -16,16 +16,52 @@ function SignUpForm() {
 
   const [loading, setLoading] = useState(false); // Loading state for API calls
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [step, setStep] = useState("signup");
 
   const handleChange = (evt) => {
-    const value = evt.target.value;
+    const { name: fieldName, value } = evt.target; // Rename "name" to "fieldName"
     setState({
       ...state,
-      [evt.target.name]: value,
+      [fieldName]: value,
     });
+  
+    // Validate password on change
+    if (fieldName === "password") {
+      validatePassword(value);
+    }
+  };
+
+  const validatePassword = (password) => {
+    // Check length between 8 and 35
+    if (password.length < 8 || password.length > 31) {
+      setPasswordError("Password must be between 8 and 31 characters.");
+      return;
+    }
+
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      setPasswordError("Password must include at least one uppercase letter.");
+      return;
+    }
+
+    // Check for exactly one underscore and no other special characters
+    if (!/^([^_]*_){1}[^_]*$/.test(password)) {
+      setPasswordError(
+        "Password must include exactly one underscore and no other special characters."
+      );
+      return;
+    }
+
+    // Clear error if all conditions are met
+    setPasswordError("");
   };
 
   const handleSendOtp = async () => {
+    if (passwordError) {
+      alert("Please fix the errors in the password before proceeding.");
+      return;
+    }
     try {
       setLoading(true);
       const response = await axios.post(
@@ -34,7 +70,15 @@ function SignUpForm() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      alert("OTP sent to your email.");
+      if (response.data.exists) {
+        alert("User already exists. Please login instead.");
+        setLoading(false);
+        return;
+      }
+      else {
+        alert("OTP sent to your email.");
+        setStep("otpVerification");
+      }
     } catch (error) {
       const message = error.response?.data?.message || "Failed to send OTP.";
       alert(`Error: ${message}`);
@@ -43,25 +87,23 @@ function SignUpForm() {
     }
   };
 
-  const handleOnSubmit = async (evt) => {
+  const handleVerifyOtp = async (evt) => {
     evt.preventDefault();
-    setError("");
     try {
       setLoading(true);
-      const { name, email, password, otp } = state;
 
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/signup`,
-        { name, email, password, otp },
+        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/verify-otp`,
+        { name: state.name, email: state.email, password: state.password, otp: state.otp },
         { headers: { "Content-Type": "application/json" } }
       );
-
-      alert("Signup successful!");
+      alert("OTP verified successfully and successfully signed up!");
       window.location.href = "/";
+
     } catch (error) {
-      const message = error.response?.data?.message || "Error in signup.";
+      const message = error.response?.data?.message || "Invalid OTP.";
+      alert(`Error: ${message}`);
       setError(message);
-      alert(message);
     } finally {
       setLoading(false);
     }
@@ -111,75 +153,75 @@ function SignUpForm() {
           <img src="/logo.png" alt="logo" />
           <div className="logo-name">TuteeTutor</div>
         </div>
-        <form onSubmit={handleOnSubmit}>
-          <h1 className="heading">Create Account</h1>
-          <div className="social-container">
-            <span type="button" className="auth-button" onClick={googleLogin}>
-              <i className="fab fa-google" />
+        {step === "signup" ? (
+          <form>
+            <h1 className="heading">Create Account</h1>
+            <div className="social-container">
+              <span type="button" className="auth-button" onClick={googleLogin}>
+                <i className="fab fa-google" />
+              </span>
+              <span type="button" className="auth-button" onClick={githubLogin}>
+                <i className="fab fa-github" />
+              </span>
+            </div>
+            <span className="additional-information">
+              or use your email for registration
             </span>
-            <span type="button" className="auth-button" onClick={githubLogin}>
-              <i className="fab fa-github" />
-            </span>
-          </div>
-          <span className="additional-information">
-            or use your email for registration
-          </span>
-          <input
-            type="text"
-            placeholder="Name"
-            name="name"
-            value={state.name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={state.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            value={state.password}
-            onChange={handleChange}
-            required
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              width: "calc(100% - 36px)",
-            }}
-          >
+            <input
+              type="text"
+              placeholder="Name"
+              name="name"
+              value={state.name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              name="email"
+              value={state.email}
+              onChange={handleChange}
+              required
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={state.password}
+              onChange={handleChange}
+              required
+            />
+            {passwordError && (
+              <div className="inline-error">
+                <i className="fas fa-exclamation-circle" /> {passwordError}
+              </div>
+            )}  
+            <button
+              onClick={handleSendOtp}
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Send OTP"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOtp}>
+            <h1 className="heading">Verify OTP</h1>
             <input
               type="text"
               placeholder="Enter OTP"
               name="otp"
               value={state.otp}
               onChange={handleChange}
-              style={{ width: "calc(70% - 10px)" }}
               required
             />
-            <button
-              type="button"
-              className="send-otp"
-              onClick={handleSendOtp}
-              disabled={loading}
-            >
-              {loading ? "Sending..." : "Send OTP"}
+            <button type="submit" disabled={loading}>
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
-          </div>
-          <button disabled={loading}>
-            {loading ? "Signing Up..." : "Sign Up"}
-          </button>
-        </form>
+          </form>
+        )}
       </div>
-    </div>
+    </div >
   );
 }
 
