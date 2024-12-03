@@ -49,7 +49,6 @@ const formatDate = (isoDate) => {
   return new Intl.DateTimeFormat("en-US", options).format(dateObj);
 };
 
-
 const paginationModel = { page: 0, pageSize: 10 };
 
 export default function CollectionTables({ name, rows, columns }) {
@@ -57,15 +56,21 @@ export default function CollectionTables({ name, rows, columns }) {
 
   // Generate unique IDs for each row
   const rowsWithId = generateRowsWithId(rows);
-  const filteredColumns = columns.filter(
-    (col) => col !== "_id" && col !== "__v" && !(name === "timetables" && col === "date")
-  );
+  const filteredColumns = columns.filter((col) => {
+    console.log("Column:", col, "Name:", name);
+    return (
+      col !== "_id" &&
+      col !== "__v" &&
+      !(name === "timetables" && col === "date") &&
+      !(name === "users" && col === "notifications")
+    );
+  });
   const formattedColumns = getColumns(filteredColumns);
 
   // Filtered rows based on search text
   const filteredRows = rowsWithId.map((row) => {
-    const { _id, __v, date, ...rest } = row;
-    if (name === "timetables") {
+    const { _id, __v, date, notifications, ...rest } = row;
+    if (name === "timetables" || name === "users") {
       // Exclude the `date` field for timetables rows
       return rest;
     }
@@ -79,32 +84,43 @@ export default function CollectionTables({ name, rows, columns }) {
   });
 
   return (
-    <Paper sx={{ width: "100%", color: "black" }}>
-      <TextField
-        variant="standard"
-        placeholder="Search by First or Last Name..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          },
-        }}
-        style={{ margin: "20px", width: "40%" }}
-      />
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: "2vw", // Offset from the left
+        width: "80vw", // Full viewport width
+        backgroundColor: "#f5f5f5", // Light gray background
+      }}
+    >
+      <Paper sx={{ width: "100%", color: "black" }}>
+        <TextField
+          variant="standard"
+          placeholder="Search...."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
+          }}
+          style={{ margin: "20px", width: "40%" }}
+        />
 
-      <DataGrid
-        rows={searchFilteredRows} // Use filtered rows with auto-generated IDs
-        columns={formattedColumns}
-        initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        sx={{ border: 0, color: "black" }}
-      />
-    </Paper>
+        <DataGrid
+          rows={searchFilteredRows} // Use filtered rows with auto-generated IDs
+          columns={formattedColumns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          sx={{ border: 0, color: "black" }}
+        />
+      </Paper>
+    </div>
   );
 }
