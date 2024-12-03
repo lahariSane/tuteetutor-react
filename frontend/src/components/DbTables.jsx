@@ -13,6 +13,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import CollectionTables from "./CollectionTables";
 import AddData from "./AddData";
 import axios from "axios";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
+
 
 function DbTables() {
   // Step 1: Create state to track if a button has been clicked
@@ -23,6 +26,7 @@ function DbTables() {
   const [selectedRows, setSelectedRows] = useState([]); // Track the clicked row
   const [searchText, setSearchText] = useState("");
   const [open, setOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -44,7 +48,7 @@ function DbTables() {
 
   // Step 2: Handle button click
   const handleButtonClick = async (row) => {
-    setShowCollectionTables(true); 
+    setShowCollectionTables(true);
 
     try {
       const response = await axios.get(
@@ -62,7 +66,7 @@ function DbTables() {
   };
 
   const handleCloseCollectionTables = () => {
-    setShowCollectionTables(false); 
+    setShowCollectionTables(false);
   };
 
   const handleOpen = () => setOpen(true);
@@ -71,7 +75,7 @@ function DbTables() {
   const filteredCollections = collections.filter((row) => {
     const name = row.name ?? "";
     return (
-      name.toLowerCase().includes(searchText.toLowerCase()) 
+      name.toLowerCase().includes(searchText.toLowerCase())
     );
   });
 
@@ -85,15 +89,25 @@ function DbTables() {
               margin: "20px auto",
               borderRadius: 2,
               boxShadow: "0px 3px 6px rgba(0,0,0,0.1)",
-              backgroundColor: "#f7f9fc",
+              backgroundColor: "transparent",
             }}
           >
             <TextField
-              variant="outlined"
+              marginBottom="20px"
+              variant="standard"
               placeholder="Search by name..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              style={{ marginBottom: "20px", width: "100%" }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }
+              }}
+              style={{ marginBottom: "20px", width: "40%", marginLeft: "20px" }}
             />
             <Table
               sx={{
@@ -119,7 +133,7 @@ function DbTables() {
               <TableBody>
                 {filteredCollections.map((collection) => (
                   <TableRow
-                    key={collection.name} 
+                    key={collection.name}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
@@ -146,7 +160,7 @@ function DbTables() {
       )}
 
       {showCollectionTables && selectedRows != [] && (
-        <div style={{ marginTop: "80px", position: "relative" }}>
+        <div style={{ position: "relative" }}>
           <IconButton
             onClick={handleCloseCollectionTables}
             style={{
@@ -156,20 +170,34 @@ function DbTables() {
               margin: "10px",
             }}
           >
-            <CloseIcon />
+            <CloseIcon style={
+              {
+                color: "black",
+                fontSize: "30px"
+              }
+            }/>
           </IconButton>
 
-          <h2
-            style={{
-              fontSize: "28px",
-              fontWeight: "bold",
-              marginBottom: "20px",
-            }}
-          >
-            {selectedRows?.name}
-          </h2>
+          <div style={{
+            display: "flex",
+            justifyContent: "start",
+            alignItems: "center",
+            marginBottom: "20px",
+            padding: "20px",
+            borderBottom: "1px solid #f0f0f0", 
+          }}>
+            <h2
+              style={{
+                fontSize: "28px",
+                fontWeight: "bold",
+                margin: "0 20px"
+              }}
+            >
+              {selectedRows?.name}
+            </h2>
 
-          <Button variant="contained" onClick={handleOpen}>Add</Button>
+            <Button variant="contained" onClick={handleOpen}>Add</Button>
+          </div>
           <AddData open={open} onClose={handleClose} onSave={handleClose} />
 
           {selectedRows?.data && <CollectionTables rows={selectedRows?.data} columns={Object.keys(selectedRows?.data[0])} />}

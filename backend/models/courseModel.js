@@ -11,12 +11,22 @@ const courseSchema = new mongoose.Schema({
     },
     section: {
         type: String,
-        required: true
+        required: false
+    },
+    type: {
+        type: String,
+        required: false,
+        default: 'faculty'
     },
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
         ref: 'User'
+    },
+    department: {
+        type: String,
+        required: true,
+        default: 'CSE',
     },
 });
 

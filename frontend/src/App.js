@@ -6,11 +6,17 @@ import StudentDashboard from "./pages/StudentDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 
 import Home from "./pages/Home";
+
 import ResetPasswordForm from "./components/ResetPasswordForm";
+import FacultyList from "./components/Faculty";
 import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
+<<<<<<< HEAD
 import LandingPage from "./pages/LandingPage";
+=======
+import Settings from "./pages/Settings";
+>>>>>>> d3d4e5fa01a3be318012ad0995d4d1ac3fb1e2d0
 
 function App() {
   document.title = "TuteeTutor";
@@ -28,7 +34,8 @@ function App() {
           <Route path="timetable" element={<TimeTable />} />
           <Route path="almanac" element={<Almanac />} />
           <Route path="support" element={<></>} />
-          <Route path="settings" element={<></>} />
+          <Route path="faculty" element={<FacultyList/>} />
+          <Route path="settings" element={<Settings/>} />
         </Route>
       </Routes>
     </Router>

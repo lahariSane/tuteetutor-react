@@ -4,7 +4,8 @@ import userCourseSchema from "../models/userCourseModel.js";
 // Get all user courses
 const getUserCourses = async (req, res) => {
     try {
-        const userCourses = await userCourseSchema.find().populate('courseRegistered'); // Populate course details if needed
+        console.log(req.user);
+        const userCourses = await userCourseSchema.findOne({user: req.user.id}).populate('courseRegistered'); // Populate course details if needed
         res.status(200).json(userCourses);
     } catch (error) {
         res.status(500).json({ message: error.message });
