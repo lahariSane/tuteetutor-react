@@ -10,6 +10,7 @@ import ResetPasswordForm from "./components/ResetPasswordForm";
 import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   document.title = "TuteeTutor";
@@ -20,7 +21,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
         <Route path="/" element={<Home />}>
-          <Route path="" element={<StudentDashboard />} />
+          <Route path="" element={<LandingPage />} />
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="coursesSelection" element={<Courses />} />
           <Route path="dashboard" element={<StudentDashboard />} />
