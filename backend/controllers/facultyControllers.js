@@ -21,7 +21,7 @@ const getFacultyCourses = async (req, res) => {
     if (code) query.code = code;
     const facultyCourses = await Course.find(query).populate({
       path: "instructor",
-      select: "-password -otp -otpExpires -notifications",
+      select: "name profileImage email",
     });
     res.status(200).json(facultyCourses);
   } catch (error) {
@@ -78,7 +78,11 @@ const getFaculty = async (req, res) => {
 
       return res.status(200).json(studentData.courseRegistered);
     }
-
+    else if (user.role === "faculty") {
+      return res
+        .status(200)
+        .json({ message: "No registered courses found for the faculty." });
+    }
     // If code is available, add it to the query
     if (code) {
       query.code = code;

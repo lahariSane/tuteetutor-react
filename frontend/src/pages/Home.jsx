@@ -76,6 +76,7 @@ function Home(props) {
 
             <Outlet context={{ drawerWidth, user }} />
             <Sidebar
+                user={user}
                 drawerWidth={drawerWidth}
                 mobileOpen={mobileOpen}
                 handleDrawerClose={handleDrawerClose}

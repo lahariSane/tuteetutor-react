@@ -10,6 +10,7 @@ import {
   MenuItem,
   Alert,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 
@@ -21,7 +22,8 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [courses, setCourses] = useState([]);
-  const [suggestions, setSuggestions] = useState([]); // For Autocomplete suggestions
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false); // Loading state
   const token = localStorage.getItem("token");
 
   // Fetch courses from the backend
@@ -37,7 +39,7 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
           }
         );
         if (response.status === 200) {
-          setCourses(response?.data); // Assuming the response is an array of course objects
+          setCourses(response?.data);
         } else {
           console.error("Failed to fetch courses");
         }
@@ -49,7 +51,7 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
     fetchCourses();
   }, []);
 
-  // Fetch brief announcement suggestions when the modal opens
+  // Fetch suggestions when the modal opens
   useEffect(() => {
     if (open) {
       const fetchSuggestions = async () => {
@@ -63,7 +65,7 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
             }
           );
           if (response.status === 200) {
-            setSuggestions(response?.data?.map((user) => user.email) || []); // Assuming the response contains suggestions array
+            setSuggestions(response?.data?.map((user) => user.email) || []);
           }
         } catch (error) {
           console.error("Error fetching suggestions:", error.message);
@@ -85,6 +87,7 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
       setSnackbarSeverity("warning");
       return;
     }
+    setLoading(true); // Set loading to true
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/faculty`,
@@ -104,24 +107,23 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
         handleAdd();
-        setSnackbarOpen(false);
-        setSnackbarMessage("");
         setFacultyEmail("");
         setSection("");
         setSelectedCourse("");
         handleClose();
       } else {
-        setSnackbarOpen(true);
         setSnackbarMessage(response.data.message);
         setSnackbarSeverity("error");
       }
     } catch (error) {
-      setSnackbarOpen(true);
       setSnackbarMessage(
         error?.response?.data?.message ||
           "An error occurred while adding Faculty."
       );
       setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false); // Set loading to false
     }
   };
 
@@ -199,7 +201,7 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
             variant="outlined"
             required
           >
-            {courses && courses.length > 0 ? (
+            {courses.length > 0 ? (
               courses.map((course) => (
                 <MenuItem key={course._id} value={course._id}>
                   {course.name}
@@ -210,7 +212,6 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
             )}
           </TextField>
           <TextField
-            id="main-announcement"
             label="Section"
             variant="outlined"
             value={Section}
@@ -219,11 +220,22 @@ function AddFacultyModel({ open, handleClose, handleAdd }) {
             required
           />
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="contained" color="secondary" onClick={handleClose}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleClose}
+              disabled={loading}
+            >
               Cancel
             </Button>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Submit
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={loading}
+              startIcon={loading && <CircularProgress size={20} />}
+            >
+              {loading ? "Submitting..." : "Submit"}
             </Button>
           </Stack>
         </Stack>
