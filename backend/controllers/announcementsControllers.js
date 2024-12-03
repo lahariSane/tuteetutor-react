@@ -16,8 +16,10 @@ const getAnnouncements = async (req, res) => {
       if (courses.length > 0) {
         const courseNames = courses.map((course) => course.name);
         courses = await Course.find({
-          name: { $in: courseNames },
-          type: { $ne: `hod` },
+          $or: [
+            { name: { $in: courseNames }, type: { $ne: "hod" } }, // Existing condition
+            { instructor: req.user.id }, // New condition to include courses where the user is an instructor
+          ],
         });
       }
     } else {
@@ -61,25 +63,27 @@ const createAnnouncement = async (req, res) => {
     return res.status(403).json({ message: "Course not found" });
   }
 
-  if (user.role === "faculty" && course.instructor.toString() !== user._id) {
+  if (
+    user.role === "faculty" &&
+    course.instructor.toString() !== user._id.toString()
+  ) {
     return res
       .status(403)
       .json({ message: "User is not an instructor of the provided course" });
-  }
-
-  if (user.role === "hod") {
+  } else if (
+    user.role === "hod" &&
+    course.instructor.toString() !== user._id.toString()
+  ) {
     const hodCourses = await Course.find({ instructor: user._id, type: "hod" });
     const courseCodeMatches = hodCourses.some(
       (hodCourse) => hodCourse.code === course.code
     );
 
     if (!courseCodeMatches) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "User is not an HOD of the provided course or course code does not match",
-        });
+      return res.status(403).json({
+        message:
+          "User is not an HOD of the provided course or course code does not match",
+      });
     }
   }
 

@@ -121,7 +121,9 @@ const StudentDashboard = () => {
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`),
         ]);
         setAnnouncementData(announcements.data);

@@ -53,14 +53,22 @@ const getAnnouncementsFaculty = async (req, res) => {
       const courseNames = hodCourses.map((course) => course.name);
 
       // Step 3: Fetch courses again using the course names
-      courses = await Course.find({ name: { $in: courseNames }, type: { $ne: "hod" } }).populate({
+      courses = await Course.find({
+        $or: [
+          { name: { $in: courseNames }, type: { $ne: "hod" } }, // Existing condition
+          { instructor: user.id, type: { $ne: "hod" } }, // New condition to include courses where the user is an instructor
+        ],
+      }).populate({
         path: "instructor",
         select: "name profileImage email",
       });
     } else if (user.role === "faculty") {
       // Faculty query logic
 
-      courses = await Course.find({ instructor: req.user.id }).populate({
+      courses = await Course.find({
+        instructor: req.user.id,
+        type: { $ne: "hod" },
+      }).populate({
         path: "instructor",
         select: "name profileImage email",
       });
@@ -102,7 +110,7 @@ const getFaculty = async (req, res) => {
 
     // Handle HOD role
     if (user.role === "hod") {
-      const hodCourse = await Course.findOne({
+      const hodCourse = await Course.find({
         type: "hod",
         instructor: user.id,
       });
@@ -111,7 +119,7 @@ const getFaculty = async (req, res) => {
         return res.status(200).json({ message: "No course found for HOD." });
       }
 
-      code = hodCourse.code;
+      code = hodCourse.map((course) => course.code);
     }
     // Handle Student role
     else if (user.role === "student") {
@@ -267,5 +275,5 @@ export {
   deleteFaculty,
   addFaculty,
   getHodCourse,
-  getAnnouncementsFaculty
+  getAnnouncementsFaculty,
 };
