@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 body {
-  overflow: hidden;
+  overflow-y: auto;
+  /* overflow-x: hidden; */
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -17,27 +18,22 @@ code {
     monospace;
 }
 
-
 ::-webkit-scrollbar {
-  width: 5px; /* Width of the scrollbar */
+  width: 0px; /* Make the scrollbar width 0 */
+  height: 0px; /* Optionally hide the horizontal scrollbar as well */
 }
 
 ::-webkit-scrollbar-track {
-  background: #ffffff; /* Track (background) of the scrollbar */
+  background: transparent; /* Make the scrollbar track transparent */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #dbd7d7c5; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Roundness of the thumb */
-  /* border: 3px solid #f1f1f1; Padding around the thumb */
+  background-color: transparent; /* Make the scrollbar thumb transparent */
+  border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a2a1a1; /* Color when hovering over the scrollbar thumb */
+/* For Firefox (optional) */
+* {
+  scrollbar-width: none; /* Hides the scrollbar in Firefox */
+  scrollbar-color: transparent transparent; /* Makes the scrollbar thumb and track transparent */
 }
-
-/* For Firefox */
-/* * {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-} */

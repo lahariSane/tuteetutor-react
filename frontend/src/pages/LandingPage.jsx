@@ -1,21 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage = () => {
   useEffect(() => {
-    gsap.to(".hero-image", {
-      rotation: 6,
-      x: -10,
-      duration: 0.2,
-      ease: "bounce.inOut",
-      yoyo: true,
-      repeat: -1, // Repeat the effect indefinitely
-    });
-
     // Navbar Animation
     gsap.fromTo(
       ".navbar",
@@ -68,7 +58,7 @@ const LandingPage = () => {
       }
     );
 
-    // Scroll-triggered Animations for Pricing Section
+    // Scroll-triggered Animations for Pricing Section (Example)
     gsap.fromTo(
       ".pricing-card",
       { scale: 0.8, opacity: 0 },
@@ -124,7 +114,7 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen flex items-center justify-center">
         {/* Background Text Section */}
         <div className="absolute top-1/2 left-0 w-full transform -translate-y-1/2 z-0">
           <div className="scroll-text text-blue-500 font-extrabold text-[300px] whitespace-nowrap">
@@ -162,7 +152,6 @@ const LandingPage = () => {
 
         {/* Image Section */}
         <div className="relative w-1/3 h-full flex items-center justify-between">
-          {" "}
           <img
             src="/images/tuteetutor.png"
             alt="Hero Image"
