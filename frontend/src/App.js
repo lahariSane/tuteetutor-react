@@ -14,6 +14,7 @@ import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
 import Settings from "./pages/Settings";
 import LeaveApproval from "./components/leaveApproval";
+import HodList from "./components/Hod";
 
 function App() {
   document.title = "TuteeTutor";
@@ -34,6 +35,7 @@ function App() {
           <Route path="faculty" element={<FacultyList/>} />
           <Route path="settings" element={<Settings/>} />
           <Route path="leaveApproval" element={<LeaveApproval />} />
+          <Route path="hod" element={<HodList />} />
         </Route>
       </Routes>
     </Router>
