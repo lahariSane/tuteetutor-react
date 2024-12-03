@@ -114,12 +114,15 @@ const deleteFaculty = async (req, res) => {
     if (!faculty) {
       return res.status(404).json({ message: "Faculty not found." });
     }
-
+    
     const course = await Course.findById(courseId);
+    const courseName = course.name;
     if (!course) {
       return res.status(404).json({ message: "Course not found." });
     }
-
+    const hod = await userModule.findById(req.user.id);
+    const hodName = hod.name;
+    
     const hodCourse = await Course.findOne({
       type: "hod",
       instructor: req.user.id,
@@ -130,6 +133,16 @@ const deleteFaculty = async (req, res) => {
         .status(403)
         .json({ message: "You are not authorized to delete this course." });
     }
+
+    const newNotification = {
+      title: "Instructor Role Removed",
+      message: `You have been removed as an instructor for the ${courseName} course by HOD ${hodName}.`,
+      isRead: false, // Default to unread
+      time: new Date(), // Optional, for tracking when the notification was created
+      type: "warning",
+    };
+    faculty.notifications = [...(faculty.notifications || []), newNotification];
+    await faculty.save();
 
     await Course.deleteOne({ _id: courseId });
     res.status(200).json({ message: "Faculty deleted successfully." });
@@ -143,10 +156,11 @@ const addFaculty = async (req, res) => {
   try {
     const { facultyEmail, courseId, section } = req.body;
     const hod = await userModule.findById(req.user.id);
-    if (!hod || hod.role !== "hod") {
-    }
+    const hodName = hod.name;
 
     const course = await Course.findById(courseId);
+    const courseName = course.name;
+    const code = course.code;
     if (!course) {
       return res.status(404).json({ message: "Course not found." });
     }
@@ -169,6 +183,15 @@ const addFaculty = async (req, res) => {
       return res.status(404).json({ message: "Faculty not found." });
     }
     faculty.role = "faculty";
+
+    const newNotification = {
+      title: "Instructor Role Assigned",
+      message: `You have been added as an instructor for the ${courseName} (${code}) course by HOD ${hodName}.`,
+      isRead: false, // Default to unread
+      time: new Date(), // Optional, for tracking when the notification was created
+      type: "info",
+    };    
+    faculty.notifications = [...(faculty.notifications || []), newNotification];
     await faculty.save();
     
     const newCourse = new Course({
