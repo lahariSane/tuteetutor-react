@@ -15,7 +15,7 @@ import AddData from "./AddData";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
-
+import LeaveApproval from "./leaveApproval";
 
 function DbTables() {
   // Step 1: Create state to track if a button has been clicked
@@ -26,7 +26,6 @@ function DbTables() {
   const [selectedRows, setSelectedRows] = useState([]); // Track the clicked row
   const [searchText, setSearchText] = useState("");
   const [open, setOpen] = useState(false);
-
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -51,15 +50,15 @@ function DbTables() {
     setShowCollectionTables(true);
 
     try {
-      console.log('entered');
+      console.log("entered");
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/collections/${row.name}`
       );
       console.log(response.data);
       setSelectedRows({
         ...row,
-        data: response.data
-      })
+        data: response.data,
+      });
     } catch (err) {
       setError("Error fetching collection data");
     }
@@ -74,88 +73,75 @@ function DbTables() {
 
   const filteredCollections = collections.filter((row) => {
     const name = row.name ?? "";
-    return (
-      name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    return name.toLowerCase().includes(searchText.toLowerCase());
   });
 
   return (
     <div>
       {!showCollectionTables && (
         <>
-          <TableContainer
-            component={Paper}
-            sx={{
-              margin: "20px auto",
-              borderRadius: 2,
-              boxShadow: "0px 3px 6px rgba(0,0,0,0.1)",
-              backgroundColor: "transparent",
+          <div
+            style={{
+              backgroundColor: "#2196F3",
+              padding: "30px",
+              width: "100%",
+              height: "350px",
+              color: "white",
+              position: "relative"
             }}
           >
-            <TextField
-              marginBottom="20px"
-              variant="standard"
-              placeholder="Search by name..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }
+            <div
+              style={{
+                margin: "100px 0",
+                fontSize: "30px",
               }}
-              style={{ marginBottom: "20px", width: "40%", marginLeft: "20px" }}
-            />
-            <Table
-              sx={{
-                backgroundColor: "#ffffff",
-                "& .MuiTableCell-head": {
-                  fontWeight: "bold",
-                  color: "#333",
-                  backgroundColor: "#f0f0f0",
-                  fontSize: "16px",
-                  textTransform: "uppercase",
-                },
-              }}
-              size="small"
-              aria-label="a dense table"
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell>COLLECTIONS</TableCell>
-                  <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredCollections.map((collection) => (
-                  <TableRow
-                    key={collection.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Button onClick={() => handleButtonClick(collection)}>
-                        {collection.name}
-                      </Button>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Button onClick={() => handleButtonClick(collection)}>
-                        Add
-                      </Button>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Button onClick={() => handleButtonClick(collection)}>
-                        Modify
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              Collections
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              overflowX: "auto",
+              padding: "20px 0",
+              height: "20vh",
+              width: "80vw",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginLeft: "50px",
+              marginTop: "-130px",
+              position: "relative"
+            }}
+          >
+            {filteredCollections.map((collection) => (
+              <Paper
+                key={collection.name}
+                sx={{
+                  display: "inline-block",
+                  marginRight: "25px",
+                  padding: "30px",
+                  width: "250px",
+                  cursor: "pointer",
+                  backgroundColor: "#fff",
+                  boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.1)",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                  marginTop: "50px",
+                  zIndex:10
+                }}
+                onClick={() => handleButtonClick(collection)}
+              >
+                <h3 style={{ marginBottom: "10px" }}>{collection.name}</h3>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleButtonClick(collection)}
+                >
+                  View
+                </Button>
+              </Paper>
+            ))}
+          </div>
+          <LeaveApproval />
         </>
       )}
 
@@ -170,38 +156,47 @@ function DbTables() {
               margin: "10px",
             }}
           >
-            <CloseIcon style={
-              {
+            <CloseIcon
+              style={{
                 color: "black",
-                fontSize: "30px"
-              }
-            }/>
+                fontSize: "30px",
+              }}
+            />
           </IconButton>
 
-          <div style={{
-            display: "flex",
-            justifyContent: "start",
-            alignItems: "center",
-            marginBottom: "20px",
-            padding: "20px",
-            borderBottom: "1px solid #f0f0f0", 
-          }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "start",
+              alignItems: "center",
+              marginBottom: "20px",
+              padding: "20px",
+              borderBottom: "1px solid #f0f0f0",
+            }}
+          >
             <h2
               style={{
                 fontSize: "28px",
                 fontWeight: "bold",
-                margin: "0 20px"
+                margin: "0 20px",
               }}
             >
               {selectedRows?.name}
             </h2>
 
-            <Button variant="contained" onClick={handleOpen}>Add</Button>
+            <Button variant="contained" onClick={handleOpen}>
+              Add
+            </Button>
           </div>
           <AddData open={open} onClose={handleClose} onSave={handleClose} />
 
-          {selectedRows?.data && <CollectionTables name={selectedRows?.name} rows={selectedRows?.data} columns={Object.keys(selectedRows?.data[0])} />}
-
+          {selectedRows?.data && (
+            <CollectionTables
+              name={selectedRows?.na}
+              rows={selectedRows?.data}
+              columns={Object.keys(selectedRows?.data[0])}
+            />
+          )}
         </div>
       )}
     </div>
