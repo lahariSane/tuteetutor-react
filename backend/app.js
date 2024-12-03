@@ -12,6 +12,7 @@ import courseRouter from "./routes/courseRouter.js";
 import userCourseRouter from "./routes/userCourseRoute.js";
 import leaveRequestRoutes from './routes/LeaveRequestRoutes.js';
 import todosRouter from "./routes/todosRoutes.js";
+import facultyRouter from "./routes/factulyRouter.js";
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.use('/', timetableRouer);
 app.use('/', holidaysRouter);
 app.use('/', courseRouter);
 app.use('/', userCourseRouter);
+app.use('/', facultyRouter);
 app.use('/api', mailRouter);
 app.use("/api", todosRouter); // Add the todos routes
 app.use('/leaveRequest', leaveRequestRoutes);

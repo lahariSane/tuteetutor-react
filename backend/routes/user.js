@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers } from "../controllers/addFacultyControllers.js";
+import { getUsers } from "../controllers/facultyControllers.js";
 import validateUser from '../middlewares/validateUser.js';
 
 const router = express.Router();

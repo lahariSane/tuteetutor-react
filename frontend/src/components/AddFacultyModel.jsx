@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-function AddFacultyModel({ open, handleClose, user }) {
+function AddFacultyModel({ open, handleClose, handleAdd }) {
   const [FacultyEmail, setFacultyEmail] = useState("");
   const [Section, setSection] = useState("");
   const [snackbarMessage, setSnackbarMessage] = useState(null);
@@ -29,7 +29,7 @@ function AddFacultyModel({ open, handleClose, user }) {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/user-course`,
+          `${process.env.REACT_APP_BACKEND_URL}/hod-course`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -37,7 +37,7 @@ function AddFacultyModel({ open, handleClose, user }) {
           }
         );
         if (response.status === 200) {
-          setCourses(response?.data?.courseRegistered); // Assuming the response is an array of course objects
+          setCourses(response?.data); // Assuming the response is an array of course objects
         } else {
           console.error("Failed to fetch courses");
         }
@@ -87,12 +87,11 @@ function AddFacultyModel({ open, handleClose, user }) {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/announcements`,
+        `${process.env.REACT_APP_BACKEND_URL}/faculty`,
         {
-          title: FacultyEmail,
-          description: Section,
-          course: selectedCourse,
-          authorId: user.id,
+          facultyEmail: FacultyEmail,
+          courseId: selectedCourse,
+          section: Section,
         },
         {
           headers: {
@@ -101,23 +100,26 @@ function AddFacultyModel({ open, handleClose, user }) {
         }
       );
       if (response.status === 201) {
-        setSnackbarOpen(true);
-        setSnackbarMessage("Announcement created successfully.");
+        setSnackbarMessage("Faculty Added successfully");
         setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+        handleAdd();
+        setSnackbarOpen(false);
+        setSnackbarMessage("");
         setFacultyEmail("");
         setSection("");
         setSelectedCourse("");
         handleClose();
       } else {
         setSnackbarOpen(true);
-        setSnackbarMessage("Failed to create announcement.");
+        setSnackbarMessage(response.data.message);
         setSnackbarSeverity("error");
       }
     } catch (error) {
       setSnackbarOpen(true);
       setSnackbarMessage(
         error?.response?.data?.message ||
-          "An error occurred while creating the announcement."
+          "An error occurred while adding Faculty."
       );
       setSnackbarSeverity("error");
     }

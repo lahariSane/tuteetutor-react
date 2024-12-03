@@ -25,6 +25,12 @@
   text-align: center;
   padding: 20px;
   margin: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.faculty-card:hover {
+  transform: translateY(-10px); /* Lifts the card slightly */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Intensifies the shadow */
 }
 
 .faculty-photo img {
@@ -32,21 +38,27 @@
   width: 100px;
   height: 100px;
   position: relative;
-  top: -50px;
   object-fit: cover;
 }
 
+.faculty-details {
+  margin-top: -20px;
+}
 .faculty-details h3 {
-  margin-top: 10px;
   font-size: 20px;
   font-weight: 600;
 }
 
-.faculty-details p {
+.faculty-details .email {
   font-size: 16px;
   color: #777;
   margin: 5px 0;
-  font-size: medium;
+}
+
+.faculty-details p {
+  font-size: 12px;
+  color: #777;
+  margin: 5px 0;
 }
 
 .remove-button {

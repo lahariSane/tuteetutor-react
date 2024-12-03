@@ -17,25 +17,27 @@ import { CalenderModel } from "../components/CalanderCard";
 
 import Typography from "@mui/material/Typography";
 
+
 function stringToColor(string) {
   if (!string) {
-    return "#000000";
+    return "#007bff"; // Default to the base color
   }
   let hash = 0;
-  let i;
 
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
+  // Generate a hash from the string
+  for (let i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
   let color = "#";
 
-  for (i = 0; i < 3; i += 1) {
+  // Generate RGB values
+  for (let i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
+    // Blend with white to ensure lighter shades
+    const blendedValue = Math.floor((value + 255) / 1.5); // Average with white (255)
+    color += `00${blendedValue.toString(16)}`.slice(-2);
   }
-  /* eslint-enable no-bitwise */
 
   return color;
 }
@@ -166,3 +168,4 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
 }
 
 export default Navbar;
+export { stringToColor };
