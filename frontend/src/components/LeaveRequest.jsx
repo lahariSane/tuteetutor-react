@@ -1,144 +1,248 @@
-import React, { useState } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TableBody from '@mui/material/TableBody';
-import { Stack, Card, Typography, Button, TextField } from '@mui/material';
-import TableContainer from '@mui/material/TableContainer';
-import { validateLeaveRequestForm } from './validation';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import gsap from "gsap";
+import { validateLeaveRequestForm } from "./validation";
 
 function LeaveRequest() {
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [errors, setErrors] = useState({});
 
-    const [leaveRequests, setLeaveRequests] = React.useState([]);
-    const [errors, setErrors] = useState({});
+  useEffect(() => {
+    gsap.from(".fade-in", { opacity: 0, duration: 1, y: -30, stagger: 0.2 });
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const errors = validateLeaveRequestForm(formData);
-        setErrors(errors);
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/all`)
+      .then((response) => {
+        setLeaveRequests(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [errors]);
 
-        if (Object.keys(errors).length === 0) {
-            const leaveRequest = {
-                studentName: formData.get('studentName'),
-                studentID: formData.get('studentID'),
-                fromDate: formData.get('fromDate'),
-                toDate: formData.get('toDate'),
-                reason: formData.get('reason'),
-            };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const errors = validateLeaveRequestForm(formData);
+    setErrors(errors);
 
-            axios.post(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/submit`, leaveRequest)
-                .then((response) => {
-                    event.currentTarget.reset();
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        } else {
-            console.log('Form is invalid');
-            return;
-        }
-    };
+    if (Object.keys(errors).length === 0) {
+      const leaveRequest = {
+        studentName: formData.get("studentName"),
+        studentID: formData.get("studentID"),
+        fromDate: formData.get("fromDate"),
+        toDate: formData.get("toDate"),
+        reason: formData.get("reason"),
+      };
 
-    const handleDeleteRequest = (id) => {
-        axios.delete(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/${id}`)
-            .then((response) => {
-                setLeaveRequests(leaveRequests.filter((request) => request._id !== id));
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
+      axios
+        .post(
+          `${process.env.REACT_APP_BACKEND_URL}/leaveRequest/submit`,
+          leaveRequest
+        )
+        .then((response) => {
+          event.currentTarget.reset();
+          gsap.to(".fade-in", { opacity: 1, duration: 1, y: 0 });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
 
-    React.useEffect(() => {
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/all`)
-            .then((response) => {
-                setLeaveRequests(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, [errors]);
+  const handleDeleteRequest = (id) => {
+    axios
+      .delete(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/${id}`)
+      .then((response) => {
+        setLeaveRequests(leaveRequests.filter((request) => request._id !== id));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-    return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <Card elevation={4} sx={{ padding: "20px", marginBottom: "10px", backgroundColor: "#fafafa", borderRadius: "10px" }}>
-                    <Stack spacing={2}>
-                        <Typography variant="h5">Submit Leave Request</Typography>
-                        <TextField label="Student Name" fullWidth name="studentName" />
-                        <TextField label="Student ID" fullWidth name="studentID" />
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                label="FromDate"
-                                type="date"
-                                fullWidth
-                                InputLabelProps={{ shrink: true }}
-                                name="fromDate"
-                            />
-                            <TextField
-                                label="LastDate"
-                                type="date"
-                                fullWidth
-                                InputLabelProps={{ shrink: true }}
-                                name="toDate"
-                            />
-                        </Stack>
-                        <TextField label="Reason" multiline rows={4} fullWidth name="reason" />
-                        <input
-                            type="file"
-                            accept="image/*,application/pdf" // Adjust according to accepted file types
-                            style={{ marginTop: "10px" }}
-                            name="proof"
-                        />
-                        <Stack direction="row" spacing={2}>
-                            <Button variant="contained" color="primary" type="submit" sx={{ fontSize: "1rem", padding: "5px 5px", minWidth: "50px" }}>Submit</Button>
-                            <Button type="reset" onClick={(handleSubmit) => handleSubmit.currentTarget.form.reset()} variant="contained" color="primary" sx={{ fontSize: "1rem", padding: "5px 5px", minWidth: "50px" }}>Reset</Button>
-                        </Stack>
-                    </Stack>
-                </Card>
-                {errors.studentName && <div style={{ color: 'red' }}>{errors.studentName}</div>}
-                {errors.studentID && <div style={{ color: 'red' }}>{errors.studentID}</div>}
-                {errors.fromDate && <div style={{ color: 'red' }}>{errors.fromDate}</div>}
-                {errors.toDate && <div style={{ color: 'red' }}>{errors.toDate}</div>}
-                {errors.reason && <div style={{ color: 'red' }}>{errors.reason}</div>}
-                {errors.proof && <div style={{ color: 'red' }}>{errors.proof}</div>}
-            </form>
-            <Card elevation={4} sx={{ padding: "20px", marginBottom: "10px", backgroundColor: "#fafafa", borderRadius: "10px" }}>
-                <Typography variant="h5">Leave Requests</Typography>
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>Student Name</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>Student ID</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>From Date</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>To Date</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>Reason</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }} align="right">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {leaveRequests.map((request, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{request.studentName}</TableCell>
-                                    <TableCell>{request.studentID}</TableCell>
-                                    <TableCell>{new Date(request.fromDate).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })}</TableCell>
-                                    <TableCell>{new Date(request.toDate).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })}</TableCell>
-                                    <TableCell>{request.reason}</TableCell>
-                                    <TableCell align="right">
-                                        <Button variant="contained" color="error" onClick={() => handleDeleteRequest(request._id)}>Delete</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Card>
-        </>
-    )
+  return (
+    <div className="flex flex-col container mx-auto p-4 space-y-8">
+      {/* Leave Request Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="fade-in max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg"
+      >
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">
+          Submit Leave Request
+        </h2>
+
+        <div className="space-y-4">
+          {/* Student Name and ID */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Student Name
+              </label>
+              <input
+                type="text"
+                name="studentName"
+                className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Student ID
+              </label>
+              <input
+                type="text"
+                name="studentID"
+                className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+                placeholder="Enter your ID"
+              />
+            </div>
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                From Date
+              </label>
+              <input
+                type="date"
+                name="fromDate"
+                className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                To Date
+              </label>
+              <input
+                type="date"
+                name="toDate"
+                className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+          </div>
+
+          {/* Reason */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Reason
+            </label>
+            <textarea
+              name="reason"
+              rows="4"
+              className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+              placeholder="Enter your reason"
+            />
+          </div>
+
+          {/* File Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Upload Proof
+            </label>
+            <input
+              type="file"
+              name="proof"
+              className="mt-2 p-2 w-full border border-gray-300 rounded-md shadow-sm"
+              accept="image/*,application/pdf"
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-4 mt-4">
+            <button
+              type="submit"
+              className="py-2 px-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+            >
+              Submit
+            </button>
+            <button
+              type="reset"
+              className="py-2 px-6 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Error Messages */}
+        <div className="text-red-500 text-sm mt-4">
+          {errors.studentName && <div>{errors.studentName}</div>}
+          {errors.studentID && <div>{errors.studentID}</div>}
+          {errors.fromDate && <div>{errors.fromDate}</div>}
+          {errors.toDate && <div>{errors.toDate}</div>}
+          {errors.reason && <div>{errors.reason}</div>}
+          {errors.proof && <div>{errors.proof}</div>}
+        </div>
+      </form>
+
+      {/* Leave Requests Table */}
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg fade-in">
+        <h2 className="text-2xl font-bold text-gray-700 mb-4">
+          Leave Requests
+        </h2>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Student Name
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Student ID
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  From Date
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  To Date
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Reason
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaveRequests.map((request) => (
+                <tr key={request._id} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-4">{request.studentName}</td>
+                  <td className="py-3 px-4">{request.studentID}</td>
+                  <td className="py-3 px-4">
+                    {new Date(request.fromDate).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </td>
+                  <td className="py-3 px-4">
+                    {new Date(request.toDate).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </td>
+                  <td className="py-3 px-4">{request.reason}</td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
+                      onClick={() => handleDeleteRequest(request._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
+
 export default LeaveRequest;
