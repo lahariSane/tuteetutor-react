@@ -12,11 +12,8 @@ import FacultyList from "./components/Faculty";
 import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
-<<<<<<< HEAD
 import LandingPage from "./pages/LandingPage";
-=======
 import Settings from "./pages/Settings";
->>>>>>> d3d4e5fa01a3be318012ad0995d4d1ac3fb1e2d0
 
 function App() {
   document.title = "TuteeTutor";
