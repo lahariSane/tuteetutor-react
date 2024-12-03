@@ -1,20 +1,11 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { TextField } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CollectionTables from "./CollectionTables";
 import AddData from "./AddData";
 import axios from "axios";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
 import LeaveApproval from "./leaveApproval";
 
 function DbTables() {
@@ -192,7 +183,7 @@ function DbTables() {
 
           {selectedRows?.data && (
             <CollectionTables
-              name={selectedRows?.na}
+              name={selectedRows?.name}
               rows={selectedRows?.data}
               columns={Object.keys(selectedRows?.data[0])}
             />

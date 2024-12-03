@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: Date,
   otp: String,
   otpExpires: Date,
+  bio:{type:String},
 });
 
 export default mongoose.model("User", userSchema);

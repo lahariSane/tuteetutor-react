@@ -15,7 +15,7 @@ import Courses from "./pages/Courses";
 import Settings from "./pages/Settings";
 import HodList from "./components/Hod";
 
-function App() {
+function App() { 
   document.title = "TuteeTutor";
   return (
     <Router>
