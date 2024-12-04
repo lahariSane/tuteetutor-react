@@ -35,11 +35,7 @@ const createCourse = async (req, res) => {
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
-<<<<<<< HEAD
-} 
-=======
 };
->>>>>>> 361b5140a84bb357fb492dbc73d09ca9ca291b4d
 
 const deleteCourse = async (req, res) => {
   const { id } = req.params;
