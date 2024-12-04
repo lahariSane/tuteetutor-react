@@ -40,4 +40,6 @@ const validateUser = (requiredRoles = []) => {
   };
 };
 
-export default validateUser;
+export default validateUser ;
+
+
