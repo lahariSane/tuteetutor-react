@@ -23,25 +23,17 @@ function Home(props) {
         const decodedToken = jwtDecode(token);
         setUser(decodedToken);
 
-                // Check token expiration (optional)
-                if (decodedToken.exp * 1000 < Date.now()) {
-                    console.log("Token has expired");
-                    localStorage.removeItem('token'); // Remove expired token
-                    navigate('/landing-page'); // Redirect to login if token is expired
-                }
-            } catch (error) {
-                console.error("Invalid token");
-            }
-        }
-        else {
-            navigate('/landing-page'); // Redirect to login if token is not present
-
+        // Check token expiration (optional)
+        if (decodedToken.exp * 1000 < Date.now()) {
+          console.log("Token has expired");
+          localStorage.removeItem("token"); // Remove expired token
+          navigate("/landing-page"); // Redirect to login if token is expired
         }
       } catch (error) {
         console.error("Invalid token");
       }
     } else {
-      navigate("/login"); // Redirect to login if token is not present
+      navigate("/landing-page"); // Redirect to login if token is not present
     }
   }, [navigate]);
 
