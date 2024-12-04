@@ -1,11 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
 import "../styles/Login.css";
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 
 function Login() {
   const [type, setType] = useState("signIn");
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+          try {
+              // Decode the JWT and extract the role
+              const decodedToken = jwtDecode(token);
+              setUser(decodedToken);
+
+              // Check token expiration (optional)
+              if (decodedToken.exp * 1000 >= Date.now()) {
+                  console.log("Token has expired");
+                  localStorage.removeItem('token'); // Remove expired token
+                  navigate('/dashboard'); // Redirect to login if token is expired
+              }
+          } catch (error) {
+              console.error("Invalid token");
+          }
+      }
+  }, [navigate]);
 
   const handleOnClick = (text) => {
     if (text !== type) {

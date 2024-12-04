@@ -2,23 +2,15 @@ import React, { useState, useEffect } from "react";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
 function TodoList() {
-  // State to manage todo items, initially an empty array
+  // State management
   const [todos, setTodos] = useState([]);
-
-  // State to control the form visibility
   const [showForm, setShowForm] = useState(false);
-
-  // State to manage form input values for adding a new to-do
   const [newTodo, setNewTodo] = useState({ title: "", dueDate: "" });
-
-  // State to track which todo is being edited
   const [editIndex, setEditIndex] = useState(null);
   const [editTodo, setEditTodo] = useState({ title: "", dueDate: "" });
   const [error, setError] = useState("");
 
-  // Fetch todos from the backend
   useEffect(() => {
     fetch("http://localhost:5000/api/todos")
       .then((response) => response.json())
@@ -26,52 +18,36 @@ function TodoList() {
       .catch((error) => console.error("Error fetching todos:", error));
   }, []);
 
-  // Function to validate date input
-  const validateDate = (date) => {
-    const currentDate = new Date();
-    const selectedDate = new Date(date);
-    return selectedDate >= currentDate; // Ensure the selected date is today or in the future
-  };
+  const validateDate = (date) => new Date(date) >= new Date();
 
-  // Handle form submission to add a new to-do item
   const handleAddTodo = (e) => {
-    e.preventDefault(); // Prevent form reload
-
+    e.preventDefault();
     if (!validateDate(newTodo.dueDate)) {
       setError("Deadline cannot be in the past.");
       return;
     }
 
-    if (newTodo.title && newTodo.dueDate) {
-      fetch("http://localhost:5000/api/todos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTodo), // Send the newTodo object to the backend
+    fetch("http://localhost:5000/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTodo),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setTodos([...todos, data]);
+        setNewTodo({ title: "", dueDate: "" });
+        setShowForm(false);
+        setError("");
       })
-        .then((response) => response.json())
-        .then((data) => {
-          setTodos([...todos, data]); // Add new todo to local state
-          setNewTodo({ title: "", dueDate: "" }); // Reset input fields
-          setShowForm(false); // Close form after adding
-          setError(""); // Clear any errors
-        })
-        .catch((error) => console.error("Error adding todo:", error));
-    }
+      .catch((error) => console.error("Error adding todo:", error));
   };
 
-  // Handle delete to-do
   const handleDeleteTodo = (id) => {
-    fetch(`http://localhost:5000/api/todos/${id}`, {
-      method: "DELETE",
-    })
-      .then(() => {
-        const updatedTodos = todos.filter((todo) => todo._id !== id);
-        setTodos(updatedTodos);
-      })
+    fetch(`http://localhost:5000/api/todos/${id}`, { method: "DELETE" })
+      .then(() => setTodos(todos.filter((todo) => todo._id !== id)))
       .catch((error) => console.error("Error deleting todo:", error));
   };
 
-  // Handle marking a to-do as completed
   const handleTodoDoneIcon = (id) => {
     const todoToUpdate = todos.find((todo) => todo._id === id);
     const updatedTodo = {
@@ -86,27 +62,18 @@ function TodoList() {
     })
       .then((response) => response.json())
       .then((updated) => {
-        const updatedTodos = todos.map((todo) =>
-          todo._id === id ? updated : todo
-        );
-        setTodos(updatedTodos);
+        setTodos(todos.map((todo) => (todo._id === id ? updated : todo)));
       })
       .catch((error) => console.error("Error updating todo:", error));
   };
 
-  // Handle edit button click
   const handleEditClick = (index) => {
     setEditIndex(index);
-    setEditTodo({
-      title: todos[index].title,
-      dueDate: todos[index].dueDate,
-    });
+    setEditTodo({ title: todos[index].title, dueDate: todos[index].dueDate });
   };
 
-  // Handle save of the edited todo
   const handleSaveEdit = (e, id) => {
     e.preventDefault();
-
     if (!validateDate(editTodo.dueDate)) {
       setError("Edited deadline cannot be in the past.");
       return;
@@ -119,58 +86,60 @@ function TodoList() {
     })
       .then((response) => response.json())
       .then((updatedTodo) => {
-        const updatedTodos = todos.map((todo) =>
-          todo._id === id ? updatedTodo : todo
-        );
-        setTodos(updatedTodos);
-        setEditIndex(null); // Exit edit mode
-        setError(""); // Clear any errors
+        setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
+        setEditIndex(null);
+        setError("");
       })
       .catch((error) => console.error("Error updating todo:", error));
   };
 
   return (
     <div>
-      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-between items-center">
-        <PendingActionsIcon className="hover:text-green-500 transition-transform duration-200" />
+      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-end items-center">
         <AddIcon
+          fontSize="large"
           className="hover:text-purple-500 hover:scale-125 transition-transform duration-200 cursor-pointer"
-          onClick={() => setShowForm(!showForm)} // Toggle form visibility
+          onClick={() => setShowForm(!showForm)}
         />
-        <MoreVertIcon className="hover:text-red-500 hover:translate-y-1 transition-transform duration-200" />
       </div>
 
-      {/* Form to add a new to-do */}
       {showForm && (
-        <div className="mx-5 my-5 p-8 bg-white shadow-lg rounded-lg">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="mx-auto my-6 max-w-md py-8 bg-white shadow-md rounded-md">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
             Add a New To-Do
           </h2>
           <form onSubmit={handleAddTodo}>
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-4">
+              {/* Input for To-Do Title */}
               <input
                 type="text"
                 placeholder="Enter To-Do Title"
-                className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={newTodo.title}
                 onChange={(e) =>
                   setNewTodo({ ...newTodo, title: e.target.value })
                 }
                 required
               />
+
               <input
                 type="date"
-                className="p-4 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={newTodo.dueDate}
                 onChange={(e) =>
                   setNewTodo({ ...newTodo, dueDate: e.target.value })
                 }
                 required
               />
-              {error && <p className="text-red-500">{error}</p>}
+
+              {error && (
+                <p className="text-red-500 text-center text-sm">{error}</p>
+              )}
+
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="p-4 bg-blue-500 text-white rounded-lg w-full hover:bg-blue-600 transition-all duration-200 ease-in-out"
+                className="p-3 bg-blue-500 text-white font-medium rounded-md w-full hover:bg-blue-600 transition duration-200"
               >
                 Add To-Do
               </button>
@@ -179,72 +148,97 @@ function TodoList() {
         </div>
       )}
 
-      {/* To-do List */}
       <div className="space-y-5 mx-5 my-5">
-        <ul className="flex-column space-y-4 text-sm font-medium text-gray-500">
+        <ul className="flex-column space-y-4 text-sm font-medium text-black">
           {todos.map((todo, index) => (
             <li key={todo._id}>
-              <div className="inline-flex items-center justify-between px-4 py-3 rounded-lg hover:text-gray-900 bg-gray-50 hover:bg-gray-100 font-bold w-full">
+              <div className="select-none cursor-pointer bg-gray-100 rounded-md flex flex-1 items-center justify-between p-4 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
                 <div className="flex flex-row items-center space-x-5">
                   <i
                     className={`fa-${
                       todo.isCompleted
                         ? "solid fa-circle-check"
                         : "regular fa-circle"
-                    } cursor-pointer`}
-                    onClick={() => handleTodoDoneIcon(todo._id)} // Toggle complete status
+                    } cursor-pointer text-2xl ${
+                      todo.isCompleted ? "text-yellow-500" : "text-gray-500"
+                    }`}
+                    onClick={() => handleTodoDoneIcon(todo._id)}
                   ></i>
 
-                  {/* Edit Mode */}
                   {editIndex === index ? (
-                    <form onSubmit={(e) => handleSaveEdit(e, todo._id)}>
-                      <input
-                        type="text"
-                        value={editTodo.title}
-                        onChange={(e) =>
-                          setEditTodo({ ...editTodo, title: e.target.value })
-                        }
-                        className="p-2 border border-gray-300 rounded-lg mr-2"
-                      />
-                      <input
-                        type="date"
-                        value={editTodo.dueDate}
-                        onChange={(e) =>
-                          setEditTodo({ ...editTodo, dueDate: e.target.value })
-                        }
-                        className="p-2 border border-gray-300 rounded-lg"
-                      />
-                      {error && <p className="text-red-500">{error}</p>}
-                      <button
-                        type="submit"
-                        className="ml-2 p-2 bg-blue-500 text-white rounded-lg"
-                      >
-                        Save
-                      </button>
+                    <form
+                      onSubmit={(e) => handleSaveEdit(e, todo._id)}
+                      className="my-6 max-w-md py-8 bg-white shadow-md rounded-md"
+                    >
+                      <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+                        Edit To-Do
+                      </h2>
+                      <div className="flex flex-col space-y-4">
+                        {/* Input for To-Do Title */}
+                        <input
+                          type="text"
+                          placeholder="Edit To-Do Title"
+                          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          value={editTodo.title}
+                          onChange={(e) =>
+                            setEditTodo({ ...editTodo, title: e.target.value })
+                          }
+                          required
+                        />
+
+                        {/* Input for Due Date */}
+                        <input
+                          type="date"
+                          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          value={editTodo.dueDate}
+                          onChange={(e) =>
+                            setEditTodo({
+                              ...editTodo,
+                              dueDate: e.target.value,
+                            })
+                          }
+                          required
+                        />
+
+                        {/* Error Message */}
+                        {error && (
+                          <p className="text-red-500 text-center text-sm">
+                            {error}
+                          </p>
+                        )}
+
+                        {/* Save Button */}
+                        <button
+                          type="submit"
+                          className="p-3 bg-blue-500 text-white font-medium rounded-md w-full hover:bg-blue-600 transition duration-200"
+                        >
+                          Save
+                        </button>
+                      </div>
                     </form>
                   ) : (
                     <div className="flex flex-col">
                       <p
-                        className={`${todo.isCompleted ? "line-through" : ""}`}
+                        className={`${
+                          todo.isCompleted ? "line-through" : ""
+                        } text-2xl text-bold`}
                       >
                         {todo.title}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xl text-gray-400 mt-1">
                         Due: {todo.dueDate}
                       </p>
                     </div>
                   )}
                 </div>
-                <div className="space-x-5">
-                  {/* Edit Icon */}
+                <div className="space-x-8">
                   <i
-                    className="fa-regular fa-pen-to-square cursor-pointer"
-                    onClick={() => handleEditClick(index)} // Start editing
+                    className="fa-regular fa-pen-to-square cursor-pointer text-2xl"
+                    onClick={() => handleEditClick(index)}
                   ></i>
-                  {/* Delete Icon */}
                   <i
-                    className="fa-regular fa-trash-can cursor-pointer"
-                    onClick={() => handleDeleteTodo(todo._id)} // Call delete function
+                    className="fa-regular fa-trash-can cursor-pointer text-2xl text-red-500 hover:text-red-600"
+                    onClick={() => handleDeleteTodo(todo._id)}
                   ></i>
                 </div>
               </div>

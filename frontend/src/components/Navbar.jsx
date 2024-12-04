@@ -20,7 +20,6 @@ import Typography from "@mui/material/Typography";
 
 import NotificationModal from "./NotificationModal";
 import NotificationDashboard from "./NotificationDashboard";
-
 function stringToColor(string) {
   if (!string) {
     return "#007bff"; // Default to the base color
