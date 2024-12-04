@@ -12,8 +12,11 @@ import courseRouter from "./routes/courseRouter.js";
 import userCourseRouter from "./routes/userCourseRoute.js";
 import leaveRequestRoutes from "./routes/LeaveRequestRoutes.js";
 import todosRouter from "./routes/todosRoutes.js";
+import userinfoRouter from './routes/userRouter.js';
+
 import facultyRouter from "./routes/factulyRouter.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import notificationRouter from "./routes/notificationsRouter.js";
 
 dotenv.config();
 const app = express();
@@ -21,30 +24,31 @@ const PORT = process.env.PORT || 5000;
 
 // Connect to the database
 const db = new DATABASE();
-
-// Middleware
+ 
 app.use(cors());
 app.use(express.json());
 
-// Routers
-app.use("/", userRouter);
-app.use("/", adminRouter);
-app.use("/", announcementsRouter);
-app.use("/", timetableRouer);
-app.use("/", holidaysRouter);
-app.use("/", courseRouter);
-app.use("/", userCourseRouter);
-app.use("/", facultyRouter);
-app.use("/api", mailRouter);
-app.use("/api", todosRouter);
-app.use("/leaveRequest", leaveRequestRoutes);
+app.use('/', userRouter);
+app.use('/', adminRouter);
+app.use('/', announcementsRouter);
+app.use('/', timetableRouer);
+app.use('/', holidaysRouter);
+app.use('/', courseRouter);
+app.use('/', userCourseRouter);
+app.use('/', facultyRouter);
+app.use('/', notificationRouter);
+app.use('/api', mailRouter);
+app.use("/api", todosRouter); 
+app.use('/api', courseRouter);
+app.use('/api',userinfoRouter)
+app.use('/leaveRequest', leaveRequestRoutes);
 
 app.use("/api/contact", contactRoutes);
-
-// Database connection
 db.connect();
+
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
+ 

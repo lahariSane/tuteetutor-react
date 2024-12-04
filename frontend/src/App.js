@@ -18,8 +18,9 @@ import Features from "./pages/Features";
 import ContactUs from "./pages/ContactUs";
 import MessageSent from "./pages/MessageSent";
 import ChatPage from "./pages/ChatPage";
+import HodList from "./components/Hod";
 
-function App() {
+function App() { 
   document.title = "TuteeTutor";
   return (
     <Router>
@@ -33,7 +34,6 @@ function App() {
         <Route path="/message-sent" element={<MessageSent />} />
         <Route path="/" element={<Home />}>
           <Route path="" element={<StudentDashboard />} />
-          <Route path="admin" element={<AdminDashboard />} />
           <Route path="coursesSelection" element={<Courses />} />
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<TimeTable />} />
@@ -41,6 +41,7 @@ function App() {
           <Route path="support" element={<ChatPage />} />
           <Route path="faculty" element={<FacultyList />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="hod" element={<HodList />} />
         </Route>
       </Routes>
     </Router>

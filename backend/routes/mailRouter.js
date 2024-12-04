@@ -40,7 +40,7 @@ const mailRouter = express.Router();
 mailRouter.post("/auth/google-login", async (req, res) => {
   try {
     const { access_token } = req.body;
-    const { data } = await axios.get(
+    const { data } = await axios.get( 
       "https://www.googleapis.com/oauth2/v3/userinfo",
       {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -63,12 +63,10 @@ mailRouter.post("/auth/google-login", async (req, res) => {
       profileImage: user.profileImage,
     });
 
-    res
-      .status(200)
-      .json({
-        message: user ? "Login successful" : "Signup successful",
-        token,
-      });
+    res.status(200).json({
+      message: user ? "Login successful" : "Signup successful",
+      token,
+    });
   } catch (error) {
     console.error("Google login error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -88,19 +86,21 @@ mailRouter.post("/auth/github-login", async (req, res) => {
       { headers: { Accept: "application/json" } }
     );
     const accessToken = tokenResponse.data.access_token;
-    const { data } = await axios.get(
-      "https://api.github.com/user",
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
+    const { data } = await axios.get("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
     const { name, avatar_url } = data;
     const email = data.email || data.login + "@github.com";
 
     let user = await User.findOne({ email });
     if (!user) {
-      user = new User({ email, name, role: "student", profileImage: avatar_url });
+      user = new User({
+        email,
+        name,
+        role: "student",
+        profileImage: avatar_url,
+      });
       await user.save();
     }
 
@@ -112,12 +112,10 @@ mailRouter.post("/auth/github-login", async (req, res) => {
       profileImage: user.profileImage,
     });
 
-    res
-      .status(200)
-      .json({
-        message: user ? "Login successful" : "Signup successful",
-        token,
-      });
+    res.status(200).json({
+      message: user ? "Login successful" : "Signup successful",
+      token,
+    });
   } catch (error) {
     console.error("Github login error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -208,13 +206,13 @@ mailRouter.post("/send-otp", validateRequest(["email"]), async (req, res) => {
     console.error("Send OTP error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}); 
+});
 
 mailRouter.post("/verify-otp", async (req, res) => {
   try {
     const { name, email, password, otp } = req.body;
     const user = await User.findOne({ email });
-    
+
     if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
@@ -230,15 +228,15 @@ mailRouter.post("/verify-otp", async (req, res) => {
       role: user.role,
       name: user.name,
       email: user.email,
+      profileImage: user.profileImage,
     });
-    
+
     res.status(200).json({ message: "OTP verified successfully" });
   } catch (error) {
     console.error("Verify OTP error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 mailRouter.post(
   "/login",
@@ -248,18 +246,11 @@ mailRouter.post(
       const { email, password } = req.body;
       const user = await User.findOne({ email });
 
-
-      console.log("Email:", email);
-      console.log("Password:", password);
-
-
-
-      console.log(user);
       if (!user) {
         return res.status(400).json({ error: "Invalid email" });
       }
 
-      if (!user.password){
+      if (!user.password) {
         return res.status(400).json({ error: "Invalid password" });
       }
 
@@ -267,12 +258,12 @@ mailRouter.post(
         return res.status(400).json({ error: "Incorrect password" });
       }
 
-
       const token = generateJwtToken({
         id: user._id,
         role: user.role,
         name: user.name,
         email: user.email,
+        profileImage: user.profileImage,
       });
       res.status(200).json({ message: "Login successful", token });
     } catch (error) {

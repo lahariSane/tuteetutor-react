@@ -5,8 +5,8 @@ const Almanac = () => {
         <div>
             <h1>Almanac 2024</h1>
             <div className="pdf-container" style={{
-                width: '84vw', 
-                height: '100vh', 
+                width: '87vw', 
+                height: '110vh', 
                 backgroundColor: '#1877d2',
                 display: 'flex',
                 justifyContent: 'center',
@@ -14,7 +14,9 @@ const Almanac = () => {
                 overflow: 'hidden',
                 marginLeft: "31rem",
                 marginTop: "3rem",
-                borderRadius: '10px' 
+                borderRadius: '10px',
+                left: "-250px",
+                position: "relative"
             }}>
                 <iframe 
                     src="/B.Tech Almanac_M-2024_ UG2,3,4.pdf" 

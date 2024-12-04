@@ -1,6 +1,9 @@
 export const validateLeaveRequestForm = (formData) => {
     const errors = {};
 
+    const fromDate = new Date(formData.get('fromDate'));
+    const toDate = new Date(formData.get('toDate'));
+    
     if (!formData.get("studentName")) {
         errors.studentName = 'Student name is required';
     }
@@ -15,6 +18,10 @@ export const validateLeaveRequestForm = (formData) => {
 
     if (!formData.get("toDate")) {
         errors.toDate = 'To date is required';
+    }
+
+    if (fromDate && toDate && fromDate >= toDate) {
+        errors.toDate = "To Date should be later than From Date.";
     }
 
     if (!formData.get("reason")) {

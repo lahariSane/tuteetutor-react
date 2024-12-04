@@ -7,29 +7,23 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 function AddData({ open, onClose, onSave }) {
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [age, setAge] = React.useState('');
+  const [date, setDate] = React.useState('');  // State for date
+  const [holidayType, setHolidayType] = React.useState('');  // State for holiday type
 
   const handleSave = () => {
-    if (!firstName || !lastName || !age) {
+    if (!date || !holidayType) {
       alert('All fields are required.');
       return;
     }
-    if (age <= 0) {
-      alert('Age must be a positive number.');
-      return;
-    }
 
-    const data = { firstName, lastName, age };
+    const data = { date, holidayType };
     onSave(data);
     handleClose();
   };
 
   const handleClose = () => {
-    setFirstName('');
-    setLastName('');
-    setAge('');
+    setDate('');
+    setHolidayType('');
     onClose();
   };
 
@@ -41,34 +35,27 @@ function AddData({ open, onClose, onSave }) {
         },
       }}
     >
-      <DialogTitle>Edit Details</DialogTitle>
+      <DialogTitle>Edit Holiday</DialogTitle>
       <DialogContent>
         <TextField
-          autoFocus
           margin="dense"
-          label="First Name"
+          label="Date"
+          type="date"
           fullWidth
           variant="outlined"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          InputLabelProps={{
+            shrink: true,  // Make the label stay above the input
+          }}
         />
         <TextField
           margin="dense"
-          label="Last Name"
+          label="Holiday Type"
           fullWidth
           variant="outlined"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Age"
-          type="number"
-          fullWidth
-          variant="outlined"
-          inputProps={{ min: 1 }} // Age must be at least 1
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
+          value={holidayType}
+          onChange={(e) => setHolidayType(e.target.value)}
         />
       </DialogContent>
       <DialogActions>

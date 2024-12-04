@@ -6,10 +6,10 @@ const courseSchema = new mongoose.Schema({
         required: true
     },
     code: {
-        type: String,
+        type: String, 
         required: true,
     },
-    section: {
+    section: { 
         type: String,
         required: false
     },

@@ -6,12 +6,12 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: false },
   role: { type: String, required: true, default: "student" },
   notifications: { type: Array, default: [] },
-  unreadMessages: { type: Boolean, default: false },
   profileImage: { type: String },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   otp: String,
   otpExpires: Date,
+  bio:{type:String},
 });
 
 export default mongoose.model("User", userSchema);

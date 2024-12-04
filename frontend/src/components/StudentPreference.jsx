@@ -1,14 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/StudentPreference.css";
+import { useOutletContext } from "react-router-dom";
+import axios from "axios";
 
 const StudentPreference = () => {
+  const { user } = useOutletContext();
+  const [courses, setCourses] = useState([]); // Store courses fetched from API
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [selectedSections, setSelectedSections] = useState({});
   const [error, setError] = useState("");
+  const userId = user?.id;
   const navigate = useNavigate();
 
-  const courses = ["Mathematics", "Physics", "Computer Science", "Biology"];
-  const sections = ["A", "B", "C", "D"];
+  useEffect(() => {
+    // Fetch courses dynamically from the backend API
+    const fetchCourses = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/api/course`
+        );
+        const data = await response.json();
+        setCourses(data); // Store the fetched courses
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const handleCourseChange = (event) => {
     const { value } = event.target;
@@ -36,7 +56,12 @@ const StudentPreference = () => {
     setError("");
   };
 
-  const handleSubmit = (event) => {
+  const selectedData = selectedCourses.map((course) => ({
+    courseId: course,
+    section: selectedSections[course],
+  }));
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Validate if each course has a section selected
@@ -47,22 +72,43 @@ const StudentPreference = () => {
       }
     }
 
-    console.log("Selected Courses:", selectedCourses);
-    console.log("Selected Sections:", selectedSections);
+    // Prepare the data to be saved
+    const selectedData = selectedCourses.map((course) => ({
+      courseId: course,
+      section: selectedSections[course],
+    }));
 
-    // Navigate to the home page after submission
-    navigate("/");
+    try {
+      console.log(selectedData);
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/courses`,
+        { courses: selectedData },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Preferences saved successfully");
+        navigate("/"); // Navigate after successful submission
+      } else {
+        setError("Failed to save preferences.");
+      }
+    } catch (error) {
+      console.error("Error submitting preferences:", error);
+      setError("An error occurred while submitting preferences.");
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-lg bg-white rounded-xl shadow-xl p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">
-          Select Your Preferences
-        </h2>
+    <div className="student-preference-container">
+      <div className="preference-card">
+        <h2 className="preference-title">Select Your Preferences</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
+        <form className="preference-form" onSubmit={handleSubmit}>
+          <div>
             <label className="block text-gray-600 font-medium mb-2">
               Registered Courses
             </label>
@@ -70,43 +116,44 @@ const StudentPreference = () => {
               multiple
               value={selectedCourses}
               onChange={handleCourseChange}
-              className="w-full h-32 px-4 py-2 border-2 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="course-select"
             >
-              {courses.map((course, index) => (
-                <option key={index} value={course}>
-                  {course}
+              {courses.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.name}
                 </option>
               ))}
             </select>
           </div>
 
-          {selectedCourses.map((course) => (
-            <div key={course} className="mb-6">
-              <label className="block text-gray-600 font-medium mb-2">
-                Section for {course}
-              </label>
-              <select
-                name={course}
-                value={selectedSections[course] || ""}
-                onChange={handleSectionChange}
-                className="w-full px-4 py-2 border-2 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select a section</option>
-                {sections.map((section, index) => (
-                  <option key={index} value={section}>
-                    {section}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
+          {selectedCourses.map((courseId) => {
+            const course = courses.find((course) => course._id === courseId);
+            return (
+              <div key={courseId}>
+                <label className="block text-gray-600 font-medium mb-2">
+                  Section for {course.name}
+                </label>
+                <select
+                  name={courseId}
+                  value={selectedSections[courseId] || ""}
+                  onChange={handleSectionChange}
+                  className="section-select"
+                >
+                  <option value="">Select a section</option>
+                  {course.sections &&
+                    course.sections.map((section) => (
+                      <option key={section._id} value={section._id}>
+                        {section.section}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            );
+          })}
 
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {error && <p className="error-message">{error}</p>}
 
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300 font-semibold text-lg"
-          >
+          <button type="submit" className="submit-button">
             Submit Preferences
           </button>
         </form>

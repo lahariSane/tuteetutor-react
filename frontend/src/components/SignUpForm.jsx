@@ -154,7 +154,7 @@ function SignUpForm() {
           <div className="logo-name">TuteeTutor</div>
         </div>
         {step === "signup" ? (
-          <form>
+          <form className='signin'>
             <h1 className="heading">Create Account</h1>
             <div className="social-container">
               <span type="button" className="auth-button" onClick={googleLogin}>
@@ -173,6 +173,7 @@ function SignUpForm() {
               name="name"
               value={state.name}
               onChange={handleChange}
+              id='login-input'
               required
             />
             <input
@@ -181,6 +182,7 @@ function SignUpForm() {
               name="email"
               value={state.email}
               onChange={handleChange}
+              id='login-input'
               required
             />
 
@@ -190,6 +192,7 @@ function SignUpForm() {
               name="password"
               value={state.password}
               onChange={handleChange}
+              id='login-input'
               required
             />
             {passwordError && (
@@ -200,12 +203,13 @@ function SignUpForm() {
             <button
               onClick={handleSendOtp}
               disabled={loading}
+              className='login-button' 
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
           </form>
         ) : (
-          <form onSubmit={handleVerifyOtp}>
+          <form onSubmit={handleVerifyOtp} className='signin'>
             <h1 className="heading">Verify OTP</h1>
             <input
               type="text"
@@ -213,9 +217,10 @@ function SignUpForm() {
               name="otp"
               value={state.otp}
               onChange={handleChange}
+              id='login-input'
               required
             />
-            <button type="submit" disabled={loading}>
+            <button className='login-button' type="submit" disabled={loading}>
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </form>

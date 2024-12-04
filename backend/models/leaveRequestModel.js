@@ -21,6 +21,16 @@ const LeaveRequestSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Reason is required'],
     },
+    status: {
+        type: String,
+        required: [true, 'Status is required'],
+        default: 'Pending',
+    },
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        unique: true
+    }
 });
 const LeaveRequest = mongoose.model('LeaveRequest', LeaveRequestSchema);
 

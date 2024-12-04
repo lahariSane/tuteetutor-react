@@ -7,11 +7,11 @@
 }
 
 .outer-container{
-    margin-top: 5em;
+    margin-top: 4em;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-left: 13em;
+    margin-left: -20em;
     width: 100vw;
 }
 
@@ -129,7 +129,7 @@
     margin-top: 20px;
     width: 37em;    
     padding-bottom: 0.3em;
-    
+    height: 23em;
 }
 
 /* Container */
@@ -194,7 +194,7 @@ label {
     color: #333;
     padding: 5px;
     width: 33em;
-    height: 1em;
+    height: 2em;
 }
 
 .profile-input::placeholder {
@@ -214,6 +214,7 @@ form{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
     margin-left: 2em;
+    height: 15em;
 }
 
 .bio-content{
@@ -221,4 +222,151 @@ form{
     border-radius: 10px;
     padding: 2px;
     margin-top: 1em;
+    height: 10em;
+}
+
+
+.edit-courses-section {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+    width: 37em;    
+    padding-bottom: 0.3em;
+    font-family: Arial, sans-serif;
+    margin-left: 2em;
+    height: 32em;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.edit-label{
+    font-size: 18px; /* Larger label text */
+    margin-bottom: 10px;
+    color: #555;
+}
+
+select {
+    padding: 15px; /* Increased padding */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 18px; /* Larger font for dropdown */
+    width: 100%; /* Full width dropdown */
+}
+
+.btn-save {
+    display: block;
+    margin: 20px auto;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+
+
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+}
+
+.edit-info-form{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 6em;
+    margin-top: 1em;
+
+}
+
+#courses{
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: border-color 0.2s ease;
+    outline: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #333;
+    padding: 5px;
+    width: 20em;
+    height: 3em;
+}
+
+#section{
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: border-color 0.2s ease;
+    outline: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #333;
+    padding: 5px;
+    width: 4em;
+    height: 3em;
+}
+
+
+.selected-courses {
+    background-color: #f9f9f9; /* Light background for better visibility */
+    padding: 15px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for a modern look */
+    overflow: auto ;
+}
+
+.selected-courses h3 {
+    font-size: 18px;
+    color: #007bff; /* Accent color for the title */
+    margin-bottom: 15px; /* Spacing below the title */
+    font-weight: bold;
+}
+
+.selected-courses ul {
+    list-style: none; /* Remove default bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.selected-courses li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between text and delete icon */
+    background-color: #fff; /* White background for individual items */
+    padding: 10px 15px; /* Padding for comfortable spacing */
+    border: 1px solid #ddd; /* Light border for separation */
+    border-radius: 5px; /* Rounded corners for individual items */
+    margin-bottom: 10px; /* Spacing between items */
+    transition: all 0.2s ease-in-out; /* Smooth hover transition */
+}
+
+.selected-courses li:hover {
+    background-color: #e9f5ff; /* Light blue hover effect */
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.selected-courses span {
+    font-size: 16px;
+    color: #333; /* Neutral text color */
+    font-weight: 500; /* Slightly bold for better readability */
+}
+
+.selected-courses span:last-child {
+    cursor: pointer;
+    color: #ff4d4f; /* Red color for the delete icon */
+    font-size: 18px;
+    margin-left: 10px;
+    transition: color 0.2s ease-in-out; /* Smooth transition on hover */
+}
+
+.selected-courses span:last-child:hover {
+    color: #ff0000; /* Darker red on hover */
 }
