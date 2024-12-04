@@ -21,7 +21,7 @@ const LeaveApproval = () => {
     };
 
     fetchLeaveRequests();
-  }, [leaveRequests]);
+  }, []);
 
   // Handle the action of accepting or declining a leave request
   const handleAction = async (id, status) => {
