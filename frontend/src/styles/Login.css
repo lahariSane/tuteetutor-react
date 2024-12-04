@@ -128,7 +128,7 @@ body {
   animation: show 2s;
 }
 
-form {
+.signin{
   background-color: #ffffff;
   display: flex;
   align-items: center;
@@ -142,7 +142,7 @@ form {
   margin-bottom: 2rem;
 }
 
-input {
+#login-input {
   background-color: #eee;
   border: none;
   padding: 14px 18px;
@@ -155,7 +155,7 @@ input {
   box-sizing: border-box;
 }
 
-button {
+.login-button {
   border-radius: 20px;
   border: 1px solid #00246b;
   background-color: #3299fc;
@@ -170,21 +170,21 @@ button {
   box-sizing: border-box;
 }
 
-button:active {
+.login-button:active {
   transform: scale(0.95);
 }
 
-button:focus {
+.login-button:focus {
   outline: none;
 }
 
-button.ghost {
+.login-button.ghost {
   background-color: transparent;
   border-color: #ffffff;
 }
 
 .overlay-container {
-  position: absolute;
+  position: absolute; 
   top: 0;
   left: 50%;
   width: 50%;

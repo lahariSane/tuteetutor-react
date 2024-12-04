@@ -1,0 +1,130 @@
+/* Simplified Student Preference Styles */
+.student-preference-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f0f4f8;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  padding: 2rem;
+  box-sizing: border-box;
+  position: relative;
+  /* Ensures fixed elements are positioned relative to this */
+  padding-bottom: 6rem;
+}
+
+.preference-card {
+  width: 100%;
+  max-width: 800px;
+  background-color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+  margin-top: 4em;
+  margin-left: 15em;
+  padding-bottom: 8rem;
+}
+
+.preference-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.preference-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.course-select,
+.section-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  color: #2c3e50;
+  font-size: 0.875rem; /* Reduce font size */
+  height: auto; /* Allow dynamic height */
+}
+
+.course-select {
+  max-height: 8rem; /* Reduce height */
+  overflow-y: auto; /* Add scroll if content exceeds */
+}
+
+.section-select {
+  max-height: 6rem; /* Adjust for smaller dropdowns */
+}
+
+.preference-form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-button {
+  grid-column: span 3; /* Make submit button span the entire row */
+  text-align: center;
+}
+
+.course-select:focus,
+.section-select:focus {
+  border-color: #6a11cb;
+  box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+}
+
+label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  color: #e74c3c;
+  background-color: rgba(231, 76, 60, 0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  border-left: 4px solid #e74c3c;
+}
+
+.submit-button {
+  position: fixed;
+  bottom: 2rem;
+  left: 47%;
+  width: auto;
+  /* Adjust width to fit content */
+  height: auto;
+  /* Auto height for better alignment */
+  padding: 1rem 2rem;
+  z-index: 10;
+  /* Ensure it stays on top */
+  background-color:#2575fc;
+  color: white;
+  padding: 1.25rem 1.5rem;
+  border: none;
+  border-radius: 1.5rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 15px 25px rgba(106, 17, 203, 0.2);
+
+}
+
+.submit-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 35px rgba(106, 17, 203, 0.3);
+}
+
+.section-select {
+  max-height: 6rem;
+  /* Adjust for smaller dropdowns */
+}
+
+.preference-form>div {
+  display: flex;
+  flex-direction: column;
+}

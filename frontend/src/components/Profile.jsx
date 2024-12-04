@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useOutletContext } from 'react-router-dom';
-
+import '../styles/Settings.css';
 
 
 export default function Profile() {
@@ -22,8 +22,7 @@ export default function Profile() {
             try {
                 // Fetch all available courses
                 const coursesResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/course`);
-                const filteredCourses = coursesResponse.data.filter(course => course.type !== 'hod');
-                setCourses(filteredCourses);
+                setCourses(coursesResponse.data);
 
                 // Fetch user's registered courses
                 const userCourseResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/user-course/${userId}`);
@@ -123,26 +122,26 @@ export default function Profile() {
     };
 
     const handleUploadProfileImage = async (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('profileImage', file);
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('profileImage', file);
 
-    try {
-        const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/upload`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        setProfileImage(response.data.profileImage); // Update the profile image
-        alert('Profile image updated successfully!');
-    } catch (error) {
-        console.error('Error uploading profile image:', error);
-        alert('Failed to upload profile image');
-    }
-};
+        try {
+            const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/upload`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            setProfileImage(response.data.profileImage); // Update the profile image
+            alert('Profile image updated successfully!');
+        } catch (error) {
+            console.error('Error uploading profile image:', error);
+            alert('Failed to upload profile image');
+        }
+    };
 
 
     return (
         <div className='outer-container'>
-            <div className='inner-container-1'>
+            <div className='inner-container-1' >
                 <div className='box-1'>
                     <div className="profile-container">
                         <div className="header">
@@ -188,7 +187,7 @@ export default function Profile() {
                             <div className="form-group">
                                 <label htmlFor="role"><b>Role</b></label>
                                 <div className="input-wrapper">
-                                    <input className='profile-input' type="text" id="role" placeholder="Role" value={personalInfo.role} onChange={handlePersonalInfoChange} disabled />
+                                    <input className='profile-input' style={{ width: "35em" }} type="text" id="role" placeholder="Role" value={personalInfo.role} onChange={handlePersonalInfoChange} disabled />
                                 </div>
                             </div>
                             {isEditing ? (
@@ -196,7 +195,7 @@ export default function Profile() {
                                     type="button"
                                     className="save-button"
                                     onClick={handleSavePersonalInfo}
-                                    style={{marginLeft:'15em'}}
+                                    style={{ marginLeft: '15em' }}
                                 >
                                     Save
                                 </button>
@@ -205,7 +204,7 @@ export default function Profile() {
                                     type="button"
                                     className="upload-button"
                                     onClick={() => setIsEditing(true)}
-                                    style={{marginLeft:'15em'}}
+                                    style={{ marginLeft: '15em' }}
                                 >
                                     Update
                                 </button>
@@ -226,10 +225,10 @@ export default function Profile() {
                                 type="button"
                                 className="save-button"
                                 onClick={handleSaveBio}
-                                style={{marginLeft:'32em' , marginTop:'4em'}}
+                                style={{ marginLeft: '32em', marginTop: '4em' }}
                             >
                                 Save
-                            </button>   
+                            </button>
                         </div>
 
                     </div>
@@ -245,9 +244,12 @@ export default function Profile() {
                                 <select id="courses" name="courses" value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
                                     <option value="">Select a Course</option>
                                     {courses.map((course) => (
-                                        <option key={course._id} value={course._id}>
-                                            {course.code}-{course.section}
-                                        </option>
+                                        // Map over courses and their sections
+                                        course.sections.map((section) => (
+                                            <option key={section._id} value={section._id}>
+                                                {course.name} - {section.section}
+                                            </option>
+                                        ))
                                     ))}
                                 </select>
                             </div>
@@ -256,13 +258,14 @@ export default function Profile() {
                                 className="btn-add"
                                 style={{
                                     padding: "8px 15px",
-                                    marginTop: '2em',
+                                    marginTop: '2.5em',
                                     borderRadius: "5px",
                                     backgroundColor: "#007bff",
                                     color: "#fff",
                                     border: "none",
                                     cursor: "pointer",
                                     fontSize: "14px",
+                                    height: '3em'
                                 }}
                                 onClick={handleAddCourse}
                                 disabled={!selectedCourse}

@@ -7,11 +7,11 @@
 }
 
 .outer-container{
-    margin-top: 5em;
+    margin-top: 4em;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-left: 10em;
+    margin-left: -20em;
     width: 100vw;
 }
 
@@ -129,7 +129,7 @@
     margin-top: 20px;
     width: 37em;    
     padding-bottom: 0.3em;
-    
+    height: 23em;
 }
 
 /* Container */
@@ -194,7 +194,7 @@ label {
     color: #333;
     padding: 5px;
     width: 33em;
-    height: 1em;
+    height: 2em;
 }
 
 .profile-input::placeholder {
@@ -236,7 +236,7 @@ form{
     padding-bottom: 0.3em;
     font-family: Arial, sans-serif;
     margin-left: 2em;
-    height: 34em;
+    height: 32em;
     display: flex;
     flex-direction: column;
 }
@@ -279,8 +279,8 @@ select {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    height: 8em;
-    margin-top: 0;
+    height: 6em;
+    margin-top: 1em;
 
 }
 
