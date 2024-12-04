@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage = () => {
   useEffect(() => {
-    // Navbar Animation
     gsap.fromTo(
       ".navbar",
       { y: -100, opacity: 0 },
@@ -32,16 +32,14 @@ const LandingPage = () => {
       { scale: 1, opacity: 1, duration: 1.2, ease: "bounce.out", delay: 1.2 }
     );
 
-    // Adding zooming animation to "Get Started" button
     gsap.to(".hero-btn", {
       scale: 1.1,
       duration: 1.5,
       ease: "power1.inOut",
       yoyo: true,
-      repeat: -1, // Loop the animation
+      repeat: -1,
     });
 
-    // Scroll-triggered Animations for Features Section
     gsap.fromTo(
       ".feature-card",
       { opacity: 0, y: 50 },
@@ -58,7 +56,6 @@ const LandingPage = () => {
       }
     );
 
-    // Scroll-triggered Animations for Pricing Section (Example)
     gsap.fromTo(
       ".pricing-card",
       { scale: 0.8, opacity: 0 },
@@ -82,7 +79,7 @@ const LandingPage = () => {
       repeat: -1, // Repeat indefinitely
       modifiers: {
         x: function (x) {
-          return (parseFloat(x) % 100) + "%"; // Reset to 0% after each loop
+          return (parseFloat(x) % 100) + "%";
         },
       },
     });
@@ -94,15 +91,24 @@ const LandingPage = () => {
       <nav className="navbar fixed top-0 left-0 w-full z-50 flex flex-row justify-between items-center p-4 bg-white shadow-md rounded-lg h-16">
         <div className="text-xl font-bold">tuteetutor</div>
         <div className="flex flex-row space-x-7">
-          <a className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300">
+          <Link
+            to="/"
+            className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
+          >
             Home
-          </a>
-          <a className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300">
+          </Link>
+          <Link
+            to="/features"
+            className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
+          >
             Features
-          </a>
-          <a className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300">
+          </Link>
+          <Link
+            to="/contact-us"
+            className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
+          >
             Contact Us
-          </a>
+          </Link>
         </div>
         <div className="flex flex-row space-x-6">
           <button
@@ -113,11 +119,12 @@ const LandingPage = () => {
           </button>
         </div>
       </nav>
+
       {/* Add padding to ensure the content is not hidden */}
       <div className="pt-20" style={{ height: "100vh" }}>
         <section className="relative h-screen flex items-center justify-center">
           <div className="absolute top-1/2 left-0 w-full transform -translate-y-1/2 z-0">
-            <div className="scroll-text text-blue-500 font-extrabold text-[300px] whitespace-nowrap">
+            <div className="scroll-text text-blue-500 font-extrabold text-[500px] whitespace-nowrap">
               TUTEETUTOR &nbsp;&nbsp;&nbsp;&nbsp; TUTEETUTOR
               &nbsp;&nbsp;&nbsp;&nbsp; TUTEETUTOR &nbsp;&nbsp;&nbsp;&nbsp;
             </div>
@@ -135,16 +142,13 @@ const LandingPage = () => {
         <section className="relative h-screen flex items-center justify-between bg-blue-500 bg-center">
           {/* Text Section */}
           <div className="relative z-10 text-left text-white px-6 py-24 w-1/2 left-[10%]">
-            <h1 className="text-5xl font-bold mb-4 hero-heading">
+            <h1 className="text-6xl font-bold mb-4 hero-heading">
               Streamline Your Learning Journey
             </h1>
-            <p className="text-lg mb-6 hero-subheading">
+            <p className="text-2xl mb-6 hero-subheading">
               Tuteetutor brings educators and students together on a modern,
               intuitive platform.
             </p>
-            <button className="hero-btn bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg mt-4 transition duration-300">
-              Get Started
-            </button>
           </div>
 
           {/* Image Section */}
@@ -169,44 +173,14 @@ const LandingPage = () => {
 
           {/* Text Section */}
           <div className="w-1/2 text-left text-blue-500 px-8">
-            <h1 className="text-4xl font-bold hero-heading mb-4">
+            <h1 className="text-6xl font-bold hero-heading mb-4">
               Empower Your Education with Tuteetutor
             </h1>
-            <p className="text-lg hero-subheading">
+            <p className="text-2xl hero-subheading">
               Our platform offers seamless communication, streamlined
               assignments, and personalized learning tools to ensure an
               engaging, productive experience.
             </p>
-          </div>
-        </section>
-
-        <section id="features" className="py-16 px-6 bg-blue-500">
-          <h1 className="text-3xl text-center text-blue-500 mb-12">
-            Our Features
-          </h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="feature-card bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl text-gray-500 font-semibold mb-4">
-                Virtual Classrooms
-              </h3>
-              <p className="text-gray-400">
-                Engage with students in interactive virtual spaces.
-              </p>
-            </div>
-            <div className="feature-card bg-gray-700 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">
-                Assignment Tracking
-              </h3>
-              <p className="text-gray-400">
-                Manage and track assignments efficiently.
-              </p>
-            </div>
-            <div className="feature-card bg-gray-700 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Real-Time Feedback</h3>
-              <p className="text-gray-400">
-                Provide and receive instant feedback on tasks.
-              </p>
-            </div>
           </div>
         </section>
       </div>

@@ -17,7 +17,6 @@ import { CalenderModel } from "../components/CalanderCard";
 
 import Typography from "@mui/material/Typography";
 
-
 function stringToColor(string) {
   if (!string) {
     return "#007bff"; // Default to the base color

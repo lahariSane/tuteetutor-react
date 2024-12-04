@@ -95,19 +95,11 @@ function TodoList() {
 
   return (
     <div>
-      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-between items-center">
-        <PendingActionsIcon
-          fontSize="large"
-          className="hover:text-green-500 transition-transform duration-200 "
-        />
+      <div className="flex flex-row px-5 mx-5 my-5 bg-gray-100 rounded-lg py-5 justify-end items-center">
         <AddIcon
           fontSize="large"
           className="hover:text-purple-500 hover:scale-125 transition-transform duration-200 cursor-pointer"
           onClick={() => setShowForm(!showForm)}
-        />
-        <MoreVertIcon
-          fontSize="large"
-          className="hover:text-red-500 hover:translate-y-1 transition-transform duration-200"
         />
       </div>
 
@@ -130,7 +122,6 @@ function TodoList() {
                 required
               />
 
-              
               <input
                 type="date"
                 className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -246,7 +237,7 @@ function TodoList() {
                     onClick={() => handleEditClick(index)}
                   ></i>
                   <i
-                    className="fa-regular fa-trash-can cursor-pointer text-2xl"
+                    className="fa-regular fa-trash-can cursor-pointer text-2xl text-red-500 hover:text-red-600"
                     onClick={() => handleDeleteTodo(todo._id)}
                   ></i>
                 </div>

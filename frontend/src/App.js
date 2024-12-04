@@ -14,6 +14,10 @@ import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
 import LandingPage from "./pages/LandingPage";
 import Settings from "./pages/Settings";
+import Features from "./pages/Features";
+import ContactUs from "./pages/ContactUs";
+import MessageSent from "./pages/MessageSent";
+import ChatPage from "./pages/ChatPage";
 
 function App() {
   document.title = "TuteeTutor";
@@ -24,6 +28,9 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
         <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
         <Route path="/landing-page" element={<LandingPage />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/message-sent" element={<MessageSent />} />
         <Route path="/" element={<Home />}>
           <Route path="" element={<StudentDashboard />} />
           <Route path="admin" element={<AdminDashboard />} />
@@ -31,9 +38,9 @@ function App() {
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<TimeTable />} />
           <Route path="almanac" element={<Almanac />} />
-          <Route path="support" element={<></>} />
-          <Route path="faculty" element={<FacultyList/>} />
-          <Route path="settings" element={<Settings/>} />
+          <Route path="support" element={<ChatPage />} />
+          <Route path="faculty" element={<FacultyList />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>
