@@ -10,13 +10,16 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import { createTheme } from "@mui/material";
 import { CalenderModel } from "../components/CalanderCard";
 
 import Typography from "@mui/material/Typography";
 
+import NotificationModal from "./NotificationModal";
+import NotificationDashboard from "./NotificationDashboard";
 
 function stringToColor(string) {
   if (!string) {
@@ -51,6 +54,25 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
   document.title = "TuteeTutor - " + sidbarActive;
   const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
   const [calendarModal, setCalendarModal] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notifications, setNotificationsRead] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/notifications/check-unread`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotificationsRead(response.data.status);
+    } catch (err) {
+      console.error("Failed to check notifications");
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   // menu related code for the user profile button
   const [anchorEl, setAnchorEl] = useState(null);
@@ -133,11 +155,23 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
           >
             <CalendarMonthIcon fontSize="medium" />
           </IconButton>
-          <IconButton color="primary">
-            <Badge color="secondary" variant="dot" invisible={false}>
+          <IconButton
+            color="primary"
+            onClick={() => setIsNotificationOpen(true)}
+            sx={{zIndex: 100, background: "white"}}
+          >
+            <Badge color="secondary" variant="dot" invisible={!notifications}>
               <NotificationsIcon fontSize="medium" />
             </Badge>
           </IconButton>
+
+          <NotificationModal
+            isOpen={isNotificationOpen}
+            onClose={() => setIsNotificationOpen(false)}
+          >
+            <NotificationDashboard user={user} setNotificationsRead={setNotificationsRead}/>
+          </NotificationModal>
+
           <IconButton onClick={handleClick}>
             <Avatar
               src={user?.profileImage}
@@ -146,6 +180,7 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
                 height: "30px",
                 fontSize: "12px",
                 bgcolor: stringToColor(user?.name),
+                zIndex: 0,
               }}
               children={`${user?.name[0]}`}
             />

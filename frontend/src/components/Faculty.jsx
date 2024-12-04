@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import "../styles/Faculty.css";
 import { useOutletContext } from "react-router-dom";
 import { Box, createTheme } from "@mui/material";
@@ -8,6 +8,7 @@ import AddFacultyModel from "./AddFacultyModel";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
+import HodList from "./Hod";
 
 function stringToColor(string) {
   if (!string) {
@@ -95,9 +96,9 @@ const FacultyList = () => {
   const token = localStorage.getItem("token");
 
   const [facultyList, setFacultyList] = React.useState([]);
-  const fetchFaculty = async () => {
+  const fetchFaculty = useCallback(async () => {
     try {
-      const res = await axios("http://localhost:5000/faculty", {
+      const res = await axios("http://localhost:5000/get-faculty", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (
@@ -107,14 +108,21 @@ const FacultyList = () => {
         navigate("/coursesSelection");
         return;
       }
+      if (
+        res?.data?.message &&
+        res?.data?.message === "No registered courses found for the faculty."
+      ) {
+        navigate("/");
+        return;
+      }
       setFacultyList(res.data);
     } catch (error) {
       console.error("Error fetching faculty list:", error);
     }
-  };
+  }, [token, navigate]);
   useEffect(() => {
     fetchFaculty();
-  }, []);
+  }, [fetchFaculty]);
 
   const data = useOutletContext();
   const user = data.user;
@@ -128,8 +136,10 @@ const FacultyList = () => {
     );
   };
 
-
   return (
+    (user && user.role === "admin") ? (
+      <HodList />
+    ):(
     <>
       <AddFacultyModel
         open={modal}
@@ -182,6 +192,7 @@ const FacultyList = () => {
         </Fab>
       )}
     </>
+    )
   );
 };
 

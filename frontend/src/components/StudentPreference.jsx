@@ -1,79 +1,158 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import '../styles/StudentPreference.css';
+import { useOutletContext } from 'react-router-dom';
 
 const StudentPreference = () => {
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedSection, setSelectedSection] = useState("");
-  const navigate = useNavigate()
 
-  const courses = ["Mathematics", "Physics", "Computer Science", "Biology"];
-  const sections = ["A", "B", "C", "D"];
+  const { user } = useOutletContext();
+  const [courses, setCourses] = useState([]);  // Store courses fetched from API
+  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedSections, setSelectedSections] = useState({});
+  const [error, setError] = useState("");
+  const userId = user?.id;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch courses dynamically from the backend API
+    const fetchCourses = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/course`);
+        const data = await response.json();
+        setCourses(data);  // Store the fetched courses
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const handleCourseChange = (event) => {
-    setSelectedCourse(event.target.value);
+    const { value } = event.target;
+    setSelectedCourses((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((course) => course !== value); // Remove if already selected
+      } else {
+        return [...prev, value]; // Add new course
+      }
+    });
   };
+
 
   const handleSectionChange = (event) => {
-    setSelectedSection(event.target.value);
+    const { value, name } = event.target;
+
+    if (selectedSections[name] && selectedSections[name] === value) {
+      setError(`You cannot select multiple sections for the same course.`);
+      return;
+    }
+
+    setSelectedSections((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setError("");
   };
 
-  const handleSubmit = (event) => {
+  const selectedData = selectedCourses.map((course) => ({
+    courseId: course,
+    section: selectedSections[course],
+  }));
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate('/')
-    console.log("Selected Course:", selectedCourse);
-    console.log("Selected Section:", selectedSection);
-  
+
+    // Validate if each course has a section selected
+    for (const course of selectedCourses) {
+      if (!selectedSections[course]) {
+        setError(`Please select a section for ${course}.`);
+        return;
+      }
+    }
+
+    // Prepare the data to be saved
+    const selectedData = selectedCourses.map((course) => ({
+      courseId: course,
+      section: selectedSections[course],
+    }));
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/courses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ courses: selectedData }),
+      });
+
+      if (response.ok) {
+        console.log("Preferences saved successfully");
+        navigate("/"); // Navigate after successful submission
+      } else {
+        setError("Failed to save preferences.");
+      }
+    } catch (error) {
+      console.error("Error submitting preferences:", error);
+      setError("An error occurred while submitting preferences.");
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">
-          Select Your Preferences
-        </h2>
+    <div className="student-preference-container">
+      <div className="preference-card">
+        <h2 className="preference-title">Select Your Preferences</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">
-              Registered Course
-            </label>
-            <select
-              value={selectedCourse}
-              onChange={handleCourseChange}
-              className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring focus:border-blue-300"
-            >
-              <option value="">Select a course</option>
-              {courses.map((course, index) => (
-                <option key={index} value={course}>
-                  {course}
-                </option>
-              ))}
-            </select>
-          </div>
+        <form className="preference-form" onSubmit={handleSubmit}>
+  <div>
+    <label className="block text-gray-600 font-medium mb-2">
+      Registered Courses
+    </label>
+    <select
+      multiple
+      value={selectedCourses}
+      onChange={handleCourseChange}
+      className="course-select"
+    >
+      {courses.map((course) => (
+        <option key={course._id} value={course._id}>
+          {course.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-600 mb-2">Section</label>
-            <select
-              value={selectedSection}
-              onChange={handleSectionChange}
-              className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring focus:border-blue-300"
-            >
-              <option value="">Select a section</option>
-              {sections.map((section, index) => (
-                <option key={index} value={section}>
-                  {section}
-                </option>
-              ))}
-            </select>
-          </div>
+  {selectedCourses.map((courseId) => {
+    const course = courses.find((course) => course._id === courseId);
+    return (
+      <div key={courseId}>
+        <label className="block text-gray-600 font-medium mb-2">
+          Section for {course.name}
+        </label>
+        <select
+          name={courseId}
+          value={selectedSections[courseId] || ""}
+          onChange={handleSectionChange}
+          className="section-select"
+        >
+          <option value="">Select a section</option>
+          {course.sections &&
+            course.sections.map((section) => (
+              <option key={section._id} value={section._id}>
+                {section.section}
+              </option>
+            ))}
+        </select>
+      </div>
+    );
+  })}
 
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-          >
-            Submit
-          </button>
-        </form>
+  {error && <p className="error-message">{error}</p>}
+
+  <button type="submit" className="submit-button">
+    Submit Preferences
+  </button>
+</form>
       </div>
     </div>
   );

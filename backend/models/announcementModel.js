@@ -5,8 +5,7 @@ const announcementSchema = mongoose.Schema({
     description: { type: String, required: [true, "Description is required"] },
     author: { type: String, required: [true, "Author is required"] },
     authorId: { type: String, required: [true, "Author ID is required"] },
-    course: { type: String, required: [true, "Course is required"] },
-    section: { type: String, required: [true, "Section is required"] },
+    course: { type: mongoose.Schema.Types.ObjectId, required: [true, "Course is required"] },
     date: {
         type: Date,
         default: new Date()

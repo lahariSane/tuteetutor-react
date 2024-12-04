@@ -27,7 +27,7 @@ function SignInForm() {
       const getGitHubAccessToken = async () => {
         try {
           const backendResponse = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/auth/github-login`,
+            `${process.env.REACT_APP_BACKEND_URL}/api/auth/github-login`, 
             { code }
           );
 
@@ -131,7 +131,7 @@ function SignInForm() {
           <img src="/logo.png" alt="logo" />
           <div className="logo-name">TuteeTutor</div>
         </div>
-        <form onSubmit={handleOnSubmit} style={{ height: "650px" }}>
+        <form className='signin' onSubmit={handleOnSubmit} style={{ height: "650px" }}>
           <h1 className="heading">Sign in</h1>
           <div className="social-container">
             <span type="button" className="auth-button" onClick={googleLogin}>
@@ -156,6 +156,7 @@ function SignInForm() {
               value={state.email}
               onChange={handleChange}
               className={emailError ? "input-error" : ""}
+              id='login-input'
               required
             />
             {emailError && (
@@ -172,6 +173,7 @@ function SignInForm() {
               value={state.password}
               onChange={handleChange}
               className={passwordError ? "input-error" : ""}
+              id='login-input'
               required
             />
             {passwordError && (
@@ -184,7 +186,7 @@ function SignInForm() {
             Forgot your password?
           </a>
           {error && <div className="error-message">{error}</div>}
-          <button type="submit" disabled={loading}>
+          <button className='login-button' type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>

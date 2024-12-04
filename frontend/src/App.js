@@ -13,8 +13,9 @@ import Almanac from "./components/Almanac";
 import TimeTable from "./components/TimeTable";
 import Courses from "./pages/Courses";
 import Settings from "./pages/Settings";
+import HodList from "./components/Hod";
 
-function App() {
+function App() { 
   document.title = "TuteeTutor";
   return (
     <Router>
@@ -24,7 +25,6 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
         <Route path="/" element={<Home />}>
           <Route path="" element={<StudentDashboard />} />
-          <Route path="admin" element={<AdminDashboard />} />
           <Route path="coursesSelection" element={<Courses />} />
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<TimeTable />} />
@@ -32,6 +32,7 @@ function App() {
           <Route path="support" element={<></>} />
           <Route path="faculty" element={<FacultyList/>} />
           <Route path="settings" element={<Settings/>} />
+          <Route path="hod" element={<HodList />} />
         </Route>
       </Routes>
     </Router>
