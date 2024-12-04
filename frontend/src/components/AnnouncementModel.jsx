@@ -21,13 +21,14 @@ function AnnouncementModel({ open, handleClose, user }) {
   const [snackbarSecurity, setSnackbarSecurity] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+  const token = localStorage.getItem("token");
   // Fetch courses from the backend
   useEffect(() => {
     const fetchCourses = async () => {
       const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/hod-course`,
+          `${process.env.REACT_APP_BACKEND_URL}/announcements/faculty`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -48,7 +49,7 @@ function AnnouncementModel({ open, handleClose, user }) {
   }, []);
 
   const handleSubmit = async () => {
-    if (!courses || !mainAnnoumcement) {
+    if (!selectedCourse || !mainAnnoumcement) {
       setSnackbarOpen(true);
       setSnackbarMessage("Please fill all the fields.");
       setSnackbarSecurity("warning");
@@ -59,17 +60,20 @@ function AnnouncementModel({ open, handleClose, user }) {
       response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/announcements`,
         {
-          courses: courses,
+          courseId: selectedCourse,
           description: mainAnnoumcement,
           authorId: user.id,
-        }
+        },
+        {headers: {
+          Authorization: `Bearer ${token}`,
+        }}
       );
       if (response.status === 201) {
         setSnackbarOpen(true);
         setSnackbarMessage("Announcement created successfully.");
         setSnackbarSecurity("success");
-        setCourses("");
         setMainAnnouncement("");
+        setSnackbarOpen(false);
         handleClose();
       } else {
         setSnackbarOpen(true);
@@ -154,7 +158,7 @@ function AnnouncementModel({ open, handleClose, user }) {
             {courses.length > 0 ? (
               courses.map((course) => (
                 <MenuItem key={course._id} value={course._id}>
-                  {course.name}
+                  {course.name} - {course.section}
                 </MenuItem>
               ))
             ) : (

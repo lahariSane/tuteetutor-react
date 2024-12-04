@@ -246,10 +246,6 @@ mailRouter.post(
       const { email, password } = req.body;
       const user = await User.findOne({ email });
 
-      console.log("Email:", email);
-      console.log("Password:", password);
-
-      console.log(user);
       if (!user) {
         return res.status(400).json({ error: "Invalid email" });
       }

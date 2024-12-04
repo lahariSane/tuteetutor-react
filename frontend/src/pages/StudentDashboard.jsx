@@ -18,6 +18,7 @@ import { CalendarCard } from "../components/CalanderCard";
 import LeaveRequest from "../components/LeaveRequest";
 import AnnouncementModel from "../components/AnnouncementModel";
 import TodoList from "../components/TodoList";
+import AdminDashboard from "./AdminDashboard";
 
 const CustomTabPanel = React.memo(function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -90,7 +91,7 @@ const Announcment = styled(Typography)(({ theme }) => ({
   padding: theme.spacing(1),
   display: "flex",
   alignItems: "flex-start",
-  justifyContent: "flex-start", 
+  justifyContent: "flex-start",
   width: "100%",
 }));
 
@@ -110,17 +111,20 @@ const StudentDashboard = () => {
   const user = data.user;
   const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
 
-  const userId = user?.id;
-
   const handleChange = (event, newValue) => setValue(newValue);
   const handlesubChange = (event, newValue) => setSubValue(newValue);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("token");
         const [announcements, timetable, holidays] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`),
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`),
         ]);
         setAnnouncementData(announcements.data);
@@ -173,7 +177,7 @@ const StudentDashboard = () => {
             }}
           >
             <Box>
-              <Topic>{announcement.course}</Topic>
+              <Topic>{announcement.title}</Topic>
               <Announcment>
                 {announcement.description.split("\n").map((line, index) => (
                   <React.Fragment key={index}>
@@ -199,48 +203,113 @@ const StudentDashboard = () => {
     const hours12 = hours % 12 || 12; // Convert 0 hours to 12 for AM/PM
     return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
-
-  const timetableData = timetable.map((timetable, index) => (
-    <Card
-      key={index}
-      elevation={1}
-      sx={{ padding: "12px", marginBottom: "10px" }}
-    >
-      <Subject>
-        {timetable.subject} - {timetable.section}
-      </Subject>
-      <Room>Room No: {timetable.roomNo}</Room>
-      <Time>
-        {formatTime(timetable.startTime)} - {formatTime(timetable.endTime)}
-      </Time>
-    </Card>
-  ));
-
-  const holidayData = holidays.map((holiday, index) => {
-    const formattedDate = new Date(holiday.date).toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      weekday: "long",
-    });
-
-    return (
-      <Card
-        key={index}
-        elevation={1}
-        sx={{ padding: "12px", marginBottom: "10px" }}
+  const timetableData =
+    timetable.length > 0 ? (
+      timetable.map((timetable, index) => (
+        <Card
+          key={index}
+          elevation={2}
+          sx={{
+            padding: "16px",
+            marginBottom: "12px",
+            backgroundColor: "background.default",
+            borderRadius: "8px",
+            boxShadow: 2,
+            "&:hover": {
+              boxShadow: 3,
+            },
+          }}
+        >
+          <Box sx={{ marginBottom: "8px" }}>
+            <Typography variant="h6" sx={{ fontWeight: 500 }}>
+              {timetable.subject} - {timetable.section}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Room No: {timetable.roomNo}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="body2" color="text.primary">
+              {formatTime(timetable.startTime)} -{" "}
+              {formatTime(timetable.endTime)}
+            </Typography>
+          </Box>
+        </Card>
+      ))
+    ) : (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+          backgroundColor: "background.paper",
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow: 1,
+        }}
       >
-        <Subject>{holiday.occasion}</Subject>
-        <Room>
-          {formattedDate.split(",")[1].trim()},{" "}
-          {formattedDate.split(",")[2].trim()}
-        </Room>
-        <Time>{formattedDate.split(",")[0]}</Time>
-      </Card>
+        <Typography variant="h6" color="text.secondary">
+          No timetable available
+        </Typography>
+      </Box>
     );
-  });
+
+  const holidayData =
+    holidays.length > 0 ? (
+      holidays.map((holiday, index) => {
+        const formattedDate = new Date(holiday.date).toLocaleDateString(
+          "en-US",
+          {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            weekday: "long",
+          }
+        );
+
+        return (
+          <Card
+            key={index}
+            elevation={1}
+            sx={{ padding: "12px", marginBottom: "10px" }}
+          >
+            <Subject>{holiday.occasion}</Subject>
+            <Room>
+              {formattedDate.split(",")[1].trim()},{" "}
+              {formattedDate.split(",")[2].trim()}
+            </Room>
+            <Time>{formattedDate.split(",")[0]}</Time>
+          </Card>
+        );
+      })
+    ) : (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+          backgroundColor: "background.paper",
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow: 1,
+        }}
+      >
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          sx={{ textAlign: "center", fontWeight: 500 }}
+        >
+          No upcoming holidays
+        </Typography>
+      </Box>
+    );
 
   return (
+    (user && user.role === "admin") ? (
+      <AdminDashboard />
+    ) : (
     <Stack
       direction="row"
       sx={{
@@ -479,6 +548,7 @@ const StudentDashboard = () => {
         </Card>
       </Box>
     </Stack>
+    )
   );
 };
 

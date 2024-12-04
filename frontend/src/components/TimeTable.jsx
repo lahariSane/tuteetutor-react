@@ -1,12 +1,12 @@
 import React from 'react';
 
-const TimeTable = () => {
+const timetable = () => {
     return (
         <div>
-            <h1>Time Table 2024</h1>
+            <h1>timetable 2024</h1>
             <div className="pdf-container" style={{
-                width: '85vw', 
-                height: '100vh', 
+                width: '87vw', 
+                height: '110vh', 
                 backgroundColor: '#1877d2',
                 display: 'flex',
                 justifyContent: 'center',
@@ -14,10 +14,12 @@ const TimeTable = () => {
                 overflow: 'hidden',
                 marginLeft: "31rem",
                 marginTop: "3rem",
-                borderRadius: '10px' 
+                borderRadius: '10px',
+                left: "-250px",
+                position: "relative"
             }}>
                 <iframe 
-                    src="Timetable M 2024 -  Timetable M 2024 UG1234.pdf" 
+                    src="/Timetable M 2024 -  Timetable M 2024 UG1234.pdf" 
                     className="pdf-frame" 
                     frameBorder="0" 
                     style={{
@@ -26,11 +28,11 @@ const TimeTable = () => {
                         border: 'none',
                         backgroundColor: 'white' 
                     }}
-                    title="Time Table PDF"
+                    title="timetable PDF"
                 ></iframe>
             </div>
         </div>
     );
 };
 
-export default TimeTable;
+export default timetable;

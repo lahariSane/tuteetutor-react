@@ -8,7 +8,9 @@ const validateUser = (requiredRoles = []) => {
       const authHeader = req.headers.authorization;
 
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Authorization token missing or invalid" });
+        return res
+          .status(401)
+          .json({ message: "Authorization token missing or invalid" });
       }
 
       const token = authHeader.split(" ")[1]; // Extract the token
@@ -21,7 +23,9 @@ const validateUser = (requiredRoles = []) => {
 
       // Check if the user has the required roles (if any)
       if (requiredRoles.length && !requiredRoles.includes(decoded.role)) {
-        return res.status(403).json({ message: "Access forbidden: insufficient permissions" });
+        return res
+          .status(403)
+          .json({ message: "Access forbidden: insufficient permissions" });
       }
 
       // Proceed to the next middleware or route handler
