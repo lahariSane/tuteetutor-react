@@ -8,6 +8,7 @@ import AddFacultyModel from "./AddFacultyModel";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
+import HodList from "./Hod";
 
 function stringToColor(string) {
   if (!string) {
@@ -136,6 +137,9 @@ const FacultyList = () => {
   };
 
   return (
+    (user && user.role === "admin") ? (
+      <HodList />
+    ):(
     <>
       <AddFacultyModel
         open={modal}
@@ -188,6 +192,7 @@ const FacultyList = () => {
         </Fab>
       )}
     </>
+    )
   );
 };
 

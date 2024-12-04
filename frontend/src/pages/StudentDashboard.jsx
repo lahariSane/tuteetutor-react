@@ -18,6 +18,7 @@ import { CalendarCard } from "../components/CalanderCard";
 import LeaveRequest from "../components/LeaveRequest";
 import AnnouncementModel from "../components/AnnouncementModel";
 import TodoList from "../components/TodoList";
+import AdminDashboard from "./AdminDashboard";
 
 const CustomTabPanel = React.memo(function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -306,6 +307,9 @@ const StudentDashboard = () => {
     );
 
   return (
+    (user && user.role === "admin") ? (
+      <AdminDashboard />
+    ) : (
     <Stack
       direction="row"
       sx={{
@@ -544,6 +548,7 @@ const StudentDashboard = () => {
         </Card>
       </Box>
     </Stack>
+    )
   );
 };
 

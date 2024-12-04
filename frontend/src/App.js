@@ -25,7 +25,6 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
         <Route path="/" element={<Home />}>
           <Route path="" element={<StudentDashboard />} />
-          <Route path="admin" element={<AdminDashboard />} />
           <Route path="coursesSelection" element={<Courses />} />
           <Route path="dashboard" element={<StudentDashboard />} />
           <Route path="timetable" element={<TimeTable />} />
