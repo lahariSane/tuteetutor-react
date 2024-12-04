@@ -6,7 +6,7 @@ const getTimetable = async (req, res) => {
   try {
     const { id } = req.user;
     const userCourses = await userCourseSchema
-      .findOne({ _id: id })
+      .findOne({ user: id })
       .populate({ path: "courseRegistered", select: "code section" });
     const query = userCourses?.courseRegistered
       ? userCourses.courseRegistered.map((course) => {
@@ -31,6 +31,10 @@ const getTimetable = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    if (!query.length) {
+      return res.status(200).json([]);
+    }
+    
     const timetable = await Timetable.find({
       $or: query.map((q) => ({
         ...q,
