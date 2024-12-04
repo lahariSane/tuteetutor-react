@@ -12,7 +12,7 @@ router.delete('/course/:id', deleteCourse);
 router.post('/user/:userId/courses', saveUserCourses);
 
 router.get("/suggestions", (req, res) => {
-  const query = req.query.q.toLowerCase();
+  const query = req.query.q.toLowerCase(); 
   const filteredSuggestions = sampleData.filter((item) =>
     item.toLowerCase().includes(query)
   );

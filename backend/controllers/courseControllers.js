@@ -36,7 +36,7 @@ const createCourse = async (req, res) => {
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
-}
+} 
 
 const deleteCourse = async (req, res) => {
   const { id } = req.params;

@@ -40,9 +40,9 @@ function ResetPasswordForm() {
         justifyContent: "center",
         alignItems: "center"
       }}>
-      <form onSubmit={handleSubmit}
+      <form onSubmit={handleSubmit} className='signin'
         style={{
-          borderRadius: "1rem",
+          borderRadius: "1rem", 
           boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
         }}>
         <div className="logo"
@@ -56,10 +56,11 @@ function ResetPasswordForm() {
           placeholder="Enter your new password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          id='login-input'
           required
           style={{ marginBottom: "3rem" }}
         />
-        <button type="submit">Reset Password</button>
+        <button type="submit" className='login-button'>Reset Password</button>
       </form>
       {message && <p>{message}</p>}
     </div>

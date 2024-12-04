@@ -78,7 +78,7 @@ export default function Profile() {
                 {
                     data: { courseId },
                 }
-            );
+            ); 
 
             setUserCourses(response.data.courseRegistered);  // Update state with the new courses
             alert('Course removed successfully!');

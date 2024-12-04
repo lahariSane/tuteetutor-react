@@ -62,7 +62,7 @@ function SignInForm() {
   };
 
   const handleOnSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
     setError("");
     setLoading(true);
     setEmailError("");

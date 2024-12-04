@@ -30,7 +30,7 @@ function ForgotPasswordForm() {
         justifyContent: "center",
         alignItems: "center"
       }}>
-      <form onSubmit={handleSubmit}
+      <form onSubmit={handleSubmit} className='signin'
         style={{
           borderRadius: "1rem",
           boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"
@@ -46,9 +46,10 @@ function ForgotPasswordForm() {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          id='login-input'
           required
         />
-        <button type="submit">Submit</button>
+        <button type="submit" className='login-button' >Submit</button>
       </form>
       {message && <p>{message}</p>}
     </div>

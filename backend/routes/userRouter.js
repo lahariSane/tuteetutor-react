@@ -3,7 +3,7 @@ import userModule from '../models/userModule.js';
 
 const userinfoRouter = express.Router();
 
-// Get user personal information (name, email, role)
+// Get user personal information (name, email, role) 
 userinfoRouter.get('/user/:id', async (req, res) => {
   try {
     const user = await userModule.findById(req.params.id);
