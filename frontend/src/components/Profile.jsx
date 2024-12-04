@@ -220,7 +220,7 @@ export default function Profile() {
                             <h2 style={{ marginBottom: '0.3em', color: 'white', fontSize: '20px', margin: 0 }} > <b> Bio</b></h2>
                         </div>
                         <div className="bio-content">
-                            <textarea width="40em" id="bio" placeholder="Write something about yourself..." rows="2" cols="65" value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
+                            <textarea width="40em" id="bio" placeholder="Write something about yourself..." rows="2" cols="55" value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
                             <button
                                 type="button"
                                 className="save-button"
