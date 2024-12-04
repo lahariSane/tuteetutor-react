@@ -7,7 +7,7 @@ const validateUser = (requiredRoles = []) => {
       // Extract token from Authorization header
       const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      if (!authHeader || !authHeader.startsWith("Bearer ")) { 
         return res.status(401).json({ message: "Authorization token missing or invalid" });
       }
 
@@ -36,4 +36,6 @@ const validateUser = (requiredRoles = []) => {
   };
 };
 
-export default validateUser;
+export default validateUser ;
+
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -9,11 +9,16 @@ import { Stack, Card, Typography, Button, TextField } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import { validateLeaveRequestForm } from './validation';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+
 
 function LeaveRequest() {
-
-    const [leaveRequests, setLeaveRequests] = React.useState([]);
+    const [leaveRequests, setLeaveRequests] = useState([]);
     const [errors, setErrors] = useState({});
+
+    const token = localStorage.getItem("token"); // Get token from localStorage
+    const decodedToken = token ? jwtDecode(token) : null; // Decode token if available
+    const userEmail = decodedToken ? decodedToken.email : null;
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -28,15 +33,22 @@ function LeaveRequest() {
                 fromDate: formData.get('fromDate'),
                 toDate: formData.get('toDate'),
                 reason: formData.get('reason'),
+                email: userEmail, // Use email from decoded token
             };
 
-            axios.post(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/submit`, leaveRequest)
-                .then((response) => {
-                    event.currentTarget.reset();
+            if (token) {
+                axios.post(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/submit`, leaveRequest, {
+                    headers: { Authorization: `Bearer ${token}` }
                 })
-                .catch((error) => {
-                    console.error(error);
-                });
+                    .then((response) => {
+                        event.currentTarget.reset();
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                console.error("No token found. Please log in.");
+            }
         } else {
             console.log('Form is invalid');
             return;
@@ -44,7 +56,9 @@ function LeaveRequest() {
     };
 
     const handleDeleteRequest = (id) => {
-        axios.delete(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/${id}`)
+        axios.delete(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
             .then((response) => {
                 setLeaveRequests(leaveRequests.filter((request) => request._id !== id));
             })
@@ -53,15 +67,23 @@ function LeaveRequest() {
             });
     };
 
-    React.useEffect(() => {
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/all`)
-            .then((response) => {
-                setLeaveRequests(response.data);
+    useEffect(() => {
+        if (token) {
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/leaveRequest/all`, {
+                headers: {
+                    Authorization: `Bearer ${token}`  // Ensure token is passed in headers
+                },
             })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, [errors]);
+                .then((response) => {
+                    setLeaveRequests(response.data);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            console.error("Token is not available. Please log in.");
+        }
+    }, [token]);  // Refresh on token change
 
     return (
         <>
@@ -100,12 +122,12 @@ function LeaveRequest() {
                         </Stack>
                     </Stack>
                 </Card>
-                {errors.studentName && <div style={{ color: 'red' }}>{errors.studentName}</div>}
-                {errors.studentID && <div style={{ color: 'red' }}>{errors.studentID}</div>}
-                {errors.fromDate && <div style={{ color: 'red' }}>{errors.fromDate}</div>}
-                {errors.toDate && <div style={{ color: 'red' }}>{errors.toDate}</div>}
-                {errors.reason && <div style={{ color: 'red' }}>{errors.reason}</div>}
-                {errors.proof && <div style={{ color: 'red' }}>{errors.proof}</div>}
+                {errors.studentName && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.studentName}</div>}
+                {errors.studentID && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.studentID}</div>}
+                {errors.fromDate && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.fromDate}</div>}
+                {errors.toDate && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.toDate}</div>}
+                {errors.reason && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.reason}</div>}
+                {errors.proof && <div style={{ color: 'red' ,fontSize: '18px', marginTop: '5px', marginBottom: '5px', fontWeight: 'bold', textAlign: 'center', display: 'block' }}>{errors.proof}</div>}
             </form>
             <Card elevation={4} sx={{ padding: "20px", marginBottom: "10px", backgroundColor: "#fafafa", borderRadius: "10px" }}>
                 <Typography variant="h5">Leave Requests</Typography>
@@ -118,6 +140,7 @@ function LeaveRequest() {
                                 <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>From Date</TableCell>
                                 <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>To Date</TableCell>
                                 <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>Reason</TableCell>
+                                <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }}>Status</TableCell>
                                 <TableCell sx={{ fontWeight: "bold", fontSize: "1.05rem" }} align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
@@ -129,8 +152,9 @@ function LeaveRequest() {
                                     <TableCell>{new Date(request.fromDate).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })}</TableCell>
                                     <TableCell>{new Date(request.toDate).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })}</TableCell>
                                     <TableCell>{request.reason}</TableCell>
+                                    <TableCell>{request.status}</TableCell>
                                     <TableCell align="right">
-                                        <Button variant="contained" color="error" onClick={() => handleDeleteRequest(request._id)}>Delete</Button>
+                                        <Button variant="contained" color="error" onClick={() => handleDeleteRequest(request._id)}>Cancel</Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -139,6 +163,7 @@ function LeaveRequest() {
                 </TableContainer>
             </Card>
         </>
-    )
+    );
 }
+
 export default LeaveRequest;
