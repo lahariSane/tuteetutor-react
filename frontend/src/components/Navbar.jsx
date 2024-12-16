@@ -26,6 +26,7 @@ function stringToColor(string) {
   }
   let hash = 0;
 
+
   // Generate a hash from the string
   for (let i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
@@ -144,9 +145,9 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
           spacing={0.9}
           sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}
         >
-          <IconButton color="primary">
-            <SearchIcon fontSize="medium" />
-          </IconButton>
+        {/* //   <IconButton color="primary">
+        //     <SearchIcon fontSize="medium" />
+        //   </IconButton> */}
           <IconButton
             onClick={() => setCalendarModal(true)}
             color="primary"
