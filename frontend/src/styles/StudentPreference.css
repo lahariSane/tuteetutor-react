@@ -1,124 +1,118 @@
-/* Simplified Student Preference Styles */
 .student-preference-container {
   display: flex;
-  width: 100%;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  background-color: #f0f4f8;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f0f4fc; /* Soft background */
+  font-family: "Inter", sans-serif;
   padding: 2rem;
-  box-sizing: border-box;
-  position: relative;
-  padding-bottom: 6rem;
 }
 
 .preference-card {
-  width: 100%;
-  max-width: 50em;
-  background-color: white;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-  padding: 2.5rem;
-  margin-top: 4em;
-  margin-left: 25em;
-  padding-bottom: 8rem;
+  width: 80%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px rgba(0, 123, 255, 0.15);
+  padding: 2rem;
 }
 
 .preference-title {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #2c3e50;
-  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: black; /* Primary color */
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
 .preference-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-
-.course-select,
-.section-select {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.75rem;
-  background-color: #f8fafc;
-  color: #2c3e50;
-  font-size: 0.875rem; /* Reduce font size */
-  height: auto; /* Allow dynamic height */
-}
-
-.course-select {
-  max-height: 8rem; /* Reduce height */
-  overflow-y: auto; /* Add scroll if content exceeds */
-}
-
-.section-select {
-  max-height: 6rem; /* Adjust for smaller dropdowns */
-}
-
-.preference-form > div {
   display: flex;
   flex-direction: column;
 }
 
-.submit-button {
-  grid-column: span 3; /* Make submit button span the entire row */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #f9fbff; /* Subtle grid background */
+  border-radius: 12px;
+  border: 1px solid rgba(0, 123, 255, 0.1);
+}
+
+.course-item {
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 1rem;
   text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
 }
 
-.course-select:focus,
-.section-select:focus {
-  border-color: #6a11cb;
-  box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+.course-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.15);
+  border: 2px solid #007bff; /* Highlight on hover */
 }
 
-label {
-  font-weight: 600;
-  color: #4a5568;
+.course-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color:black; /* Primary color */
   margin-bottom: 0.5rem;
 }
 
+.section-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d6e4ff;
+  border-radius: 8px;
+  background: #f8fbff;
+  color: #007bff;
+  font-weight: bold;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.section-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
 .error-message {
-  color: #e74c3c;
-  background-color: rgba(231, 76, 60, 0.05);
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.1);
   padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  border-left: 4px solid #e74c3c;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 
 .submit-button {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  width: auto;
-  height: auto;
-  padding: 1rem 2rem;
-  z-index: 10;
-  background-color:#2575fc;
+  margin: 1rem auto 0;
+  display: block;
+  padding: 0.75rem 2rem;
+  background: #007bff;
   color: white;
-  border: none;
-  border-radius: 1.5rem;
-  font-weight: 700;
-  font-size: 1em;
-  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  box-shadow: 0 15px 25px rgba(106, 17, 203, 0.2);
-
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
 .submit-button:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 35px rgba(106, 17, 203, 0.3);
+  background: #0056b3; /* Darker blue on hover */
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
 }
 
-.section-select {
-  max-height: 6rem;
-}
-
-.preference-form>div {
-  display: flex;
-  flex-direction: column;
+.submit-button:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
