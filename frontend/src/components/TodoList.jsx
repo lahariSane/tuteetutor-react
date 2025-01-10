@@ -142,7 +142,7 @@ function TodoList() {
       </div>
 
       {showForm && (
-        <div className="mx-auto my-6 max-w-md py-8 bg-white shadow-md rounded-md">
+        <div className="mx-8 my-6 max-w py-8 px-5 bg-white shadow-md rounded-md">
           <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
             Add a New To-Do
           </h2>
@@ -152,7 +152,7 @@ function TodoList() {
               <input
                 type="text"
                 placeholder="Enter To-Do Title"
-                className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="px-4 p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={newTodo.title}
                 onChange={(e) =>
                   setNewTodo({ ...newTodo, title: e.target.value })
@@ -206,7 +206,7 @@ function TodoList() {
                   {editIndex === index ? (
                     <form
                       onSubmit={(e) => handleSaveEdit(e, todo._id)}
-                      className="my-6 max-w-md py-8 bg-white shadow-md rounded-md"
+                      className="my-6 w-full max-w-lg py-8 px-5 bg-white shadow-md rounded-md"
                     >
                       <h2 className="text-xl font-semibold text-gray-900 mb-4 text-center">
                         Edit To-Do
