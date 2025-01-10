@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 function TodoList() {
-  // State management
   const [todos, setTodos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newTodo, setNewTodo] = useState({ title: "", dueDate: "" });
@@ -11,28 +9,56 @@ function TodoList() {
   const [editTodo, setEditTodo] = useState({ title: "", dueDate: "" });
   const [error, setError] = useState("");
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/todos")
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error("Error fetching todos:", error));
-  }, []);
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/todos", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setTodos(data);
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+      }
+    };
+
+    fetchTodos();
+  }, [token]);
 
   const validateDate = (date) => new Date(date) >= new Date();
 
   const handleAddTodo = (e) => {
     e.preventDefault();
+
+    console.log("Adding newTodo:", newTodo);
+
     if (!validateDate(newTodo.dueDate)) {
       setError("Deadline cannot be in the past.");
       return;
     }
 
+    console.log("Token being sent:", token);
+
     fetch("http://localhost:5000/api/todos", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(newTodo),
     })
-      .then((response) => response.json())
+      .then(async (response) => {
+        if (!response.ok) {
+          return response.json().then((error) => {
+            throw new Error(error.message || "Error adding todo.");
+          });
+        }
+        return response.json();
+      })
       .then((data) => {
         setTodos([...todos, data]);
         setNewTodo({ title: "", dueDate: "" });
@@ -43,7 +69,12 @@ function TodoList() {
   };
 
   const handleDeleteTodo = (id) => {
-    fetch(`http://localhost:5000/api/todos/${id}`, { method: "DELETE" })
+    fetch(`http://localhost:5000/api/todos/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(() => setTodos(todos.filter((todo) => todo._id !== id)))
       .catch((error) => console.error("Error deleting todo:", error));
   };
@@ -57,7 +88,10 @@ function TodoList() {
 
     fetch(`http://localhost:5000/api/todos/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(updatedTodo),
     })
       .then((response) => response.json())
@@ -68,6 +102,7 @@ function TodoList() {
   };
 
   const handleEditClick = (index) => {
+    if (index < 0 || index >= todos.length) return;
     setEditIndex(index);
     setEditTodo({ title: todos[index].title, dueDate: todos[index].dueDate });
   };
@@ -81,7 +116,10 @@ function TodoList() {
 
     fetch(`http://localhost:5000/api/todos/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(editTodo),
     })
       .then((response) => response.json())
