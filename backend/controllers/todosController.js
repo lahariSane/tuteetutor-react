@@ -3,7 +3,7 @@ import Todo from "../models/todos.js";
 // Get all todos
 const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const todos = await Todo.find({ userId: req.user.id });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: "Error fetching todos", error });
@@ -13,14 +13,22 @@ const getTodos = async (req, res) => {
 // Add a new todo
 const addTodo = async (req, res) => {
   const { title, dueDate } = req.body;
+
+  if (!title || !dueDate) {
+    return res
+      .status(400)
+      .json({ message: "Title and due date are required." });
+  }
+
   try {
-    const newTodo = new Todo({ title, dueDate });
+    const newTodo = new Todo({ title, dueDate, userId: req.user.id });
     await newTodo.save();
     res.status(201).json(newTodo);
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "There is a problem adding the todo", error });
+    res.status(400).json({
+      message: "There is a problem adding the todo",
+      error: error.message,
+    });
   }
 };
 
@@ -31,7 +39,7 @@ const updateTodo = async (req, res) => {
 
   try {
     const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+      { _id: id, userId: req.user.id },
       { title, dueDate, isCompleted },
       { new: true }
     );
@@ -50,7 +58,10 @@ const updateTodo = async (req, res) => {
 const deleteTodo = async (req, res) => {
   const { id } = req.params;
   try {
-    const deletedTodo = await Todo.findByIdAndDelete(id);
+    const deletedTodo = await Todo.findByIdAndDelete({
+      _id: id,
+      userId: req.user.id,
+    });
     if (!deletedTodo) {
       res.status(400).json({ message: "The Todo is not found" });
     }
