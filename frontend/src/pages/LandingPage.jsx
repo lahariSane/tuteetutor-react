@@ -97,12 +97,7 @@ const LandingPage = () => {
           >
             Home
           </Link>
-          <Link
-            to="/features"
-            className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
-          >
-            Features
-          </Link>
+
           <Link
             to="/contact-us"
             className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"

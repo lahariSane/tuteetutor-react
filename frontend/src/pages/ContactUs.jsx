@@ -50,12 +50,7 @@ const ContactUs = () => {
           >
             Home
           </a>
-          <a
-            href="/features"
-            className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
-          >
-            Features
-          </a>
+
           <a
             href="/contact-us"
             className="cursor-pointer text-lg text-gray-600 hover:text-blue-700 hover:scale-110 transition duration-300"
