@@ -8,18 +8,17 @@ const LeaveApproval = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch leave requests from the backend
+  const fetchLeaveRequests = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/collections/leaverequests`);
+      setLeaveRequests(response.data); // Assuming response data is an array of leave requests
+    } catch (error) {
+      console.error("Error fetching leave requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchLeaveRequests = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/collections/leaverequests`);
-        setLeaveRequests(response.data); // Assuming response data is an array of leave requests
-      } catch (error) {
-        console.error("Error fetching leave requests:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLeaveRequests();
   }, []);
 
@@ -32,6 +31,7 @@ const LeaveApproval = () => {
           request.id === id ? { ...request, status } : request
         )
       );
+      fetchLeaveRequests();
     } catch (error) {
       console.error("Error updating leave request status:", error);
     }

@@ -20,12 +20,12 @@ import Typography from "@mui/material/Typography";
 
 import NotificationModal from "./NotificationModal";
 import NotificationDashboard from "./NotificationDashboard";
-
 function stringToColor(string) {
   if (!string) {
     return "#007bff"; // Default to the base color
   }
   let hash = 0;
+
 
   // Generate a hash from the string
   for (let i = 0; i < string.length; i += 1) {
@@ -145,9 +145,9 @@ function Navbar({ drawerWidth, handleDrawerToggle, user, sidbarActive }) {
           spacing={0.9}
           sx={{ color: (theme) => (theme.vars ?? theme).palette.primary.main }}
         >
-          <IconButton color="primary">
-            <SearchIcon fontSize="medium" />
-          </IconButton>
+        {/* //   <IconButton color="primary">
+        //     <SearchIcon fontSize="medium" />
+        //   </IconButton> */}
           <IconButton
             onClick={() => setCalendarModal(true)}
             color="primary"

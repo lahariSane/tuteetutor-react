@@ -1,20 +1,21 @@
-import cors from 'cors';
-import express from 'express';
-import dotenv from 'dotenv';
+import cors from "cors";
+import express from "express";
+import dotenv from "dotenv";
 import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
 import announcementsRouter from "./routes/announcementsRouter.js";
 import holidaysRouter from "./routes/holidayRouter.js";
-import timetableRouer from './routes/timetableRouter.js';
-import DATABASE from './models/db.js';
+import timetableRouer from "./routes/timetableRouter.js";
+import DATABASE from "./models/db.js";
 import mailRouter from "./routes/mailRouter.js";
 import courseRouter from "./routes/courseRouter.js";
 import userCourseRouter from "./routes/userCourseRoute.js";
-import leaveRequestRoutes from './routes/LeaveRequestRoutes.js';
+import leaveRequestRoutes from "./routes/LeaveRequestRoutes.js";
 import todosRouter from "./routes/todosRoutes.js";
 import userinfoRouter from './routes/userRouter.js';
 
 import facultyRouter from "./routes/factulyRouter.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import notificationRouter from "./routes/notificationsRouter.js";
 
 dotenv.config();
@@ -42,9 +43,11 @@ app.use('/api', courseRouter);
 app.use('/api',userinfoRouter)
 app.use('/leaveRequest', leaveRequestRoutes);
 
+app.use("/api/contact", contactRoutes);
 db.connect();
- 
 
+
+// Start server
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
