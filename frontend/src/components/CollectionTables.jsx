@@ -124,3 +124,5 @@ export default function CollectionTables({ name, rows, columns }) {
     </div>
   );
 }
+
+

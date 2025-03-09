@@ -71,7 +71,7 @@ function DbTables() {
     <div>
       {!showCollectionTables && (
         <>
-          <div
+          {/* <div
             style={{
               backgroundColor: "#2196F3",
               padding: "30px",
@@ -89,8 +89,8 @@ function DbTables() {
             >
               Collections
             </div>
-          </div>
-          <div
+          </div> */}
+          {/* <div
             style={{
               display: "flex",
               overflowX: "auto",
@@ -131,12 +131,12 @@ function DbTables() {
                 </Button>
               </Paper>
             ))}
-          </div>
-          <LeaveApproval />
+          </div> */}
+          {/* <LeaveApproval /> */}
         </>
       )}
 
-      {showCollectionTables && selectedRows != [] && (
+      {/* {showCollectionTables && selectedRows != [] && (
         <div style={{ position: "relative" }}>
           <IconButton
             onClick={handleCloseCollectionTables}
@@ -189,7 +189,9 @@ function DbTables() {
             />
           )}
         </div>
-      )}
+      )} */}
+      <h1 className="bold text-3xl relative left-8">Leave forms</h1>
+      <LeaveApproval />
     </div>
   );
 }

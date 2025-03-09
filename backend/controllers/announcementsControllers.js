@@ -112,4 +112,16 @@ const deleteAnnouncement = async (req, res) => {
   res.json({ message: "Announcement deleted successfully" });
 };
 
-export { getAnnouncements, createAnnouncement, deleteAnnouncement };
+const updateAnnouncement = async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+  try {
+      const updatedAnnouncement = await Announcements.findByIdAndUpdate(id, updatedData, { new: true });
+      if (!updatedAnnouncement) return res.status(404).json({ message: "Announcement not found" });
+      res.status(200).json(updatedAnnouncement);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
+export { getAnnouncements, createAnnouncement, deleteAnnouncement, updateAnnouncement };
