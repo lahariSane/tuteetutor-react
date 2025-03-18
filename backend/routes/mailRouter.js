@@ -5,6 +5,10 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import axios from "axios";
 import User from "../models/userModule.js";
+import morgan from 'morgan';
+
+const mailRouter = express.Router();
+mailRouter.use(morgan('combined'));
 
 // Utility Functions
 const generateJwtToken = (payload) =>
@@ -34,7 +38,6 @@ const validateRequest = (fields) => {
   };
 };
 
-const mailRouter = express.Router();
 
 // Routes
 mailRouter.post("/auth/google-login", async (req, res) => {

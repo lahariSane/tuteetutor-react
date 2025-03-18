@@ -4,6 +4,7 @@ import validateUser from '../middlewares/validateUser.js';
 
 const router = express.Router();
 
+
 router.get('/user-course', validateUser(), getUserCourses);
 router.post('/user-course', validateUser(), createUserCourse);
 router.put('/user-course', validateUser(), updateUserCourse);

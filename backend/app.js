@@ -16,6 +16,7 @@ import userinfoRouter from './routes/userRouter.js';
 import facultyRouter from "./routes/facultyRouter.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import notificationRouter from "./routes/notificationsRouter.js";
+import morgan from 'morgan';
 
 dotenv.config();
 const app = express();
@@ -26,6 +27,8 @@ const db = new DATABASE();
  
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev')); 
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/', userRouter);
 app.use('/', adminRouter);
