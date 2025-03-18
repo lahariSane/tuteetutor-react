@@ -36,6 +36,7 @@ function stringToColor(string) {
 
 const FacultyCard = ({ faculty, user, token, onFacultyRemove }) => {
   const instructor = faculty.instructor;
+  if (!instructor) return <></>;
   const handleClick = async () => {
     try {
       const response = await axios.delete(
