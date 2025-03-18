@@ -262,7 +262,7 @@ mailRouter.post(
         id: user._id,
         role: user.role,
         name: user.name,
-        email: user.email,
+        email: user.email, 
         profileImage: user.profileImage,
       });
       res.status(200).json({ message: "Login successful", token });

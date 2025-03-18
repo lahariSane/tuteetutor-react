@@ -180,7 +180,7 @@ export default function Profile() {
                                 <label htmlFor="email"> <b> Email address</b></label>
                                 <div className="input-wrapper">
                                     <span className="icon">📧</span>
-                                    <input className='profile-input' type="email" id="email" name="email" placeholder="Email" value={personalInfo.email} onChange={handlePersonalInfoChange} disabled={!isEditing} />
+                                    <input className='profile-input' type="email" id="email" name="email" placeholder="Email" value={personalInfo.email} onChange={handlePersonalInfoChange} disabled />
                                 </div>
                             </div>
 

@@ -21,7 +21,7 @@ function SignInForm() {
       const user = jwtDecode(token);
       user.role === "student" ? navigate("/coursesSelection") : navigate("/");
     } else if (code) {
-      setLoading(true);
+      setLoading(true); 
 
       // Exchange GitHub code for access token
       const getGitHubAccessToken = async () => {
@@ -58,7 +58,7 @@ function SignInForm() {
 
   const navigateBasedOnRole = (token) => {
     const user = jwtDecode(token);
-    user.role === "student" ? navigate("/coursesSelection") : navigate("/");
+    user.role === "student" ? navigate("/") : navigate("/");
   };
 
   const handleOnSubmit = async (event) => {
