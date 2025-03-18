@@ -10,8 +10,13 @@ import {
   Card,
   Typography,
   createTheme,
+  Button,
+  IconButton,
+  Fade,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AttachFileIcon from "@mui/icons-material/AttachFile"; // Add this import
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { CalendarCard } from "../components/CalanderCard";
@@ -102,9 +107,15 @@ const StudentDashboard = () => {
   const [announcementData, setAnnouncementData] = React.useState([]);
   const [timetable, setTimetable] = React.useState([]);
   const [holidays, setHolidays] = React.useState([]);
+  // New state for selected announcement
+  const [selectedAnnouncement, setSelectedAnnouncement] = React.useState(null);
 
   const handleModalOpen = () => setModal(true);
-  const handleModalClose = () => setModal(false);
+  const handleModalClose = () => {
+    setModal(false);
+    // Refresh announcements after closing the modal
+    fetchAnnouncements();
+  };
 
   const data = useOutletContext();
   const drawerWidth = data.drawerWidth;
@@ -114,20 +125,52 @@ const StudentDashboard = () => {
   const handleChange = (event, newValue) => setValue(newValue);
   const handlesubChange = (event, newValue) => setSubValue(newValue);
 
+  // New handlers for announcement selection
+  const handleAnnouncementClick = (announcement) => {
+    console.log("Selected announcement:", announcement);
+    setSelectedAnnouncement(announcement);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackToList = () => {
+    setSelectedAnnouncement(null);
+  };
+
+  // Separate function to fetch announcements for better reusability
+  const fetchAnnouncements = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+      
+      console.log("Fetching announcements...");
+      const response = await axios.get(`${backendUrl}/announcements`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      console.log("Announcements data:", response.data);
+      setAnnouncementData(response.data);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  };
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const [announcements, timetable, holidays] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/announcements`, {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+        
+        // Fetch announcements
+        await fetchAnnouncements();
+        
+        // Fetch timetable and holidays
+        const [timetable, holidays] = await Promise.all([
+          axios.get(`${backendUrl}/timetable`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetable`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`),
+          axios.get(`${backendUrl}/holidays`),
         ]);
-        setAnnouncementData(announcements.data);
+        
         setTimetable(timetable.data);
         setHolidays(holidays.data);
       } catch (error) {
@@ -135,6 +178,13 @@ const StudentDashboard = () => {
       }
     };
     fetchData();
+  }, []);  // Remove modal dependency to prevent unnecessary refetching
+
+  // Refetch when modal closes
+  React.useEffect(() => {
+    if (!modal) {
+      fetchAnnouncements();
+    }
   }, [modal]);
 
   const imageList = [
@@ -142,58 +192,193 @@ const StudentDashboard = () => {
     "/images/unnamed2.jpg",
     "/images/unnamed3.jpg",
   ];
-  const announcement = announcementData.map((announcement, index) => {
-    const image = imageList[Math.floor(index % imageList.length)];
+
+  // Detail view for a single announcement
+  const renderAnnouncementDetail = () => {
+    if (!selectedAnnouncement) return null;
+    
+    const image = imageList[Math.floor(Math.random() * imageList.length)];
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+    
+    console.log("Rendering announcement detail with file:", selectedAnnouncement.file);
+    
     return (
-      <Card
-        key={index}
-        elevation={4}
-        sx={{
-          borderRadius: "20px",
-          padding: "12px",
-          marginBottom: "10px",
-          background: "#fafafa",
-          "&:hover": { boxShadow: 10 },
-        }}
-      >
-        <Stack direction="row">
-          <Box
+      <Fade in={!!selectedAnnouncement} timeout={500}>
+        <Box>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <IconButton 
+              onClick={handleBackToList} 
+              color="primary" 
+              sx={{ mr: 1 }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6">Back to Announcements</Typography>
+          </Box>
+          
+          <Card
+            elevation={4}
             sx={{
-              height: "200px",
-              minWidth: "200px",
-              borderRadius: "10px",
-              backgroundImage: `url(${image})`,
-              backgroundSize: "cover",
-              marginRight: "50px",
-            }}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              alignItems: "left",
-              width: "calc(98% - 200px)",
+              borderRadius: "20px",
+              padding: "20px",
+              background: "#fafafa",
+              transition: "all 0.3s ease",
             }}
           >
-            <Box>
-              <Topic>{announcement.title}</Topic>
-              <Announcment>
-                {announcement.description.split("\n").map((line, index) => (
+            <Box
+              sx={{
+                height: "250px",
+                width: "100%",
+                borderRadius: "10px",
+                backgroundImage: `url(${image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                mb: 3,
+              }}
+            />
+            
+            <Topic sx={{ fontSize: "30px", mb: 2 }}>
+              {selectedAnnouncement.title}
+            </Topic>
+            
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+              <Time sx={{ justifyContent: "left" }}>
+                Announced By: <b>{selectedAnnouncement.author}</b>
+              </Time>
+              <Time sx={{ justifyContent: "right" }}>
+                {new Date(selectedAnnouncement.date || new Date()).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </Time>
+            </Box>
+            
+            <Box sx={{ bgcolor: "#f0f0f0", p: 3, borderRadius: "10px" }}>
+              <Announcment sx={{ fontSize: "18px", lineHeight: 1.8 }}>
+                {selectedAnnouncement.description.split("\n").map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
-                    {index <
-                      announcement.description.split("\n").length - 1 && <br />}
+                    {index < selectedAnnouncement.description.split("\n").length - 1 && <br />}
                   </React.Fragment>
                 ))}
               </Announcment>
             </Box>
-            <Time sx={{ justifyContent: "right", paddingRight: "1vw" }}>
-              Announced By: <b>{announcement.author}</b>
-            </Time>
-          </Box>
-        </Stack>
-      </Card>
+            
+            {/* Display file attachment if available */}
+            {selectedAnnouncement.file && (
+              <Box sx={{ mt: 3, p: 2, bgcolor: "#e3f2fd", borderRadius: "10px", display: "flex", alignItems: "center" }}>
+                <AttachFileIcon sx={{ mr: 2, color: "#1976d2" }} />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 0.5 }}>
+                    Attachment
+                  </Typography>
+                  <Button 
+                    variant="outlined" 
+                    size="small" 
+                    color="primary"
+                    href={`${backendUrl}/${selectedAnnouncement.file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Download File
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Card>
+        </Box>
+      </Fade>
+    );
+  };
+
+  // List view for all announcements
+  const announcement = announcementData.map((announcement, index) => {
+    const image = imageList[Math.floor(index % imageList.length)];
+    const hasAttachment = !!announcement.file;
+    
+    return (
+      <Fade key={announcement._id || index} in={true} timeout={300} style={{ transitionDelay: `${index * 50}ms` }}>
+        <Card
+          elevation={4}
+          sx={{
+            borderRadius: "20px",
+            padding: "12px",
+            marginBottom: "10px",
+            background: "#fafafa",
+            "&:hover": { 
+              boxShadow: 10,
+              transform: "translateY(-5px)",
+              cursor: "pointer",
+            },
+            transition: "all 0.3s ease",
+          }}
+          onClick={() => handleAnnouncementClick(announcement)}
+        >
+          <Stack direction="row">
+            <Box
+              sx={{
+                height: "200px",
+                minWidth: "200px",
+                borderRadius: "10px",
+                backgroundImage: `url(${image})`,
+                backgroundSize: "cover",
+                marginRight: "50px",
+              }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "left",
+                width: "calc(98% - 200px)",
+              }}
+            >
+              <Box>
+                <Topic>
+                  {announcement.title}
+                  {hasAttachment && (
+                    <AttachFileIcon 
+                      sx={{ 
+                        ml: 1, 
+                        fontSize: "0.8em", 
+                        color: "primary.main", 
+                        verticalAlign: "middle" 
+                      }} 
+                    />
+                  )}
+                </Topic>
+                <Announcment sx={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {announcement.description}
+                </Announcment>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                <Time>
+                  Announced By: <b>{announcement.author}</b>
+                </Time>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAnnouncementClick(announcement);
+                  }}
+                >
+                  Read More
+                </Button>
+              </Box>
+            </Box>
+          </Stack>
+        </Card>
+      </Fade>
     );
   });
 
@@ -320,8 +505,6 @@ const StudentDashboard = () => {
         top: "64px",
         position: "absolute",
         [theme.breakpoints.down("md")]: {
-          // backgroundColor: theme.palette.primary.main,
-          // height: "700px",
           height: "100%",
           width: "100%",
           left: 0,
@@ -410,8 +593,10 @@ const StudentDashboard = () => {
                 index={0}
                 sx={{ paddingTop: "300px", position: "relative" }}
               >
-                {announcement}
-                {user && user.role !== "student" && (
+                {/* Conditionally render either selected announcement or full list */}
+                {selectedAnnouncement ? renderAnnouncementDetail() : announcement}
+                
+                {user && user.role !== "student" && !selectedAnnouncement && (
                   <>
                     <Box sx={{ height: "50px" }} />
                     <Fab
@@ -506,7 +691,6 @@ const StudentDashboard = () => {
             [theme.breakpoints.down("sm")]: {
               width: "100%",
               maxWidth: "900px",
-              // maxHeight: "350px",
               marginRight: "30px",
             },
           }}
