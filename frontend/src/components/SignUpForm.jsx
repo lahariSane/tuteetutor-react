@@ -46,12 +46,12 @@ function SignUpForm() {
     }
 
     // Check for exactly one underscore and no other special characters
-    if (!/^([^_]*_){1}[^_]*$/.test(password)) {
-      setPasswordError(
-        "Password must include exactly one underscore and no other special characters."
-      );
-      return;
-    }
+    // if (!/^([^_]*_){1}[^_]*$/.test(password)) {
+    //   setPasswordError(
+    //     "Password must include exactly one underscore and no other special characters."
+    //   );
+    //   return;
+    // }
 
     // Clear error if all conditions are met
     setPasswordError("");
