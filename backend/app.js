@@ -5,7 +5,7 @@ import userRouter from "./routes/user.js";
 import adminRouter from "./routes/admin.js";
 import announcementsRouter from "./routes/announcementsRouter.js";
 import holidaysRouter from "./routes/holidayRouter.js";
-import timetableRouer from "./routes/timetableRouter.js";
+import timetableRouter from "./routes/timetableRouter.js";
 import DATABASE from "./models/db.js";
 import mailRouter from "./routes/mailRouter.js";
 import courseRouter from "./routes/courseRouter.js";
@@ -13,10 +13,10 @@ import userCourseRouter from "./routes/userCourseRoute.js";
 import leaveRequestRoutes from "./routes/LeaveRequestRoutes.js";
 import todosRouter from "./routes/todosRoutes.js";
 import userinfoRouter from './routes/userRouter.js';
-
-import facultyRouter from "./routes/factulyRouter.js";
+import facultyRouter from "./routes/facultyRouter.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import notificationRouter from "./routes/notificationsRouter.js";
+import morgan from 'morgan';
 
 dotenv.config();
 const app = express();
@@ -27,11 +27,13 @@ const db = new DATABASE();
  
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev')); 
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/', userRouter);
 app.use('/', adminRouter);
 app.use('/', announcementsRouter);
-app.use('/', timetableRouer);
+app.use('/', timetableRouter);
 app.use('/', holidaysRouter);
 app.use('/', courseRouter);
 app.use('/', userCourseRouter);
@@ -46,6 +48,19 @@ app.use('/leaveRequest', leaveRequestRoutes);
 app.use("/api/contact", contactRoutes);
 db.connect();
 
+app.use((req, res, next) => {
+  const error = new Error("Route Not Found");
+  error.status = 404;
+  next(error);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log error
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
 
 // Start server
 app.listen(PORT, () => {

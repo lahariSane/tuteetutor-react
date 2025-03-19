@@ -36,6 +36,7 @@ function stringToColor(string) {
 
 const FacultyCard = ({ faculty, user, token, onFacultyRemove }) => {
   const instructor = faculty.instructor;
+  if (!instructor) return <></>;
   const handleClick = async () => {
     try {
       const response = await axios.delete(
@@ -153,7 +154,7 @@ const FacultyList = () => {
           left: drawerWidth,
           top: "64px",
           position: "absolute",
-          height: "calc(100% - 60px)",
+          // height: "calc(100% - 60px)",
           [theme.breakpoints.down("md")]: {
             height: "100%",
             maxWidth: "100vw",
