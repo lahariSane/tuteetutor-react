@@ -8,7 +8,7 @@ import User from "../models/userModule.js";
 import morgan from 'morgan';
 
 const mailRouter = express.Router();
-mailRouter.use(morgan('combined'));
+mailRouter.use(morgan('combined')); // router level middleware
 
 // Utility Functions
 const generateJwtToken = (payload) =>

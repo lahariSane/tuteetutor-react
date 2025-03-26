@@ -25,9 +25,10 @@ const PORT = process.env.PORT || 5000;
 // Connect to the database
 const db = new DATABASE();
  
+// application level middleware
 app.use(cors());
-app.use(express.json());
-app.use(morgan('dev')); 
+app.use(express.json()); // inbuilt middleware
+app.use(morgan('dev')); // third party middleware
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/', userRouter);
@@ -48,6 +49,7 @@ app.use('/leaveRequest', leaveRequestRoutes);
 app.use("/api/contact", contactRoutes);
 db.connect();
 
+// error handling middleware
 app.use((req, res, next) => {
   const error = new Error("Route Not Found");
   error.status = 404;
