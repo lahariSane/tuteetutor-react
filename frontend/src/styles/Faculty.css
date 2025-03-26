@@ -4,6 +4,7 @@
   flex-wrap: wrap;
   justify-content: center;
   overflow: auto;
+  margin-top: 70px;
   /* margin-left: ; */
 }
 
@@ -41,9 +42,9 @@
   object-fit: cover;
 }
 
-.faculty-details {
+/* .faculty-details {
   margin-top: -20px;
-}
+} */
 .faculty-details h3 {
   font-size: 20px;
   font-weight: 600;
@@ -63,6 +64,18 @@
 
 .remove-button {
   background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.edit-button{
+  background-color: #3498db;
   color: white;
   border: none;
   padding: 10px 15px;

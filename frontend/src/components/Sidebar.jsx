@@ -147,7 +147,11 @@ function Sidebar({
     Support: <SupportAgentIcon sx={{ color: "white" }} />,
   };
 
-  if (user?.role !== "faculty") {
+  if (user?.role == "admin") {
+    topIcons.Users = <AssignmentIndIcon sx={{ color: "white" }} />;
+  }
+
+  else if (user?.role !== "faculty") {
     topIcons.Faculty = <AssignmentIndIcon sx={{ color: "white" }} />;
   }
 

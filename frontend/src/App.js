@@ -42,6 +42,7 @@ function App() {
           <Route path="faculty" element={<FacultyList />} />
           <Route path="settings" element={<Settings />} />
           <Route path="hod" element={<HodList />} />
+          <Route path="users" element={<FacultyList />} />
         </Route>
       </Routes>
     </Router>
