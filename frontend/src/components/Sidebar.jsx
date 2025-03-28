@@ -149,6 +149,7 @@ function Sidebar({
 
   if (user?.role == "admin") {
     topIcons.Users = <AssignmentIndIcon sx={{ color: "white" }} />;
+    topIcons.TimeTableManager = <EditCalendarOutlinedIcon sx={{ color: "white" }} />;
   }
 
   else if (user?.role !== "faculty") {
