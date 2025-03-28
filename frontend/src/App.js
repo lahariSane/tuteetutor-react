@@ -19,6 +19,7 @@ import ContactUs from "./pages/ContactUs";
 import MessageSent from "./pages/MessageSent";
 import ChatPage from "./pages/ChatPage";
 import HodList from "./components/Hod";
+import TimetableManager from "./components/TimetableAdmin";
 
 function App() { 
   document.title = "TuteeTutor";
@@ -43,6 +44,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="hod" element={<HodList />} />
           <Route path="users" element={<FacultyList />} />
+          <Route path="timeTableManager" element={<TimetableManager />} />
         </Route>
       </Routes>
     </Router>

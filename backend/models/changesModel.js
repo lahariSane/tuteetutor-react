@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 
 const changesSchema = mongoose.Schema({
-    id: { type: string, required: true, unique: true },
-    date: { type: number, required: true },
-    month: { type: number, required: true },
-    year: { type: number, required: true },
-    changeTo: { type: number, required: true },
+    date: { type: Number, required: true },
+    month: { type: Number, required: true },
+    year: { type: Number, required: true },
+    changeTo: { type: Number, required: true },
 });
 
 const Changes = mongoose.model('Changes', changesSchema, 'changes');

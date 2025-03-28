@@ -1,6 +1,7 @@
 import Timetable from "../models/timetableModel.js";
 import userCourseSchema from "../models/userCourseModel.js";
 import Course from "../models/courseModel.js";
+import mongoose from "mongoose";
 
 const getTimetable = async (req, res) => {
   try {
@@ -51,6 +52,16 @@ const getTimetable = async (req, res) => {
   }
 };
 
+const getAllTimetables = async (req, res) => {
+  try {
+    const timetables = await Timetable.find();
+    console.log(timetables)
+    res.status(200).json(timetables);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const createTimetable = async (req, res) => {
   const timetable = req.body;
 
@@ -82,12 +93,49 @@ const createTimetable = async (req, res) => {
   }
 };
 
-const deleteTimetable = async (req, res) => {
+const updateTimetable = async (req, res) => {
   const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id))
+  const updatedData = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send("No timetable with that id");
-  await Timetable.findByIdAndRemove(id);
-  res.json({ message: "Timetable deleted successfully" });
+  }
+
+  try {
+    const updatedTimetable = await Timetable.findByIdAndUpdate(
+      id,
+      { ...updatedData, id },
+      { new: true }
+    );
+
+    if (!updatedTimetable) {
+      return res.status(404).json({ message: "Timetable not found" });
+    }
+
+    res.status(200).json(updatedTimetable);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
-export { getTimetable, createTimetable, deleteTimetable };
+const deleteTimetable = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send("No timetable with that id");
+  }
+
+  try {
+    const deletedTimetable = await Timetable.findOneAndDelete({ _id: id });
+
+    if (!deletedTimetable) {
+      return res.status(404).json({ message: "Timetable not found" });
+    }
+
+    res.json({ message: "Timetable deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export { getTimetable, createTimetable, updateTimetable, deleteTimetable, getAllTimetables };

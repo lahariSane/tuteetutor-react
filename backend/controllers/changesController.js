@@ -1,3 +1,4 @@
+import Changes from "../models/changesModel.js";
 class ChangesController {
   async getChanges(req, res) {
       try {
@@ -19,6 +20,7 @@ class ChangesController {
   }
 
   async createChange(req, res) {
+    console.log(req.body);
       try {
           const newChange = new Changes(req.body);
           await newChange.save();
@@ -31,7 +33,7 @@ class ChangesController {
   async updateChange(req, res) {
       try {
           const updatedChange = await Changes.findOneAndUpdate(
-              { id: req.params.id },
+              { _id: req.params.id },
               req.body,
               { new: true }
           );
@@ -44,7 +46,7 @@ class ChangesController {
 
   async deleteChange(req, res) {
       try {
-          const deletedChange = await Changes.findOneAndDelete({ id: req.params.id });
+          const deletedChange = await Changes.findOneAndDelete({ _id: req.params.id });
           if (!deletedChange) return res.status(404).json({ message: "Change not found" });
           res.json({ message: "Change deleted successfully" });
       } catch (error) {

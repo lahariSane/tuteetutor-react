@@ -16,6 +16,8 @@ import userinfoRouter from './routes/userRouter.js';
 import facultyRouter from "./routes/facultyRouter.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import notificationRouter from "./routes/notificationsRouter.js";
+import breakRouter from "./routes/breaksRouter.js";
+import changeRouter from "./routes/changesRouter.js";
 import morgan from 'morgan';
 
 dotenv.config();
@@ -45,7 +47,8 @@ app.use("/api", todosRouter);
 app.use('/api', courseRouter);
 app.use('/api',userinfoRouter)
 app.use('/leaveRequest', leaveRequestRoutes);
-
+app.use('/break', breakRouter);
+app.use('/changes', changeRouter);
 app.use("/api/contact", contactRoutes);
 db.connect();
 
