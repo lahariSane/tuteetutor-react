@@ -55,7 +55,6 @@ const getTimetable = async (req, res) => {
 const getAllTimetables = async (req, res) => {
   try {
     const timetables = await Timetable.find();
-    console.log(timetables)
     res.status(200).json(timetables);
   } catch (error) {
     res.status(500).json({ message: error.message });
