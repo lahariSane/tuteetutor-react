@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useOutletContext } from 'react-router-dom';
 import '../styles/Settings.css';
+import Avatar from "@mui/material/Avatar";
+import { stringToColor } from "../components/Navbar";
 
 
 export default function Profile() {
@@ -15,6 +17,9 @@ export default function Profile() {
     const [profileImage, setProfileImage] = useState('https://via.placeholder.com/100'); // Default image URL
     const userId = user?.id;
     const [bio, setBio] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [savedImage, setSavedImage] = useState(null);
 
     // Fetch courses on load
     useEffect(() => {
@@ -78,7 +83,7 @@ export default function Profile() {
                 {
                     data: { courseId },
                 }
-            ); 
+            );
 
             setUserCourses(response.data.courseRegistered);  // Update state with the new courses
             alert('Course removed successfully!');
@@ -121,23 +126,51 @@ export default function Profile() {
         }
     };
 
-    const handleUploadProfileImage = async (event) => {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('profileImage', file);
+    // const handleUploadProfileImage = async (event) => {
+    //     const file = event.target.files[0];
+    //     const formData = new FormData();
+    //     formData.append('profileImage', file);
 
-        try {
-            const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/upload`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            setProfileImage(response.data.profileImage); // Update the profile image
-            alert('Profile image updated successfully!');
-        } catch (error) {
-            console.error('Error uploading profile image:', error);
-            alert('Failed to upload profile image');
-        }
+    //     try {
+    //         const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/api/user/${userId}/upload`, formData, {
+    //             headers: { 'Content-Type': 'multipart/form-data' },
+    //         });
+    //         setProfileImage(response.data.profileImage); // Update the profile image
+    //         alert('Profile image updated successfully!');
+    //     } catch (error) {
+    //         console.error('Error uploading profile image:', error);
+    //         alert('Failed to upload profile image');
+    //     }
+    // };
+
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setSelectedFile(file);
+        setPreview(URL.createObjectURL(file)); // Show preview before uploading
     };
 
+    const handleUpload = async () => {
+        if (!selectedFile) return alert("Please select an image to upload.");
+
+        const formData = new FormData();
+        formData.append("profileImage", selectedFile);
+        formData.append("userId", userId);
+
+        try {
+            const response = await axios.post("http://localhost:5000/api/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+
+            setSavedImage(`http://localhost:5000/uploads/${response.data.fileName}`);
+            setSelectedFile(null);
+            setPreview(null);
+            alert("Profile picture uploaded successfully!");
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            alert("Failed to upload profile picture.");
+        }
+    };
 
     return (
         <div className='outer-container'>
@@ -149,7 +182,16 @@ export default function Profile() {
                         </div>
                         <div className="profile-content">
                             <div className="profile-photo">
-                                <img className='profile-picture' src={profileImage} alt="Profile Photo" />
+                                <Avatar
+                                    sx={{
+                                        width: "100px",
+                                        height: "100px",
+                                        fontSize: "32px",
+                                        bgcolor: stringToColor(user?.name),
+                                    }}
+                                >
+                                    {user?.name ? user.name[0].toUpperCase() : "U"}
+                                </Avatar>
                             </div>
                             <div style={{ position: 'relative', top: "-3em" }}>
                                 <h2 style={{ marginBottom: '0.3em', fontSize: '20px', margin: 0 }}>Your Photo</h2>

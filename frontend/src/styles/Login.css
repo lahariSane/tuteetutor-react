@@ -156,18 +156,26 @@ body {
 }
 
 .login-button {
-  border-radius: 20px;
-  border: 1px solid #00246b;
-  background-color: #3299fc;
+  border-radius: 25px;
+  border: 2px solid #00246b;
+  background: linear-gradient(135deg, #3299fc, #267cd3);
   color: #ffffff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   padding: 14px 50px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  transition: transform 80ms ease-in;
+  transition: all 0.3s ease-in-out;
   margin-top: 10px;
   box-sizing: border-box;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 36, 107, 0.3);
+}
+
+.login-button:hover {
+  background: linear-gradient(135deg, #267cd3, #1b5da9);
+  box-shadow: 0 6px 12px rgba(0, 36, 107, 0.4);
+  transform: translateY(-2px);
 }
 
 .login-button:active {
@@ -180,8 +188,40 @@ body {
 
 .login-button.ghost {
   background-color: transparent;
-  border-color: #ffffff;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  transition: all 0.3s ease-in-out;
 }
+
+.login-button.ghost:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.ghost {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ghost:hover {
+  background: linear-gradient(135deg, #3299fc, #267cd3);
+  color: #ffffff;
+  box-shadow: 0 6px 12px rgba(50, 153, 252, 0.4);
+  transform: translateY(-2px);
+}
+
+
 
 .overlay-container {
   position: absolute; 

@@ -62,13 +62,13 @@ function Login() {
             <div className="overlay-panel overlay-right">
               <h1>Hello, Friend!</h1>
               <p>Enter your personal details and start your journey with us.</p>
-              <button
-                className="ghost"
-                id="signUp"
-                onClick={() => handleOnClick("signUp")}
-              >
-                Sign Up
-              </button>
+                <button
+                  className="ghost"
+                  id="signUp"
+                  onClick={() => handleOnClick("signUp")}
+                >
+                  Sign Up
+                </button>
             </div>
           </div>
         </div>
