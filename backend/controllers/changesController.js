@@ -20,7 +20,6 @@ class ChangesController {
   }
 
   async createChange(req, res) {
-    console.log(req.body);
       try {
           const newChange = new Changes(req.body);
           await newChange.save();

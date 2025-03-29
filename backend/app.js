@@ -19,10 +19,13 @@ import notificationRouter from "./routes/notificationsRouter.js";
 import breakRouter from "./routes/breaksRouter.js";
 import changeRouter from "./routes/changesRouter.js";
 import morgan from 'morgan';
+import swaggerDocs from "./swaggerConfig.js";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+swaggerDocs(app);
 
 // Connect to the database
 const db = new DATABASE();

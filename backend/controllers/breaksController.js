@@ -12,13 +12,10 @@ class BreaksController {
     }
 
     async createBreak(req, res) {
-        console.log(req.body);
         const { startTime, endTime, description} = req.body;
-        console.log(startTime, endTime, description);
 
         const newBreak = new Breaks({ startTime, endTime, description });
         try {
-            await newBreak.validate();
             await newBreak.save();
             res.status(201).json(newBreak);
         }
@@ -47,9 +44,23 @@ class BreaksController {
 
     async deleteBreak(req, res) {
         const { id } = req.params;
-        // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No break with that id');
-        await Breaks.findByIdAndDelete(id);
-        res.json({ message: 'Break deleted successfully' });
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid break ID" });
+        }
+
+        try {
+            const breakToDelete = await Breaks.findById(id);
+            if (!breakToDelete) {
+                return res.status(404).json({ message: "Break not found" });
+            }
+
+            await breakToDelete.deleteOne();
+            res.json({ message: "Break deleted successfully" });
+        } catch (error) {
+            console.error("Error deleting break:", error);
+            res.status(500).json({ message: "Server error" });
+        }
     }
 }
 

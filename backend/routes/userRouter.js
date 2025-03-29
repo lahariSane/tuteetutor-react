@@ -6,7 +6,6 @@ const userinfoRouter = express.Router();
 userinfoRouter.get('/users/role', async (req, res) => {
   try {
     const role = req.query.role;
-    console.log(role);
     const users = await userModule.find({ role });
 
     if (!users.length) return res.status(404).json({ message: `No users found for role: ${role}` });

@@ -127,22 +127,6 @@ function TimetableManager() {
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         if (formData._id !== null) {
-    //             await axios.patch(`http://localhost:5000/timetable/${formData._id}`, formData);
-    //             setClasses((prev) => prev.map((cls) => (cls._id === formData._id ? { ...formData } : cls)));
-    //         } else {
-    //             const response = await axios.post("http://localhost:5000/timetable", formData);
-    //             setClasses([...classes, { ...response.data }]);
-    //         }
-    //         setFormData({ _id: null, day: "Monday", startTime: "", endTime: "", roomNo: "", subject: "", section: "A" });
-    //     } catch (error) {
-    //         console.error("Error saving class:", error);
-    //     }
-    // };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {

@@ -30,6 +30,30 @@ const createHoliday = async (req, res) => {
         res.status(409).json({ message: error.message });
     }
 }
+const updateHoliday = async (req, res) => {
+    const { id } = req.params;
+    const { date, occasion } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).send('No holiday with that id');
+    }
+
+    try {
+        const updatedHoliday = await Holiday.findByIdAndUpdate(
+            id,
+            { date, occasion },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedHoliday) {
+            return res.status(404).json({ message: 'Holiday not found' });
+        }
+
+        res.status(200).json(updatedHoliday);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 const deleteHoliday = async (req, res) => {
     const { id } = req.params;
@@ -38,4 +62,4 @@ const deleteHoliday = async (req, res) => {
     res.json({ message: 'Holiday deleted successfully' });
 }
 
-export { getHolidays, createHoliday, deleteHoliday };
+export { getHolidays, createHoliday, updateHoliday, deleteHoliday };
