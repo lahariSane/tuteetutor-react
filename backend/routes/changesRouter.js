@@ -1,5 +1,6 @@
 import express from "express";
 import ChangesController from "../controllers/changesController.js";
+import validateUser from "../middlewares/validateUser.js";
 
 const router = express.Router();
 const changesController = new ChangesController();
@@ -8,52 +9,75 @@ const changesController = new ChangesController();
  * @swagger
  * tags:
  *   name: Changes
- *   description: API for managing changes
+ *   description: API endpoints to create, view, update, and delete change records
  */
 
 /**
  * @swagger
  * /changes:
  *   get:
- *     summary: Get all changes
+ *     summary: Retrieve all changes
  *     tags: [Changes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Successfully retrieved the list of changes
+ *         description: List of changes retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   date:
+ *                     type: number
+ *                   month:
+ *                     type: number
+ *                   year:
+ *                     type: number
+ *                   changeTo:
+ *                     type: number
  *       500:
  *         description: Internal Server Error
  */
-router.get("/", changesController.getChanges);
+router.get("/", validateUser(), changesController.getChanges);
 
 /**
  * @swagger
  * /changes/{id}:
  *   get:
- *     summary: Get a specific change by ID
+ *     summary: Retrieve a single change by ID
  *     tags: [Changes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: Change ID (MongoDB ObjectId)
+ *         description: Unique ID of the change
  *     responses:
  *       200:
- *         description: Successfully retrieved the change
+ *         description: Change retrieved successfully
  *       404:
  *         description: Change not found
  *       500:
  *         description: Internal Server Error
  */
-router.get("/:id", changesController.getChange);
+router.get("/:id", validateUser(), changesController.getChange);
 
 /**
  * @swagger
  * /changes:
  *   post:
- *     summary: Create a new change
+ *     summary: Create a new change entry(Admin only)
  *     tags: [Changes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -81,14 +105,16 @@ router.get("/:id", changesController.getChange);
  *       500:
  *         description: Internal Server Error
  */
-router.post("/", changesController.createChange);
+router.post("/", validateUser(['admin']), changesController.createChange);
 
 /**
  * @swagger
  * /changes/{id}:
  *   patch:
- *     summary: Update a change by ID
+ *     summary: Update a change by ID(Admin only)
  *     tags: [Changes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -123,14 +149,16 @@ router.post("/", changesController.createChange);
  *       500:
  *         description: Internal Server Error
  */
-router.patch("/:id", changesController.updateChange);
+router.patch("/:id", validateUser(['admin']), changesController.updateChange);
 
 /**
  * @swagger
  * /changes/{id}:
  *   delete:
- *     summary: Delete a change by ID
+ *     summary: Delete a change by ID(Admin only)
  *     tags: [Changes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -146,6 +174,6 @@ router.patch("/:id", changesController.updateChange);
  *       500:
  *         description: Internal Server Error
  */
-router.delete("/:id", changesController.deleteChange);
+router.delete("/:id", validateUser(['admin']), changesController.deleteChange);
 
 export default router;

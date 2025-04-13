@@ -1,5 +1,6 @@
 import express from "express";
 import BreaksController from "../controllers/breaksController.js";
+import validateUser from "../middlewares/validateUser.js";
 
 const router = express.Router();
 const breaksController = new BreaksController();
@@ -8,35 +9,60 @@ const breaksController = new BreaksController();
  * @swagger
  * tags:
  *   name: Breaks
- *   description: API for managing breaks
+ *   description: Endpoints for managing break timings
  */
 
 /**
  * @swagger
  * /break/breaks:
  *   get:
- *     summary: Get all breaks
+ *     summary: Retrieve all breaks
  *     tags: [Breaks]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved the list of breaks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   startTime:
+ *                     type: string
+ *                   endTime:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *       401:
+ *         description: Unauthorized access
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
-router.get("/breaks", breaksController.getBreaks);
+router.get("/breaks", validateUser(), breaksController.getBreaks);
 
 /**
  * @swagger
  * /break/addBreak:
  *   post:
- *     summary: Add a new break
+ *     summary: Add a new break (Admin only)
  *     tags: [Breaks]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - startTime
+ *               - endTime
+ *               - description
  *             properties:
  *               startTime:
  *                 type: string
@@ -52,22 +78,28 @@ router.get("/breaks", breaksController.getBreaks);
  *         description: Break successfully added
  *       400:
  *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized access
+ *       500:
+ *         description: Internal server error
  */
-router.post("/addBreak", breaksController.createBreak);
+router.post("/addBreak", validateUser(['admin']), breaksController.createBreak);
 
 /**
  * @swagger
  * /break/breaks/{id}:
  *   patch:
- *     summary: Update a break
+ *     summary: Update a break by ID (Admin only)
  *     tags: [Breaks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Break ID
  *         schema:
  *           type: string
- *         description: Break ID
  *     requestBody:
  *       required: true
  *       content:
@@ -88,37 +120,43 @@ router.post("/addBreak", breaksController.createBreak);
  *       200:
  *         description: Break successfully updated
  *       400:
- *         description: Invalid break ID
+ *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized access
  *       404:
  *         description: Break not found
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
-router.patch("/breaks/:id", breaksController.updateBreak);
+router.patch("/breaks/:id", validateUser(['admin']), breaksController.updateBreak);
 
 /**
  * @swagger
  * /break/breaks/{id}:
  *   delete:
- *     summary: Delete a break
+ *     summary: Delete a break by ID (Admin only)
  *     tags: [Breaks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Break ID
  *         schema:
  *           type: string
- *         description: Break ID
  *     responses:
  *       200:
  *         description: Break successfully deleted
  *       400:
  *         description: Invalid break ID
+ *       401:
+ *         description: Unauthorized access
  *       404:
  *         description: Break not found
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
-router.delete("/breaks/:id", breaksController.deleteBreak);
+router.delete("/breaks/:id", validateUser(['admin']), breaksController.deleteBreak);
 
 export default router;
