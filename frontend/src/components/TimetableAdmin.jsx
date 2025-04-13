@@ -8,6 +8,12 @@ function TimetableManager() {
     const [classes, setClasses] = useState([]);
     const [changes, setChanges] = useState([]);
     const [breaks, setBreaks] = useState([]);
+    const [holidays, setHolidays] = useState([]);
+    const [holidaysData, setHolidaysData] = useState({
+        _id : null,
+        date: "",
+        occasion: "",
+    });
     const [formData, setFormData] = useState({
         _id: null,
         day: "Monday",
@@ -30,6 +36,67 @@ function TimetableManager() {
         description: "",
     });
 
+    const handleHoliday = (e) => {
+        setHolidaysData({ ...holidaysData, [e.target.name]: e.target.value });
+    };
+    const handleHolidaySubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const holidayPayload = {
+                date: holidaysData.date,
+                occasion: holidaysData.occasion,
+            };
+            if (holidaysData._id !== null) {
+                await axios.patch(`http://localhost:5000/holiday/${holidaysData._id}`, holidayPayload,
+                    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+                );
+            } else {
+                await axios.post("http://localhost:5000/holidays", holidayPayload,
+                    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+                );
+            }
+            fetchHolidays(); // Refresh holiday list after operation
+            setHolidaysData({ _id: null, date: "", occasion: "" });
+            e.target.reset();
+        } catch (error) {
+            console.error("Error saving holiday:", error);
+        }
+    };
+
+    const handleHolidayEdit = (_id) => {
+        const selectedHoliday = holidays.find((hol) => hol._id === _id);
+        if (selectedHoliday) {
+            setHolidaysData(selectedHoliday);
+        }
+    };
+
+    const handleHolidayDelete = async (_id) => {
+        try {
+            await axios.delete(`http://localhost:5000/holiday/${_id}`,
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+            );
+            fetchHolidays(); // Refresh after delete
+        } catch (error) {
+            console.error("Error deleting holiday:", error);
+        }
+    };
+
+    const fetchHolidays = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/holidays",
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+            );
+            const formattedHolidays = response.data.map(holiday => ({
+                ...holiday,
+                date: `${String(holiday.date).substring(0, 10)}`,
+                occasion: holiday.occasion
+            }));
+            setHolidays(formattedHolidays);
+        } catch (error) {
+            console.error("Error fetching holidays:", error);
+        }
+    };
+
     // Handle input changes
     const handleBreak = (e) => {
         setBreakData({ ...breakData, [e.target.name]: e.target.value });
@@ -37,31 +104,32 @@ function TimetableManager() {
 
     useEffect(() => {
         fetchBreaks();
+        fetchHolidays();
     }, []);
 
     const convertTo12HourFormat = (timeString) => {
         if (!timeString) return null;
-        
+
         const [hours, minutes] = timeString.split(":").map(Number);
         const period = hours >= 12 ? "PM" : "AM";
         const adjustedHours = hours % 12 || 12; // Convert 0 to 12
-    
+
         return { hours: adjustedHours, minutes, part: period };
     };
-    
+
     const convertTo24HourFormat = (timeObj) => {
         if (!timeObj || typeof timeObj !== "object") return null; // Ensure it's a valid object
-        
+
         let { hours, minutes, part } = timeObj;
-    
+
         if (part === "PM" && hours !== 12) {
             hours += 12;
         } else if (part === "AM" && hours === 12) {
             hours = 0; // Midnight case (12 AM → 00:00)
         }
-    
+
         return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    };    
+    };
 
     const fetchBreaks = async () => {
         try {
@@ -73,40 +141,40 @@ function TimetableManager() {
                 startTime: convertTo24HourFormat(breakItem.startTime),
                 endTime: convertTo24HourFormat(breakItem.endTime)
             }));
-    
+
             setBreaks(formattedBreaks);
         } catch (error) {
             console.error("Error fetching breaks:", error);
         }
     };
-    
+
     const handleBreakSubmit = async (e) => {
         e.preventDefault();
         try {
             // Convert 24-hour format times to 12-hour format
             const formattedStartTime = convertTo12HourFormat(breakData.startTime);
             const formattedEndTime = convertTo12HourFormat(breakData.endTime);
-    
+
             const breakPayload = {
                 startTime: formattedStartTime,
                 endTime: formattedEndTime,
                 description: breakData.description
             };
-    
+
             if (breakData._id !== null) {
                 await axios.patch(`http://localhost:5000/break/breaks/${breakData._id}`, breakPayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
                 await axios.post("http://localhost:5000/break/addBreak", breakPayload,
-                    {headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+                    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
-    
+
             fetchBreaks(); // Refresh break list after operation
             setBreakData({ _id: null, startTime: "", endTime: "", description: "" });
             e.target.reset();
-    
+
         } catch (error) {
             console.error("Error saving break:", error);
         }
@@ -139,15 +207,15 @@ function TimetableManager() {
         e.preventDefault();
         try {
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    
+
             // Convert day name to number before sending
             const formattedData = {
                 ...formData,
                 day: dayNames.indexOf(formData.day), // Convert to number (0-6)
             };
-    
+
             if (formData._id) {
-                await axios.patch(`http://localhost:5000/timetable/${formData._id}`, formattedData, 
+                await axios.patch(`http://localhost:5000/timetable/${formData._id}`, formattedData,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
@@ -155,14 +223,14 @@ function TimetableManager() {
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
-    
+
             fetchClasses(); // Refresh timetable
             setFormData({ _id: null, day: "Monday", startTime: "", endTime: "", roomNo: "", subject: "", section: "" });
         } catch (error) {
             console.error("Error saving class:", error);
         }
     };
-    
+
 
     const handleEdit = (cls) => setFormData(cls);
 
@@ -183,19 +251,19 @@ function TimetableManager() {
             const response = await axios.get("http://localhost:5000/timetables",
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
-    
+
             // Convert day numbers to weekday names
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
             const formattedClasses = response.data.map((cls) => ({
                 ...cls,
                 day: dayNames[cls.day], // Convert day number to name
             }));
-            setClasses(formattedClasses);  
+            setClasses(formattedClasses);
         } catch (error) {
             console.error("Error fetching classes:", error);
         }
     };
-    
+
 
     useEffect(() => {
         fetchClasses();
@@ -207,14 +275,14 @@ function TimetableManager() {
             // Split date into day, month, and year (assuming input is in YYYY-MM-DD format)
             const [year, month, date] = changeData.date.split("-").map(Number);
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    
+
             const changePayload = {
                 date,
                 month,
                 year,
                 changeTo: dayNames.indexOf(changeData.changeTo) // Ensure it's a number
             };
-    
+
             if (changeData._id !== null) {
                 await axios.patch(`http://localhost:5000/changes/${changeData._id}`, changePayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
@@ -226,7 +294,7 @@ function TimetableManager() {
             }
             fetchChanges(); // Refresh the changes list
             setChangeData({ _id: null, date: "", changeTo: "" });
-    
+
         } catch (error) {
             console.error("Error saving change:", error);
         }
@@ -244,7 +312,7 @@ function TimetableManager() {
 
     const handleChangeDelete = async (_id) => {
         try {
-            await axios.delete(`http://localhost:5000/changes/${_id}`, 
+            await axios.delete(`http://localhost:5000/changes/${_id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             fetchChanges(); // Refresh the changes list
@@ -260,20 +328,20 @@ function TimetableManager() {
             );
 
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    
+
             // Convert { date, month, year } into a string format "YYYY-MM-DD"
             const formattedChanges = response.data.map(change => ({
                 ...change,
                 date: `${change.year}-${String(change.month).padStart(2, "0")}-${String(change.date).padStart(2, "0")}`,
                 changeTo: dayNames[change.changeTo] // Convert number to weekday
             }));
-    
+
             setChanges(formattedChanges);
         } catch (error) {
             console.error("Error fetching changes:", error);
         }
     };
-    
+
 
     useEffect(() => {
         fetchChanges();
@@ -292,6 +360,7 @@ function TimetableManager() {
                     <option value="Timetable">Timetable</option>
                     <option value="Breaks">Breaks</option>
                     <option value="Changes">Changes</option>
+                    <option value="Holidays">Holidays</option>
                 </select>
             </div>
 
@@ -460,69 +529,124 @@ function TimetableManager() {
 
             {/* Changes Section */}
             {selectedOption === "Changes" && (
-                <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
-                    {selectedOption === "Changes" && (
-                        <>
-                            <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-                                <form onSubmit={handleChangeSubmit} className="grid grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Date of Change</label>
-                                        <input type="date" name="date" value={changeData.date} onChange={handleChangeData} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">To Day</label>
-                                        <select name="changeTo" value={changeData.toDay} onChange={handleChangeData} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
-                                                <option key={day}>{day}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <button type="submit" className="col-span-2 mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2">
-                                        <Calendar className="w-4 h-4" />
-                                        {changeData._id !== null ? "Update Change" : "Add Change"}
-                                    </button>
-                                </form>
+                <>
+                    <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                        <form onSubmit={handleChangeSubmit} className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Date of Change</label>
+                                <input type="date" name="date" value={changeData.date} onChange={handleChangeData} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">To Day</label>
+                                <select name="changeTo" value={changeData.toDay} onChange={handleChangeData} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+                                        <option key={day}>{day}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <button type="submit" className="col-span-2 mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <Calendar className="w-4 h-4" />
+                                {changeData._id !== null ? "Update Change" : "Add Change"}
+                            </button>
+                        </form>
+                    </div>
 
-                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                                <table className="w-full">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            {["Date", "Change to", "Actions"].map((head) => (
-                                                <th key={head} className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                                                    {head}
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                        {changes.map((chg, index) => (
-                                            <tr key={chg.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}>
-                                                <td className="px-6 py-4 text-sm text-gray-900">{chg.date}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-900">{chg.changeTo}</td>
-                                                <td className="px-6 py-4 text-right space-x-3">
-                                                    <button onClick={() => handleChangeEdit(chg._id)} className="text-blue-600 hover:text-blue-800">
-                                                        <Edit2 className="w-4 h-4" />
-                                                    </button>
-                                                    <button onClick={() => handleChangeDelete(chg._id)} className="text-red-600 hover:text-red-800">
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {changes.length === 0 && (
-                                            <tr>
-                                                <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                                                    No changes recorded yet.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    {["Date", "Change to", "Actions"].map((head) => (
+                                        <th key={head} className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                                            {head}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {changes.map((chg, index) => (
+                                    <tr key={chg.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}>
+                                        <td className="px-6 py-4 text-sm text-gray-900">{chg.date}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900">{chg.changeTo}</td>
+                                        <td className="px-6 py-4 text-right space-x-3">
+                                            <button onClick={() => handleChangeEdit(chg._id)} className="text-blue-600 hover:text-blue-800">
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => handleChangeDelete(chg._id)} className="text-red-600 hover:text-red-800">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {changes.length === 0 && (
+                                    <tr>
+                                        <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                                            No changes recorded yet.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
+
+            {/* Holidays section */}
+            {selectedOption === "Holidays" && (
+                <>
+                    <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                        <form onSubmit={handleHolidaySubmit} className="grid grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Date of Holiday</label>
+                                <input type="date" name="date" value={holidaysData.date} onChange={handleHoliday} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
                             </div>
-                        </>
-                    )}
-                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Occasion</label>
+                                <input type="text" name="occasion" value={holidaysData.occasion} onChange={handleHoliday} className="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500" required />
+                            </div>
+                            <button type="submit" className="col-span-2 mt-6 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <Calendar className="w-4 h-4" />
+                                {holidaysData._id !== null ? "Update Holiday" : "Add Holiday"}
+                            </button>
+                        </form>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    {["Date", "Occasion", "Actions"].map((head) => (
+                                        <th key={head} className="px-6 py-4 text-left text-sm font-medium text-gray-500">
+                                            {head}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {holidays.map((holiday, index) => (
+                                    <tr key={holiday.id} className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}>
+                                        <td className="px-6 py-4 text-sm text-gray-900">{holiday.date}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900">{holiday.occasion}</td>
+                                        <td className="px-6 py-4 text-right space-x-3">
+                                            <button onClick={() => handleHolidayEdit(holiday._id)} className="text-blue-600 hover:text-blue-800">
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => handleHolidayDelete(holiday._id)} className="text-red-600 hover:text-red-800">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {holidays.length === 0 && (
+                                    <tr>
+                                        <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                                            No holidays recorded yet.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
             )}
         </div>
     );

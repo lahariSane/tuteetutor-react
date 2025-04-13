@@ -1,4 +1,5 @@
 import Holiday from "../models/holidayModel.js";
+import mongoose from "mongoose";
 
 const getHolidays = async (req, res) => {
     try {
@@ -58,7 +59,7 @@ const updateHoliday = async (req, res) => {
 const deleteHoliday = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('No holiday with that id');
-    await Holiday.findByIdAndRemove(id);
+    const deletedHoliday = await Holiday.findByIdAndDelete(id);
     res.json({ message: 'Holiday deleted successfully' });
 }
 
