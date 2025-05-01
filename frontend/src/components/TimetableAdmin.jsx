@@ -9,8 +9,16 @@ function TimetableManager() {
     const [changes, setChanges] = useState([]);
     const [breaks, setBreaks] = useState([]);
     const [holidays, setHolidays] = useState([]);
+    const [currentClassesPage, setCurrentClassesPage] = useState(1);
+    const [totalClassesPages, setTotalClassesPages] = useState(1);
+    const [currentBreaksPage, setCurrentBreaksPage] = useState(1);
+    const [totalBreaksPages, setTotalBreaksPages] = useState(1);
+    const [currentChangesPage, setCurrentChangesPage] = useState(1);
+    const [totalChangesPages, setTotalChangesPages] = useState(1);
+    const [currentHolidaysPage, setCurrentHolidaysPage] = useState(1);
+    const [totalHolidaysPages, setTotalHolidaysPages] = useState(1);
     const [holidaysData, setHolidaysData] = useState({
-        _id : null,
+        _id: null,
         date: "",
         occasion: "",
     });
@@ -83,7 +91,7 @@ function TimetableManager() {
 
     const fetchHolidays = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/holidays",
+            const response = await axios.get(`http://localhost:5000/holidays`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             const formattedHolidays = response.data.map(holiday => ({
@@ -92,6 +100,7 @@ function TimetableManager() {
                 occasion: holiday.occasion
             }));
             setHolidays(formattedHolidays);
+            setTotalHolidaysPages(response.data.totalPages);
         } catch (error) {
             console.error("Error fetching holidays:", error);
         }
@@ -103,9 +112,19 @@ function TimetableManager() {
     };
 
     useEffect(() => {
-        fetchBreaks();
         fetchHolidays();
-    }, []);
+        fetchBreaks();
+        fetchChanges();
+        fetchChanges()
+    }, [selectedOption]);
+
+    useEffect(() => {
+        fetchHolidays();
+    }, [currentHolidaysPage]);
+
+    useEffect(() => {
+        fetchBreaks();
+    }, [currentBreaksPage]);
 
     const convertTo12HourFormat = (timeString) => {
         if (!timeString) return null;
@@ -133,16 +152,16 @@ function TimetableManager() {
 
     const fetchBreaks = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/break/breaks",
+            const response = await axios.get(`http://localhost:5000/break/breaks?page=${currentBreaksPage}&limit=5`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             ); // Adjust the endpoint as per backend route
-            const formattedBreaks = response.data.map(breakItem => ({
+            const formattedBreaks = response.data["breaks"].map(breakItem => ({
                 ...breakItem,
                 startTime: convertTo24HourFormat(breakItem.startTime),
                 endTime: convertTo24HourFormat(breakItem.endTime)
             }));
-
             setBreaks(formattedBreaks);
+            setTotalBreaksPages(response.data.totalPages);
         } catch (error) {
             console.error("Error fetching breaks:", error);
         }
@@ -248,17 +267,22 @@ function TimetableManager() {
     const fetchClasses = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:5000/timetables",
+            const response = await axios.get(`http://localhost:5000/timetables?page=${currentClassesPage}&limit=5`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
-
-            // Convert day numbers to weekday names
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-            const formattedClasses = response.data.map((cls) => ({
-                ...cls,
-                day: dayNames[cls.day], // Convert day number to name
+
+            const formattedClasses = response.data.timetables.map((cls) => ({
+                id: cls._id,
+                day: dayNames[cls.day] || "Unknown", // Convert number to day (adjusted for 0-indexing)
+                startTime: cls.startTime,
+                endTime: cls.endTime,
+                subject: cls.subject,
+                section: cls.section,
+                room: cls.roomNo
             }));
             setClasses(formattedClasses);
+            setTotalClassesPages(response.data.totalPages);
         } catch (error) {
             console.error("Error fetching classes:", error);
         }
@@ -267,7 +291,7 @@ function TimetableManager() {
 
     useEffect(() => {
         fetchClasses();
-    }, []);
+    }, [currentClassesPage]);
 
     const handleChangeSubmit = async (e) => {
         e.preventDefault();
@@ -323,7 +347,7 @@ function TimetableManager() {
 
     const fetchChanges = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/changes",
+            const response = await axios.get(`http://localhost:5000/changes`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
 
@@ -337,6 +361,7 @@ function TimetableManager() {
             }));
 
             setChanges(formattedChanges);
+            setTotalChangesPages(response.data.totalPages);
         } catch (error) {
             console.error("Error fetching changes:", error);
         }
@@ -345,7 +370,7 @@ function TimetableManager() {
 
     useEffect(() => {
         fetchChanges();
-    }, []);
+    }, [currentChangesPage]);
 
     return (
         <div className="max-w-4xl mx-auto p-6 mt-[150px] h-[100vh]">
@@ -404,7 +429,7 @@ function TimetableManager() {
                         </form>
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-sm overflow-scroll h-full">
+                    <div className="bg-white rounded-2xl shadow-sm overflow-scroll">
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -442,6 +467,25 @@ function TimetableManager() {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex justify-center items-center space-x-2 my-4">
+                        <button
+                            onClick={() => setCurrentClassesPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentClassesPage === 1}
+                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+                        <span className="text-sm text-gray-700">
+                            Page {currentClassesPage} of {totalClassesPages}
+                        </span>
+                        <button
+                            onClick={() => setCurrentClassesPage((prev) => Math.min(prev + 1, totalClassesPages))}
+                            disabled={currentClassesPage === totalClassesPages}
+                            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                        >
+                            Next
+                        </button>
                     </div>
                 </>
             )}
@@ -497,29 +541,50 @@ function TimetableManager() {
                     <div className="mt-6 bg-white rounded-2xl shadow-sm p-6">
                         <h2 className="text-lg font-semibold text-gray-700 mb-4">Break Schedule</h2>
                         {breaks.length > 0 ? (
-                            <ul className="divide-y divide-gray-200">
-                                {breaks.map((brk) => (
-                                    <li key={brk.id} className="flex justify-between items-center py-3">
-                                        <span className="text-gray-600">
-                                            {brk.startTime} - {brk.endTime} | {brk.description}
-                                        </span>
-                                        <div className="flex gap-3">
-                                            <button
-                                                onClick={() => handleEditBreak(brk._id)}
-                                                className="text-blue-600 hover:text-blue-800 transition"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteBreak(brk._id)}
-                                                className="text-red-600 hover:text-red-800 transition"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                            <>
+                                <ul className="divide-y divide-gray-200">
+                                    {breaks.map((brk) => (
+                                        <li key={brk.id} className="flex justify-between items-center py-3">
+                                            <span className="text-gray-600">
+                                                {brk.startTime} - {brk.endTime} | {brk.description}
+                                            </span>
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => handleEditBreak(brk._id)}
+                                                    className="text-blue-600 hover:text-blue-800 transition"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteBreak(brk._id)}
+                                                    className="text-red-600 hover:text-red-800 transition"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div className="flex justify-center items-center space-x-2 my-4">
+                                    <button
+                                        onClick={() => setCurrentBreaksPage((prev) => Math.max(prev - 1, 1))}
+                                        disabled={currentBreaksPage === 1}
+                                        className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        Prev
+                                    </button>
+                                    <span className="text-sm text-gray-700">
+                                        Page {currentBreaksPage} of {totalBreaksPages}
+                                    </span>
+                                    <button
+                                        onClick={() => setCurrentBreaksPage((prev) => Math.min(prev + 1, totalBreaksPages))}
+                                        disabled={currentBreaksPage === totalBreaksPages}
+                                        className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <p className="text-gray-500">No breaks added yet.</p>
                         )}

@@ -16,28 +16,64 @@ const breaksController = new BreaksController();
  * @swagger
  * /break/breaks:
  *   get:
- *     summary: Retrieve all breaks
+ *     summary: Retrieve all breaks (paginated)
  *     tags: [Breaks]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
  *     responses:
  *       200:
  *         description: Successfully retrieved the list of breaks
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                   startTime:
- *                     type: string
- *                   endTime:
- *                     type: string
- *                   description:
- *                     type: string
+ *               type: object
+ *               properties:
+ *                 totalPages:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 breaks:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       startTime:
+ *                         type: object
+ *                         properties:
+ *                           hours:
+ *                             type: integer
+ *                           minutes:
+ *                             type: integer
+ *                           part:
+ *                             type: string
+ *                             enum: [AM, PM]
+ *                       endTime:
+ *                         type: object
+ *                         properties:
+ *                           hours:
+ *                             type: integer
+ *                           minutes:
+ *                             type: integer
+ *                           part:
+ *                             type: string
+ *                             enum: [AM, PM]
+ *                       description:
+ *                         type: string
  *       401:
  *         description: Unauthorized access
  *       500:

@@ -33,15 +33,37 @@ const router = express.Router();
  *             schema:
  *               type: object
  *               properties:
- *                 day:
- *                   type: string
- *                   example: "Monday"
- *                 subject:
- *                   type: string
- *                   example: "Mathematics"
- *                 time:
- *                   type: string
- *                   example: "10:00 AM - 11:00 AM"
+ *                 timetables:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       day:
+ *                         type: string
+ *                         example: "Friday"
+ *                       startTime:
+ *                         type: string
+ *                         example: "08:45"
+ *                       endTime:
+ *                         type: string
+ *                         example: "09:45"
+ *                       subject:
+ *                         type: string
+ *                         example: "Mathematics"
+ *                       section:
+ *                         type: string
+ *                         example: "A"
+ *                       roomNo:
+ *                         type: string
+ *                         example: "G-01"
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 3
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
  *       500:
  *         description: Internal Server Error
  */

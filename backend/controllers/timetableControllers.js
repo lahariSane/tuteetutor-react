@@ -52,14 +52,36 @@ const getTimetable = async (req, res) => {
   }
 };
 
+// const getAllTimetables = async (req, res) => {
+//   try {
+//     const timetables = await Timetable.find();
+//     res.status(200).json(timetables);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const getAllTimetables = async (req, res) => {
   try {
-    const timetables = await Timetable.find();
-    res.status(200).json(timetables);
+    const page = parseInt(req.query.page) || 1;      // Current page number
+    const limit = parseInt(req.query.limit) || 5;    // Items per page
+    const skip = (page - 1) * limit;
+
+    const [timetables, total] = await Promise.all([
+      Timetable.find().skip(skip).limit(limit).lean(),
+      Timetable.countDocuments()
+    ]);
+
+    res.status(200).json({
+      timetables,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const createTimetable = async (req, res) => {
   const timetable = req.body;

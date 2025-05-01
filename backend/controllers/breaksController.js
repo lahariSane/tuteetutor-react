@@ -1,15 +1,36 @@
 import Breaks from "../models/breaksModel.js";
 
 class BreaksController {
+    // async getBreaks(req, res) {
+    //     try {
+    //         const breaks = await Breaks.find();
+    //         res.status(200).json(breaks);
+    //     }
+    //     catch (error) {
+    //         res.status(404).json({ message: error.message });
+    //     }
+    // }
+
     async getBreaks(req, res) {
         try {
-            const breaks = await Breaks.find();
-            res.status(200).json(breaks);
+          const page = parseInt(req.query.page) || 1;      // Current page number (default: 1)
+          const limit = parseInt(req.query.limit) || 10;   // Items per page (default: 10)
+          const skip = (page - 1) * limit;
+      
+          const [breaks, total] = await Promise.all([
+            Breaks.find().skip(skip).limit(limit).lean(),
+            Breaks.countDocuments()
+          ]);
+      
+          res.status(200).json({
+            breaks,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+          });
+        } catch (error) {
+          res.status(404).json({ message: error.message });
         }
-        catch (error) {
-            res.status(404).json({ message: error.message });
-        }
-    }
+      }      
 
     async createBreak(req, res) {
         const { startTime, endTime, description} = req.body;
