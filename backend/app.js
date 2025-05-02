@@ -53,6 +53,7 @@ app.use('/leaveRequest', leaveRequestRoutes);
 app.use('/break', breakRouter);
 app.use('/changes', changeRouter);
 app.use("/api/contact", contactRoutes);
+
 db.connect();
 
 // error handling middleware
@@ -75,3 +76,4 @@ app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
  
+

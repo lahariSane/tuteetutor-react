@@ -10,6 +10,14 @@ import morgan from 'morgan';
 const mailRouter = express.Router();
 mailRouter.use(morgan('combined')); // router level middleware
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: User Authentication
+ *   description: Endpoints for user authentication
+ */
+
 // Utility Functions
 const generateJwtToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
@@ -37,6 +45,31 @@ const validateRequest = (fields) => {
     next();
   };
 };
+
+
+/**
+ * @swagger
+ * /auth/google-login:
+ *   post:
+ *     summary: Login or signup with Google OAuth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - access_token
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login/Signup successful
+ *       500:
+ *         description: Internal server error
+ */
 
 
 // Routes
@@ -75,6 +108,32 @@ mailRouter.post("/auth/google-login", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+/**
+ * @swagger
+ * /auth/github-login:
+ *   post:
+ *     summary: Login or signup with GitHub OAuth
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - code
+ *             properties:
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login/Signup successful
+ *       500:
+ *         description: Internal server error
+ */
+
 
 mailRouter.post("/auth/github-login", async (req, res) => {
   try {
@@ -125,6 +184,34 @@ mailRouter.post("/auth/github-login", async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset email sent
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+
+
 mailRouter.post(
   "/forgot-password",
   validateRequest(["email"]),
@@ -154,6 +241,41 @@ mailRouter.post(
   }
 );
 
+
+/**
+ * @swagger
+ * /reset-password/{token}:
+ *   post:
+ *     summary: Reset password using token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Password reset token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *       400:
+ *         description: Invalid or expired token
+ *       500:
+ *         description: Internal server error
+ */
+
+
 mailRouter.post(
   "/reset-password/:token",
   validateRequest(["password"]),
@@ -181,6 +303,32 @@ mailRouter.post(
     }
   }
 );
+
+
+/**
+ * @swagger
+ * /send-otp:
+ *   post:
+ *     summary: Send OTP for signup verification
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       500:
+ *         description: Internal server error
+ */
+
 
 mailRouter.post("/send-otp", validateRequest(["email"]), async (req, res) => {
   try {
@@ -211,6 +359,43 @@ mailRouter.post("/send-otp", validateRequest(["email"]), async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /verify-otp:
+ *   post:
+ *     summary: Verify OTP and complete signup
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - otp
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ *       400:
+ *         description: Invalid or expired OTP
+ *       500:
+ *         description: Internal server error
+ */
+
+
 mailRouter.post("/verify-otp", async (req, res) => {
   try {
     const { name, email, password, otp } = req.body;
@@ -240,6 +425,37 @@ mailRouter.post("/verify-otp", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Login with email and password
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Internal server error
+ */
+
 
 mailRouter.post(
   "/login",
