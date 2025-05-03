@@ -59,8 +59,7 @@ class Database {
   async updateLeaveRequestStatus(id, status) {
     try {
       const objectId = new ObjectId(id);
-      const result = await mongoose.connection.client
-        .db(dbName)
+      const result = await mongoose.connection.db
         .collection("leaverequests")
         .updateOne({ _id: objectId }, { $set: { status } });
     } catch (error) {
@@ -77,9 +76,7 @@ class Database {
         );
       }
 
-      const usersCollection = mongoose.connection.client
-        .db(dbName)
-        .collection("users");
+      const usersCollection = mongoose.connection.db.collection("users");
       const users = await usersCollection.find({ role }).toArray();
 
       if (users.length === 0) {
@@ -96,15 +93,14 @@ class Database {
   async deleteFaculty(id) {
     try {
       const objectId = new ObjectId(id);
-      const result = await mongoose.connection.client
-        .db(dbName)
+      const result = await mongoose.connection.db
         .collection("users")
         .deleteOne({ _id: objectId });
 
       if (result.deletedCount === 1) {
         // Remove faculty reference from the "courses" collection
         await mongoose.connection.client
-          .db("yourDbName") // replace with your actual DB name
+          .db(dbName) // replace with your actual DB name
           .collection("courses")
           .updateMany(
             { "faculty.hod": objectId }, // Filter by the faculty reference
@@ -127,8 +123,7 @@ class Database {
   async deleteHod(id) {
     try {
       const objectId = new ObjectId(id);
-      const result = await mongoose.connection.client
-        .db(dbName)
+      const result = await mongoose.client.db
         .collection("users")
         .deleteOne({ _id: objectId });
       return result;

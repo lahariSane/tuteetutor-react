@@ -14,4 +14,4 @@ const userSchema = new mongoose.Schema({
   bio:{type:String},
 });
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model("user", userSchema);

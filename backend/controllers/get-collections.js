@@ -59,12 +59,9 @@ class Collections {
   };
 
   getFaculty = async (req, res) => {
-    console.log(req.query);
     try {
       const role = req.query.role;
-      console.log(role);
       const faculty = await this.db.getUsersByRole(role);
-      console.log(faculty);
       res.json(faculty);
     } catch (error) {
       res.status(404).json({ message: error.message });
