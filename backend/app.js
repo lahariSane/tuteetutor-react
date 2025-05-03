@@ -71,9 +71,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+// // Start server
+// app.listen(PORT, () => {
+//   console.log(`Listening on port ${PORT}`);
+// });
+
+export default app;
+
  
 
