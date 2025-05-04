@@ -168,7 +168,9 @@ const StudentDashboard = () => {
           axios.get(`${backendUrl}/timetable`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${backendUrl}/holidays`),
+          axios.get(`${backendUrl}/holidays`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         
         setTimetable(timetable.data);

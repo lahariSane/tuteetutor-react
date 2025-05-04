@@ -4,12 +4,12 @@ const userCourseSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
+        ref: 'user'
     },
     courseRegistered: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Course',
+            ref: 'course',
             required: true
         }
     ],
