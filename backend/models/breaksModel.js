@@ -26,5 +26,7 @@ const breaksSchema = mongoose.Schema({
     description: { type: String, required: [true, "Description is required"] },
 });
 
+breaksSchema.index({ startTime: 1, endTime: 1 }, { unique: true });
+
 const Breaks = mongoose.model('Breaks', breaksSchema, 'breaks');
 export default Breaks;

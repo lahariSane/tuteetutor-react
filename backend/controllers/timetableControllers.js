@@ -87,32 +87,45 @@ const createTimetable = async (req, res) => {
   const timetable = req.body;
 
   try {
-    const data = {
-      date: timetable.date,
-      day: timetable.day,
-      startTime: timetable.startTime,
-      endTime: timetable.endTime,
-      section: timetable.section,
-      subject: timetable.subject,
-      roomNo: timetable.roomNo,
-    };
-    const existingTimetable = await Timetable.findOne(data);
-    if (existingTimetable) {
-      return res
-        .status(409)
-        .json({
-          message:
-            "Duplicate timetable entry: A timetable with the same day, start time, and end time already exists.",
-        });
+    const { date, day, startTime, endTime, section, subject, roomNo } = timetable;
+
+    // Check for overlapping classes in the same room at the same time
+    const overlappingTimetable = await Timetable.findOne({
+      roomNo,
+      day,
+      date,
+      $or: [
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Check if time ranges overlap
+        { startTime: { $eq: startTime }, endTime: { $eq: endTime } }   // Check if exact match
+      ]
+    });
+
+    if (overlappingTimetable) {
+      return res.status(409).json({
+        message: "Room is already booked for the selected time slot.",
+      });
     }
 
+    const data = {
+      date,
+      day,
+      startTime,
+      endTime,
+      section,
+      subject,
+      roomNo,
+    };
+
+    // Now create a new timetable entry
     const newTimetable = new Timetable(data);
     await newTimetable.save();
+
     res.status(201).json(newTimetable);
   } catch (error) {
     res.status(409).json({ message: error.message });
   }
 };
+
 
 const updateTimetable = async (req, res) => {
   const { id } = req.params;

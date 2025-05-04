@@ -7,5 +7,7 @@ const changesSchema = mongoose.Schema({
     changeTo: { type: Number, required: true },
 });
 
+changesSchema.index({ year: 1, month: 1, date: 1 }, { unique: true });
+
 const Changes = mongoose.model('Changes', changesSchema, 'changes');
 export default Changes;
