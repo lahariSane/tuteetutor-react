@@ -9,6 +9,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import { jwtDecode } from "jwt-decode";
 
 const stringToColor = (string) => {
   if (!string) return "#007bff";
@@ -73,9 +74,10 @@ const UserList = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [users, setUsers] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("hod");
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const userRole = jwtDecode(token).role; // Decode the JWT to get the user role
+  const [selectedRole, setSelectedRole] = useState("faculty");
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -119,7 +121,9 @@ const UserList = () => {
       <FormControl sx={{ minWidth: 200, marginBottom: 2 }}>
         <InputLabel>Select Role</InputLabel>
         <Select value={selectedRole} onChange={handleRoleChange}>
-          <MenuItem value="hod">HOD</MenuItem>
+          {userRole === "admin" && (
+            <MenuItem value="hod">HOD</MenuItem>
+          )}
           <MenuItem value="faculty">Faculty</MenuItem>
           <MenuItem value="student">Student</MenuItem>
         </Select>

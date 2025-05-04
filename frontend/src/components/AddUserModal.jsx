@@ -12,6 +12,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 function AddUserModal({ open, handleClose, handleUpdate, userData }) {
   const [name, setName] = useState("");
@@ -22,6 +23,7 @@ function AddUserModal({ open, handleClose, handleUpdate, userData }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const userRole = jwtDecode(token).role; // Decode the JWT to get the user role
 
   useEffect(() => {
     if (userData) {
@@ -139,7 +141,9 @@ function AddUserModal({ open, handleClose, handleUpdate, userData }) {
             variant="outlined"
             required
           >
-            <MenuItem value="hod">HOD</MenuItem>
+            {userRole === "admin" && (
+              <MenuItem value="hod">HOD</MenuItem>
+            )}
             <MenuItem value="faculty">Faculty</MenuItem>
             <MenuItem value="student">Student</MenuItem>
           </TextField>
