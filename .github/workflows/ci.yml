@@ -40,5 +40,3 @@ jobs:
           JWT_SECRET: secret
         run: npm test
 
-      # - name: Build Docker Image
-      #   run: docker build -t your-app-name .
