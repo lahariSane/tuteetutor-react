@@ -238,10 +238,6 @@ export default function Profile() {
                   This will be displayed on your profile
                 </p>
               </div>
-              <div className="buttons">
-                <button className="upload-button">Upload New</button>
-                <button className="save-button">Save</button>
-              </div>
             </div>
           </div>
         </div>
