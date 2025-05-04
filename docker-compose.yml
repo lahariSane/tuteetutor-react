@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   server:
@@ -12,23 +12,29 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '5000:5000'
+      - "5000:5000"
     depends_on:
       - mongo
+      - solr
     env_file:
       - ./backend/.env
     environment:
       - NODE_ENV=development
+      - SOLR_HOST=solr
+      - SOLR_PORT=8983
+      - SOLR_PROTOCOL=http
     networks:
       - node-network
+
   mongo:
     image: mongo:4.4
     volumes:
       - data-volume:/data/db
     ports:
-      - '27018:27017'
+      - "27018:27017"
     networks:
       - node-network
+
   client:
     build:
       context: ./frontend
@@ -36,7 +42,7 @@ services:
     image: react-client
     container_name: react-client
     ports:
-      - '3000:3000'
+      - "3000:3000"
     env_file:
       - ./frontend/.env
     environment:
@@ -50,12 +56,26 @@ services:
     depends_on:
       - server
 
+  solr:
+    image: solr:8.11.2
+    container_name: solr
+    ports:
+      - "8983:8983"
+    volumes:
+      - solr_data:/var/solr
+    command:
+      - solr-precreate
+      - gettingstarted
+    networks:
+      - node-network
+
 networks:
   node-network:
     driver: bridge
 
 volumes:
   data-volume:
-  node-modules:
+  node_modules:
   web-root:
     driver: local
+  solr_data:
