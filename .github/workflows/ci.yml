@@ -36,6 +36,8 @@ jobs:
 
       - name: Run Tests
         working-directory: ./backend
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm test
 
       # - name: Build Docker Image
