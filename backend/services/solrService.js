@@ -105,35 +105,54 @@ class SolrService {
     }
   }
 
-  // Search todos
   async searchTodos(query, userId, filters = {}) {
-    console.log("userId in searchTodos", userId);
+    console.log("searchTodos params:", { query, userId, filters });
+    const debugQuery = this.todosClient.query().q("*:*").rows(1);
+
+    const debugResult = await this.todosClient.search(debugQuery);
+    console.log("Debug result", debugResult.response.docs.length);
+    if (debugResult.response.docs.length > 0) {
+      console.log(
+        "Document structure:",
+        Object.keys(debugResult.response.docs[0]),
+      );
+      // Document structure: [ 'id', 'title', 'dueDate', 'isCompleted', 'userId', '_version_' ]
+    }
+    if (!userId) {
+      throw new Error("userId is required for search");
+    }
+
     try {
-      const queryParams = this.todosClient
+      // Create the query object
+      const searchQuery = this.todosClient
         .query()
-        .q(query || "*:*")
-        .fq(`userId:${userId}`) // Always filter by user ID
+        .q(query ? `title:*${query}*` : "*:*")
         .start(typeof filters.start === "number" ? filters.start : 0)
         .rows(typeof filters.rows === "number" ? filters.rows : 10);
 
-      // Optional filters
+      // For solr-client, use matchFilter or multiple fq calls
+      searchQuery.matchFilter("userId", userId);
+
       if (typeof filters.isCompleted === "boolean") {
-        queryParams.fq(`isCompleted:${filters.isCompleted}`);
+        searchQuery.matchFilter("isCompleted", filters.isCompleted);
       }
 
       if (typeof filters.dueDate === "string" && filters.dueDate.trim()) {
-        queryParams.fq(`dueDate:[* TO ${filters.dueDate}]`);
+        searchQuery.fq({
+          field: "dueDate",
+          value: `[* TO ${filters.dueDate}]`,
+        });
       }
 
       // Highlighting
-      queryParams.hl({
+      searchQuery.hl({
         on: true,
         fl: ["title"],
         simplePre: "<em>",
         simplePost: "</em>",
       });
 
-      const result = await this.todosClient.search(queryParams);
+      const result = await this.todosClient.search(searchQuery);
       return {
         docs: result.response.docs,
         numFound: result.response.numFound,
