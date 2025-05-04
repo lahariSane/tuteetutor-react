@@ -11,14 +11,16 @@ import courseRouter from "./routes/courseRouter.js";
 import userCourseRouter from "./routes/userCourseRoute.js";
 import leaveRequestRoutes from "./routes/LeaveRequestRoutes.js";
 import todosRouter from "./routes/todosRoutes.js";
-import userinfoRouter from './routes/userRouter.js';
+import userinfoRouter from "./routes/userRouter.js";
 import facultyRouter from "./routes/facultyRouter.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import notificationRouter from "./routes/notificationsRouter.js";
 import breakRouter from "./routes/breaksRouter.js";
 import changeRouter from "./routes/changesRouter.js";
-import morgan from 'morgan';
+import morgan from "morgan";
 import swaggerDocs from "./swaggerConfig.js";
+import searchRoutes from "./routes/searchRoutes.js";
+import initializationService from "./services/initializationService.js";
 
 dotenv.config();
 const app = express();
@@ -29,27 +31,30 @@ swaggerDocs(app);
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms"),
+);
 app.use(express.urlencoded({ extended: true }));
 
 // Routers
-app.use('/', userRouter);
-app.use('/', adminRouter);
-app.use('/', announcementsRouter);
-app.use('/', timetableRouter);
-app.use('/', holidaysRouter);
-app.use('/', courseRouter);
-app.use('/', userCourseRouter);
-app.use('/', facultyRouter);
-app.use('/', notificationRouter);
-app.use('/api', mailRouter);
-app.use('/api', todosRouter);
-app.use('/api', courseRouter);
-app.use('/api', userinfoRouter);
-app.use('/leaveRequest', leaveRequestRoutes);
-app.use('/break', breakRouter);
-app.use('/changes', changeRouter);
-app.use('/api/contact', contactRoutes);
+app.use("/", userRouter);
+app.use("/", adminRouter);
+app.use("/", announcementsRouter);
+app.use("/", timetableRouter);
+app.use("/", holidaysRouter);
+app.use("/", courseRouter);
+app.use("/", userCourseRouter);
+app.use("/", facultyRouter);
+app.use("/", notificationRouter);
+app.use("/api", mailRouter);
+app.use("/api", todosRouter);
+app.use("/api", courseRouter);
+app.use("/api", userinfoRouter);
+app.use("/leaveRequest", leaveRequestRoutes);
+app.use("/break", breakRouter);
+app.use("/changes", changeRouter);
+app.use("/api/contact", contactRoutes);
+app.use("/api", searchRoutes);
 
 // Error handlers
 app.use((req, res, next) => {
