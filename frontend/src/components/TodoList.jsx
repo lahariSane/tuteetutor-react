@@ -44,7 +44,13 @@ function TodoList() {
   // Handle search results
   const handleSearchResults = (results) => {
     console.log("Search results received:", results);
-    setTodos(results);
+    setTodos(
+      results.map(({ id, isCompleted, ...rest }) => ({
+        ...rest,
+        _id: id,
+        isCompleted: isCompleted[0], // Extract the first element from the array
+      })),
+    );
   };
 
   const handleAddTodo = (e) => {
