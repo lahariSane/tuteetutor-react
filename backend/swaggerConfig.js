@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'MERN API Documentation',
+      title: 'TuteeTutor API Documentation',
       version: '1.0.0',
-      description: 'API documentation for your MERN project',
+      // description: 'API documentation for your MERN project',
     },
     servers: [
       {

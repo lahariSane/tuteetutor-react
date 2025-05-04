@@ -8,7 +8,7 @@ import User from "../models/userModule.js";
 import morgan from 'morgan';
 
 const mailRouter = express.Router();
-mailRouter.use(morgan('combined')); // router level middleware
+mailRouter.use(morgan('dev')); // router level middleware
 
 
 /**

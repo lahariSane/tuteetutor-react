@@ -48,6 +48,8 @@ const timetableSchema = mongoose.Schema({
     }
 });
 
+timetableSchema.index({ roomNo: 1, day: 1, date: 1, startTime: 1 }, { unique: true }); // prevent overlap
+
 const Timetable = mongoose.model('Timetable', timetableSchema);
 
 export default Timetable;
