@@ -1,12 +1,13 @@
-import express from 'express';
-import { 
-  getTimetable, 
-  createTimetable, 
-  updateTimetable, 
-  deleteTimetable, 
-  getAllTimetables 
-} from '../controllers/timetableControllers.js';
-import validateUser from '../middlewares/validateUser.js';
+import express from "express";
+import {
+  getTimetable,
+  createTimetable,
+  updateTimetable,
+  deleteTimetable,
+  getAllTimetables,
+} from "../controllers/timetableControllers.js";
+import validateUser from "../middlewares/validateUser.js";
+import cacheMiddleware from "../middlewares/cacheMiddleware.js";
 
 const router = express.Router();
 
@@ -67,7 +68,21 @@ const router = express.Router();
  *       500:
  *         description: Internal Server Error
  */
-router.get('/timetable', validateUser(), getTimetable);
+router.get(
+  "/timetable",
+  validateUser(),
+  cacheMiddleware({
+    expiration: 600, // 10 minutes
+    keyPrefix: "timetable",
+    generateKey: (req) => {
+      const userId = req.user?.id || "guest";
+      const today = new Date().toISOString().split("T")[0];
+      const day = new Date().getDay();
+      return `user:${userId}:date:${today}:day:${day}`;
+    },
+  }),
+  getTimetable,
+);
 
 /**
  * @swagger
@@ -98,7 +113,20 @@ router.get('/timetable', validateUser(), getTimetable);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/timetables', validateUser(['admin']), getAllTimetables);
+router.get(
+  "/timetables",
+  validateUser(["admin"]),
+  cacheMiddleware({
+    expiration: 300, // 5 minutes
+    keyPrefix: "all-timetables",
+    generateKey: (req) => {
+      const page = req.query.page || "1";
+      const limit = req.query.limit || "5";
+      return `page:${page}:limit:${limit}`;
+    },
+  }),
+  getAllTimetables,
+);
 
 /**
  * @swagger
@@ -135,7 +163,7 @@ router.get('/timetables', validateUser(['admin']), getAllTimetables);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/timetable', validateUser(['admin']), createTimetable);
+router.post("/timetable", validateUser(["admin"]), createTimetable);
 
 /**
  * @swagger
@@ -160,7 +188,7 @@ router.post('/timetable', validateUser(['admin']), createTimetable);
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/timetable/:id', validateUser(['admin']), deleteTimetable);
+router.delete("/timetable/:id", validateUser(["admin"]), deleteTimetable);
 
 /**
  * @swagger
@@ -201,6 +229,6 @@ router.delete('/timetable/:id', validateUser(['admin']), deleteTimetable);
  *       500:
  *         description: Internal Server Error
  */
-router.patch('/timetable/:id', validateUser(['admin']), updateTimetable);
+router.patch("/timetable/:id", validateUser(["admin"]), updateTimetable);
 
 export default router;

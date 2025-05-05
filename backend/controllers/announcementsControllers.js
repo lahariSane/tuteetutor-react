@@ -3,6 +3,7 @@ import User from "../models/userModule.js";
 import Course from "../models/courseModel.js";
 import userCourseSchema from "../models/userCourseModel.js";
 import mongoose from "mongoose";
+import { announcementCacheHelper } from "../utils/announcementCacheHelper.js";
 
 const getAnnouncements = async (req, res) => {
   try {
@@ -28,13 +29,13 @@ const getAnnouncements = async (req, res) => {
       const userCourse = await userCourseSchema
         .findOne({ user: userId })
         .populate("courseRegistered");
-      
+
       if (!userCourse) {
         return res
           .status(404)
           .json({ message: "No courses found for the user." });
       }
-      
+
       courses = userCourse.courseRegistered;
     }
 
@@ -67,32 +68,33 @@ const createAnnouncement = async (req, res) => {
     console.log("Create announcement request:", req.body);
     console.log("File received:", req.file);
     console.log("User from token:", req.user);
-    
+
     // Extract data from request
     const { courseId, title, description, authorId } = req.body;
     const file = req.file ? req.file.path : null; // Get the uploaded file path if exists
-    
+
     // Use either authorId from the body or user.id from the token
     const userId = authorId || (req.user ? req.user.id : null);
-    
+
     console.log("Using userId for lookup:", userId);
-    
+
     if (!userId) {
-      return res.status(400).json({ 
-        message: "No user ID provided. Please ensure you're logged in or provide authorId.",
-        debug: { body: req.body, user: req.user }
+      return res.status(400).json({
+        message:
+          "No user ID provided. Please ensure you're logged in or provide authorId.",
+        debug: { body: req.body, user: req.user },
       });
     }
-    
+
     // Find the user
     const user = await User.findById(userId);
     console.log("Found user:", user ? `${user.name} (${user._id})` : "null");
-    
+
     if (!user) {
-      return res.status(404).json({ 
-        message: "User not found", 
+      return res.status(404).json({
+        message: "User not found",
         userId: userId,
-        debug: { body: req.body, user: req.user }
+        debug: { body: req.body, user: req.user },
       });
     }
 
@@ -100,7 +102,7 @@ const createAnnouncement = async (req, res) => {
     if (!courseId) {
       return res.status(400).json({ message: "Course ID is required" });
     }
-    
+
     // Validate courseId format
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({ message: "Invalid course ID format" });
@@ -108,8 +110,11 @@ const createAnnouncement = async (req, res) => {
 
     // Find the course
     const course = await Course.findById(courseId);
-    console.log("Found course:", course ? `${course.name} (${course._id})` : "null");
-    
+    console.log(
+      "Found course:",
+      course ? `${course.name} (${course._id})` : "null",
+    );
+
     if (!course) {
       return res.status(404).json({ message: "Course not found", courseId });
     }
@@ -121,34 +126,43 @@ const createAnnouncement = async (req, res) => {
 
     // Permission checks
     let hasPermission = false;
-    
+
     if (user.role === "admin") {
       hasPermission = true; // Admin can create announcements for any course
     } else if (user.role === "faculty") {
       // Faculty can only create announcements for courses they teach
-      hasPermission = course.instructor && course.instructor.toString() === user._id.toString();
+      hasPermission =
+        course.instructor &&
+        course.instructor.toString() === user._id.toString();
     } else if (user.role === "hod") {
       // HOD can create announcements for their own courses or courses in their department
-      if (course.instructor && course.instructor.toString() === user._id.toString()) {
+      if (
+        course.instructor &&
+        course.instructor.toString() === user._id.toString()
+      ) {
         hasPermission = true;
       } else {
-        const hodCourses = await Course.find({ instructor: user._id, type: "hod" });
+        const hodCourses = await Course.find({
+          instructor: user._id,
+          type: "hod",
+        });
         const courseCodeMatches = hodCourses.some(
-          (hodCourse) => hodCourse.code === course.code
+          (hodCourse) => hodCourse.code === course.code,
         );
         hasPermission = courseCodeMatches;
       }
     }
-    
+
     console.log("User permission check:", {
       role: user.role,
-      hasPermission: hasPermission
+      hasPermission: hasPermission,
     });
 
     if (!hasPermission) {
       return res.status(403).json({
-        message: "You don't have permission to create announcements for this course",
-        userRole: user.role
+        message:
+          "You don't have permission to create announcements for this course",
+        userRole: user.role,
       });
     }
 
@@ -161,14 +175,18 @@ const createAnnouncement = async (req, res) => {
       author: user.name,
       course: course._id,
       file: file, // Add the file path if a file was uploaded
-      date: new Date()
+      date: new Date(),
     });
 
     console.log("Creating new announcement:", newAnnouncement);
-    
+
     await newAnnouncement.save();
     console.log("Announcement saved successfully");
-    
+
+    // Invalidate caches after successful creation
+    await announcementCacheHelper.invalidateAllAnnouncementCaches();
+    await announcementCacheHelper.invalidateFacultyCoursesCache(user._id);
+
     res.status(201).json(newAnnouncement);
   } catch (error) {
     console.error("Error creating announcement:", error);
@@ -179,25 +197,31 @@ const createAnnouncement = async (req, res) => {
 const deleteAnnouncement = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid announcement ID format" });
+      return res
+        .status(400)
+        .json({ message: "Invalid announcement ID format" });
     }
-    
+
     const announcement = await Announcements.findById(id);
-    
+
     if (!announcement) {
       return res.status(404).json({ message: "Announcement not found" });
     }
-    
+
     // Check permissions (optional)
     // Only the author, HOD, or admin can delete the announcement
-    if (req.user.role !== 'admin' && 
-        announcement.authorId.toString() !== req.user.id.toString() &&
-        req.user.role !== 'hod') {
-      return res.status(403).json({ message: "You don't have permission to delete this announcement" });
+    if (
+      req.user.role !== "admin" &&
+      announcement.authorId.toString() !== req.user.id.toString() &&
+      req.user.role !== "hod"
+    ) {
+      return res.status(403).json({
+        message: "You don't have permission to delete this announcement",
+      });
     }
-    
+
     // Delete the file if it exists (requires fs module)
     // if (announcement.file) {
     //   try {
@@ -206,9 +230,12 @@ const deleteAnnouncement = async (req, res) => {
     //     console.error("Error deleting file:", fileError);
     //   }
     // }
-    
+
     await Announcements.findByIdAndRemove(id);
-    
+
+    // Invalidate caches after successful deletion
+    await announcementCacheHelper.invalidateAllAnnouncementCaches();
+
     res.status(200).json({ message: "Announcement deleted successfully" });
   } catch (error) {
     console.error("Error deleting announcement:", error);
@@ -220,30 +247,36 @@ const updateAnnouncement = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid announcement ID format" });
+      return res
+        .status(400)
+        .json({ message: "Invalid announcement ID format" });
     }
-    
+
     // Find the announcement first
     const announcement = await Announcements.findById(id);
-    
+
     if (!announcement) {
       return res.status(404).json({ message: "Announcement not found" });
     }
-    
+
     // Check permissions (optional)
     // Only the author, HOD, or admin can update the announcement
-    if (req.user.role !== 'admin' && 
-        announcement.authorId.toString() !== req.user.id.toString() &&
-        req.user.role !== 'hod') {
-      return res.status(403).json({ message: "You don't have permission to update this announcement" });
+    if (
+      req.user.role !== "admin" &&
+      announcement.authorId.toString() !== req.user.id.toString() &&
+      req.user.role !== "hod"
+    ) {
+      return res.status(403).json({
+        message: "You don't have permission to update this announcement",
+      });
     }
-    
+
     // If there's a new file, update the file path
     if (req.file) {
       updatedData.file = req.file.path;
-      
+
       // Delete old file if it exists (requires fs module)
       // if (announcement.file) {
       //   try {
@@ -253,9 +286,16 @@ const updateAnnouncement = async (req, res) => {
       //   }
       // }
     }
-    
-    const updatedAnnouncement = await Announcements.findByIdAndUpdate(id, updatedData, { new: true });
-    
+
+    const updatedAnnouncement = await Announcements.findByIdAndUpdate(
+      id,
+      updatedData,
+      { new: true },
+    );
+
+    // Invalidate caches after successful update
+    await announcementCacheHelper.invalidateAllAnnouncementCaches();
+
     res.status(200).json(updatedAnnouncement);
   } catch (error) {
     console.error("Error updating announcement:", error);
@@ -268,24 +308,24 @@ const getFacultyCourses = async (req, res) => {
   try {
     console.log("Getting faculty courses for user:", req.user);
     const userId = req.user.id;
-    
+
     let courses;
-    
+
     if (req.user.role === "faculty") {
       courses = await Course.find({ instructor: userId });
     } else if (req.user.role === "hod") {
       // First, get the HOD courses
       const hodCourses = await Course.find({ instructor: userId, type: "hod" });
-      
+
       if (hodCourses.length > 0) {
         // Get all department courses that match the HOD's department codes
-        const departmentCodes = hodCourses.map(course => course.code);
-        
+        const departmentCodes = hodCourses.map((course) => course.code);
+
         courses = await Course.find({
           $or: [
             { code: { $in: departmentCodes }, type: { $ne: "hod" } },
-            { instructor: userId }
-          ]
+            { instructor: userId },
+          ],
         });
       } else {
         courses = await Course.find({ instructor: userId });
@@ -293,26 +333,30 @@ const getFacultyCourses = async (req, res) => {
     } else if (req.user.role === "admin") {
       courses = await Course.find();
     } else {
-      return res.status(403).json({ message: "Only faculty, HOD, or admin can access this endpoint" });
+      return res.status(403).json({
+        message: "Only faculty, HOD, or admin can access this endpoint",
+      });
     }
-    
+
     if (!courses || courses.length === 0) {
       return res.status(404).json({ message: "No courses found" });
     }
-    
+
     console.log(`Found ${courses.length} courses for faculty ${userId}`);
-    
+
     res.status(200).json(courses);
   } catch (error) {
     console.error("Error getting faculty courses:", error);
-    res.status(500).json({ message: "Something went wrong. Please try again later." });
+    res
+      .status(500)
+      .json({ message: "Something went wrong. Please try again later." });
   }
 };
 
-export { 
-  getAnnouncements, 
-  createAnnouncement, 
-  deleteAnnouncement, 
+export {
+  getAnnouncements,
+  createAnnouncement,
+  deleteAnnouncement,
   updateAnnouncement,
-  getFacultyCourses
+  getFacultyCourses,
 };
