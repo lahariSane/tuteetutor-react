@@ -132,9 +132,9 @@ function TodoList() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/todos/${id}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/todos/${id}`, {
       method: "PUT",
-      headers: {
+      headers: { 
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },

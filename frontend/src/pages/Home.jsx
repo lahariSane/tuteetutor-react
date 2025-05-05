@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,7 +8,6 @@ import { Outlet } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import zIndex from "@mui/material/styles/zIndex";
 
 const drawerWidth = 250;
 const navBarHeight = 64;
