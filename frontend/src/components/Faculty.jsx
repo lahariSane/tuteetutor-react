@@ -1,155 +1,204 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback } from "react";
 import "../styles/Faculty.css";
 import { useOutletContext } from "react-router-dom";
-import { Box, createTheme, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Box, createTheme } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { Fab } from "@mui/material";
-import AddUserModal from "./AddUserModal";
+import AddFacultyModel from "./AddFacultyModel";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Avatar } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import { jwtDecode } from "jwt-decode";
+import UserList from "./AdminFaculty";
 
-const stringToColor = (string) => {
-  if (!string) return "#007bff";
+function stringToColor(string) {
+  if (!string) {
+    return "#007bff"; // Default to the base color
+  }
   let hash = 0;
+
+  // Generate a hash from the string
   for (let i = 0; i < string.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
+
   let color = "#";
+
+  // Generate RGB values
   for (let i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
-    const blendedValue = Math.floor((value + 255) / 1.5);
+    // Blend with white to ensure lighter shades
+    const blendedValue = Math.floor((value + 255) / 1.5); // Average with white (255)
     color += `00${blendedValue.toString(16)}`.slice(-2);
   }
+
   return color;
-};
+}
 
-const UserCard = ({ user, token, onUserRemove, onEditUser, userRole }) => {
-  if (!user) return null;
-
-  const handleDelete = async () => {
+const FacultyCard = ({ faculty, user, token, onFacultyRemove }) => {
+  const instructor = faculty.instructor;
+  const handleClick = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/user/${user._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      onUserRemove(user._id);
+      const response = await axios.delete(
+        `${process.env.REACT_APP_BACKEND_URL}/faculty/${instructor._id}/course/${faculty._id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        onFacultyRemove(faculty._id); // Notify parent to update the list
+      }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error deleting faculty:", error);
     }
   };
-
   return (
     <div className="faculty-container">
-      <Box className="faculty-card">
+      <Box
+        className="faculty-card"
+        sx={{ height: user.role !== "hod" ? "250px" : "300px" }}
+      >
         <div className="faculty-photo">
           <Avatar
-            src={user?.profileImage}
-            sx={{ width: "100px", height: "100px", bgcolor: stringToColor(user?.name) }}
-          >
-            {user?.name?.[0]}
-          </Avatar>
+            src={instructor?.profileImage}
+            sx={{
+              width: "100px",
+              height: "100px",
+              fontSize: "25px",
+              fontWeight: "bold",
+              position: "relative",
+              top: "-50px",
+              objectFit: "cover",
+              bgcolor: stringToColor(instructor?.name),
+            }}
+            children={`${instructor?.name[0]}`}
+          />
         </div>
         <div className="faculty-details">
-          <h3>{user.name}</h3>
-          <p className="email">{user.email}</p>
+          <h3>{instructor.name}</h3>
+          <p className="email">{instructor.email}</p>
+          <p>
+            {faculty.code} - {faculty.section}
+          </p>
+          <p>{faculty.department}</p>
         </div>
-        (userRole !== "student" &&
-          <div>
-            <button className="edit-button" onClick={() => onEditUser(user)}>
-              <EditIcon />
-              Edit
-            </button>
-            <button className="remove-button" onClick={handleDelete}>
-              <i className="fas fa-trash-alt"></i> Remove
-            </button>
-          </div>
-        )
+        {user && user.role === "hod" && (
+          <button className="remove-button" onClick={handleClick}>
+            <i className="fas fa-trash-alt"></i> Remove
+          </button>
+        )}
       </Box>
     </div>
   );
 };
 
-const UserList = () => {
-  const theme = createTheme();
+const FacultyList = () => {
+  const data = useOutletContext();
+  const user = data.user;
+  if (user && user.role === "admin") {
+    return <UserList/>
+  }
+
+  const theme = createTheme({ breakpoints: { values: { sm: 700, md: 1380 } } });
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const [users, setUsers] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const userRole = jwtDecode(token).role; // Decode the JWT to get the user role
-  const [selectedRole, setSelectedRole] = useState("faculty");
 
-  const fetchUsers = useCallback(async () => {
+  const [facultyList, setFacultyList] = React.useState([]);
+  const fetchFaculty = useCallback(async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/users/role?role=${selectedRole}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsers(res.data);
+      const res = await axios(
+        `${process.env.REACT_APP_BACKEND_URL}/get-faculty`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (
+        res?.data?.message &&
+        res?.data?.message === "No registered courses found for the student."
+      ) {
+        navigate("/coursesSelection");
+        return;
+      }
+      if (
+        res?.data?.message &&
+        res?.data?.message === "No registered courses found for the faculty."
+      ) {
+        navigate("/");
+        return;
+      }
+      setFacultyList(res.data);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching faculty list:", error);
     }
-  }, [token, selectedRole]);
-
+  }, [token, navigate]);
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchFaculty();
+  }, [fetchFaculty]);
 
-  const handleRoleChange = (event) => {
-    setSelectedRole(event.target.value);
-  };
-
-  const handleUserRemove = (userId) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
-  };
-
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setModalOpen(true);
+  const drawerWidth = data.drawerWidth;
+  const [modal, setModal] = React.useState(false);
+  const handleModalOpen = () => setModal(true);
+  const handleModalClose = () => setModal(false);
+  const handleFacultyRemove = (facultyId) => {
+    setFacultyList((prevList) =>
+      prevList.filter((faculty) => faculty._id !== facultyId)
+    );
   };
 
   return (
     <>
-      <AddUserModal
-        open={modalOpen}
-        handleClose={() => {
-          setModalOpen(false);
-          setSelectedUser(null);
-        }}
-        handleUpdate={fetchUsers}
-        userData={selectedUser} // Pass selected user for editing
+      <AddFacultyModel
+        open={modal}
+        handleClose={handleModalClose}
+        handleAdd={fetchFaculty}
       />
-      <FormControl sx={{ minWidth: 200, marginBottom: 2 }}>
-        <InputLabel>Select Role</InputLabel>
-        <Select value={selectedRole} onChange={handleRoleChange}>
-          {userRole === "admin" && (
-            <MenuItem value="hod">HOD</MenuItem>
-          )}
-          <MenuItem value="faculty">Faculty</MenuItem>
-          <MenuItem value="student">Student</MenuItem>
-        </Select>
-      </FormControl>
-      <Box className="faculty-list">
-        {users.map((user, index) => (
-          <UserCard key={index} user={user} token={token} onUserRemove={handleUserRemove} onEditUser={handleEditUser} userRole={userRole} />
-        ))}
-      </Box>
-      <Fab
-        onClick={() => {
-          setSelectedUser(null);
-          setModalOpen(true);
+      <Box
+        className="faculty-list"
+        sx={{
+          width: `calc(100vw - ${drawerWidth}px)`,
+          left: drawerWidth,
+          top: "64px",
+          position: "absolute",
+          height: "calc(100% - 60px)",
+          [theme.breakpoints.down("md")]: {
+            height: "100%",
+            maxWidth: "100vw",
+            width: "100%",
+            left: 0,
+            flexDirection: "column-reverse",
+            alignItems: "center",
+          },
         }}
-        color="primary"
-        variant="extended"
-        aria-label="add"
-        sx={{ position: "absolute", bottom: "20px", right: "20px" }}
       >
-        (userRole === "admin" && <AddIcon sx={{ marginRight: "6px" }} /> Add User)
-        (userRole === "hod" && <AddIcon sx={{ marginRight: "6px" }} /> Add Faculty)
-      </Fab>
+        {facultyList.map((faculty, index) =>
+          faculty && faculty.instructor ? (
+            <FacultyCard
+              key={index}
+              faculty={faculty}
+              user={user}
+              token={token}
+              onFacultyRemove={handleFacultyRemove}
+            />
+          ) : null
+        )}
+      </Box>
+      {user && user.role === "hod" && (
+        <Fab
+          onClick={handleModalOpen}
+          color="primary"
+          variant="extended"
+          aria-label="add"
+          sx={{
+            position: "absolute",
+            zIndex: 1,
+            bottom: "20px",
+            right: "20px",
+          }}
+        >
+          <AddIcon sx={{ marginRight: "6px" }} />
+          Add Faculty
+        </Fab>
+      )}
     </>
   );
 };
 
-export default UserList;
+export default FacultyList;

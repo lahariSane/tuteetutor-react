@@ -21,7 +21,7 @@ const courseSchema = new mongoose.Schema({
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
-        ref: 'User'
+        ref: 'user'
     },
     department: {
         type: String,
