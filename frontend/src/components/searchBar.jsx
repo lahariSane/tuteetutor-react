@@ -20,7 +20,7 @@ const SearchBar = ({ type, onResults, placeholder, onClear }) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/search/${type}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/search/${type}`,
         {
           params: { q: searchQuery },
           headers: {

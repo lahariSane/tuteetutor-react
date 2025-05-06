@@ -23,22 +23,19 @@ if (!fs.existsSync(uploadsDir)) {
   console.log("Created uploads directory");
 }
 
-// Configure multer for file storage
+// Multer config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    // Generate unique filename with original extension
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const fileExtension = file.originalname.split(".").pop();
     cb(null, `announcement-${uniqueSuffix}.${fileExtension}`);
   },
 });
 
-// Define file filter for security
 const fileFilter = (req, file, cb) => {
-  // Accept common document and media types
   const allowedTypes = [
     "application/pdf",
     "application/msword",
@@ -53,28 +50,19 @@ const fileFilter = (req, file, cb) => {
     "text/plain",
   ];
 
-  // Accept all file types in development mode for testing
   const isDevelopment = process.env.NODE_ENV === "development";
 
   if (isDevelopment || allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(
-      new Error(
-        "Invalid file type. Only documents, images, and common office files are allowed.",
-      ),
-      false,
-    );
+    cb(new Error("Invalid file type. Only documents, images, and common office files are allowed."), false);
   }
 };
 
-// Set file size limits
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
-  },
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 // Debug middleware
@@ -88,17 +76,41 @@ router.use("/announcements", (req, res, next) => {
   next();
 });
 
-// Routes with caching
-
-// Cache announcements - with different cache keys based on user role
+/**
+ * @swagger
+ * /announcements:
+ *   get:
+ *     summary: Get all announcements
+ *     tags: [Announcements]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Limit per page
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Announcement type (optional)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of announcements
+ */
 router.get(
   "/announcements",
   validateUser(),
   cacheMiddleware({
-    expiration: 300, // 5 minutes
+    expiration: 300,
     keyPrefix: "announcements",
     generateKey: (req) => {
-      // Create cache key based on user role and query parameters
       const role = req.user?.role || "guest";
       const page = req.query.page || "1";
       const limit = req.query.limit || "10";
@@ -109,29 +121,64 @@ router.get(
   getAnnouncements,
 );
 
-// Cache faculty courses
+/**
+ * @swagger
+ * /announcements/faculty:
+ *   get:
+ *     summary: Get faculty courses
+ *     tags: [Announcements]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Courses taught by faculty
+ */
 router.get(
   "/announcements/faculty",
   validateUser(["hod", "faculty", "admin"]),
   cacheMiddleware({
-    expiration: 900, // 15 minutes
+    expiration: 900,
     keyPrefix: "faculty-courses",
     generateKey: (req) => req.user?.id || "anonymous",
   }),
   getFacultyCourses,
 );
 
-// Create announcement - invalidate cache
+/**
+ * @swagger
+ * /announcements:
+ *   post:
+ *     summary: Create a new announcement
+ *     tags: [Announcements]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Announcement created
+ */
 router.post(
   "/announcements",
   validateUser(["hod", "faculty", "admin"]),
   upload.single("file"),
   async (req, res, next) => {
     try {
-      // Call the original controller
       await createAnnouncement(req, res);
-
-      // If successful, invalidate all announcements cache
       await invalidateCache("announcements:*");
     } catch (error) {
       next(error);
@@ -139,16 +186,31 @@ router.post(
   },
 );
 
-// Delete announcement - invalidate cache
+/**
+ * @swagger
+ * /announcements/{id}:
+ *   delete:
+ *     summary: Delete an announcement
+ *     tags: [Announcements]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Announcement ID
+ *     responses:
+ *       200:
+ *         description: Announcement deleted
+ */
 router.delete(
   "/announcements/:id",
   validateUser(["hod", "faculty", "admin"]),
   async (req, res, next) => {
     try {
-      // Call the original controller
       await deleteAnnouncement(req, res);
-
-      // If successful, invalidate all announcements cache
       await invalidateCache("announcements:*");
     } catch (error) {
       next(error);
@@ -156,17 +218,46 @@ router.delete(
   },
 );
 
-// Update announcement - invalidate cache
+/**
+ * @swagger
+ * /announcements/{id}:
+ *   put:
+ *     summary: Update an announcement
+ *     tags: [Announcements]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Announcement ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Announcement updated
+ */
 router.put(
   "/announcements/:id",
   validateUser(["hod", "faculty", "admin"]),
   upload.single("file"),
   async (req, res, next) => {
     try {
-      // Call the original controller
       await updateAnnouncement(req, res);
-
-      // If successful, invalidate all announcements cache
       await invalidateCache("announcements:*");
     } catch (error) {
       next(error);
@@ -174,17 +265,31 @@ router.put(
   },
 );
 
-// Serve static files from uploads directory
+/**
+ * @swagger
+ * /uploads/{filename}:
+ *   get:
+ *     summary: Serve uploaded announcement files
+ *     tags: [Uploads]
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Name of the uploaded file
+ *     responses:
+ *       200:
+ *         description: Returns the requested file
+ */
 router.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// Error handling middleware for multer errors
+// Error handler
 router.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     console.error("Multer error:", err);
     if (err.code === "LIMIT_FILE_SIZE") {
-      return res
-        .status(400)
-        .json({ message: "File is too large. Maximum size is 10MB." });
+      return res.status(400).json({ message: "File is too large. Maximum size is 10MB." });
     }
     return res.status(400).json({ message: `Upload error: ${err.message}` });
   } else if (err) {

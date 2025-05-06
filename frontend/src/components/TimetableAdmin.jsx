@@ -55,11 +55,11 @@ function TimetableManager() {
                 occasion: holidaysData.occasion,
             };
             if (holidaysData._id !== null) {
-                await axios.patch(`http://localhost:5000/holiday/${holidaysData._id}`, holidayPayload,
+                await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/holiday/${holidaysData._id}`, holidayPayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
-                await axios.post("http://localhost:5000/holidays", holidayPayload,
+                await axios.post(`${process.env.REACT_APP_BACKEND_URL}/holidays`, holidayPayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
@@ -80,7 +80,7 @@ function TimetableManager() {
 
     const handleHolidayDelete = async (_id) => {
         try {
-            await axios.delete(`http://localhost:5000/holiday/${_id}`,
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/holiday/${_id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             fetchHolidays(); // Refresh after delete
@@ -91,7 +91,7 @@ function TimetableManager() {
 
     const fetchHolidays = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/holidays`,
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/holidays`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             const formattedHolidays = response.data.map(holiday => ({
@@ -152,7 +152,7 @@ function TimetableManager() {
 
     const fetchBreaks = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/break/breaks?page=${currentBreaksPage}&limit=5`,
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/break/breaks?page=${currentBreaksPage}&limit=5`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             ); // Adjust the endpoint as per backend route
             const formattedBreaks = response.data["breaks"].map(breakItem => ({
@@ -181,11 +181,11 @@ function TimetableManager() {
             };
 
             if (breakData._id !== null) {
-                await axios.patch(`http://localhost:5000/break/breaks/${breakData._id}`, breakPayload,
+                await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/break/breaks/${breakData._id}`, breakPayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
-                await axios.post("http://localhost:5000/break/addBreak", breakPayload,
+                await axios.post(`${process.env.REACT_APP_BACKEND_URL}/break/addBreak`, breakPayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
@@ -210,7 +210,7 @@ function TimetableManager() {
     // Handle delete
     const handleDeleteBreak = async (_id) => {
         try {
-            await axios.delete(`http://localhost:5000/break/breaks/${_id}`,
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/break/breaks/${_id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             fetchBreaks(); // Refresh after delete
@@ -234,11 +234,11 @@ function TimetableManager() {
             };
 
             if (formData._id) {
-                await axios.patch(`http://localhost:5000/timetable/${formData._id}`, formattedData,
+                await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/timetable/${formData._id}`, formattedData,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
-                await axios.post("http://localhost:5000/timetable", formattedData,
+                await axios.post(`${process.env.REACT_APP_BACKEND_URL}/timetable`, formattedData,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
@@ -255,7 +255,7 @@ function TimetableManager() {
 
     const handleDelete = async (_id) => {
         try {
-            await axios.delete(`http://localhost:5000/timetable/${_id}`,
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/timetable/${_id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             fetchClasses(); // Reload classes after deletion
@@ -267,7 +267,7 @@ function TimetableManager() {
     const fetchClasses = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(`http://localhost:5000/timetables?page=${currentClassesPage}&limit=5`,
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/timetables?page=${currentClassesPage}&limit=5`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -308,11 +308,11 @@ function TimetableManager() {
             };
 
             if (changeData._id !== null) {
-                await axios.patch(`http://localhost:5000/changes/${changeData._id}`, changePayload,
+                await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/changes/${changeData._id}`, changePayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             } else {
-                await axios.post("http://localhost:5000/changes", changePayload,
+                await axios.post(`${process.env.REACT_APP_BACKEND_URL}/changes`, changePayload,
                     { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
                 );
             }
@@ -336,7 +336,7 @@ function TimetableManager() {
 
     const handleChangeDelete = async (_id) => {
         try {
-            await axios.delete(`http://localhost:5000/changes/${_id}`,
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/changes/${_id}`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
             fetchChanges(); // Refresh the changes list
@@ -347,7 +347,7 @@ function TimetableManager() {
 
     const fetchChanges = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/changes`,
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/changes`,
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
 

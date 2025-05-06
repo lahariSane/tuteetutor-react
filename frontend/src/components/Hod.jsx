@@ -37,7 +37,7 @@ const FacultyCard = ({ faculty, onFacultyRemove, role }) => {
   const handleClick = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/${role}/${instructor._id}/`
+        `${process.env.REACT_APP_BACKEND_URL}/${role}/${instructor._id}/`
       );
       if (response.status === 200) {
         onFacultyRemove(faculty._id);
@@ -100,7 +100,7 @@ const HodList = () => {
   const fetchData = React.useCallback(
     debounce(async (role) => {
       try {
-        const res = await axios.get(`http://localhost:5000/faculty`, {
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/faculty`, {
           params: { role },
         });
         console.log(res.data);

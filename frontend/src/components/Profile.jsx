@@ -184,14 +184,14 @@ export default function Profile() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/upload",
+        `${process.env.REACT_APP_BACKEND_URL}/api/upload`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      setSavedImage(`http://localhost:5000/uploads/${response.data.fileName}`);
+      setSavedImage(`${process.env.REACT_APP_BACKEND_URL}/uploads/${response.data.fileName}`);
       setSelectedFile(null);
       setPreview(null);
       alert("Profile picture uploaded successfully!");

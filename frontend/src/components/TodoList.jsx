@@ -17,7 +17,7 @@ function TodoList() {
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/todos", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/todos`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +61,7 @@ function TodoList() {
       return;
     }
 
-    fetch("http://localhost:5000/api/todos", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/todos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +87,7 @@ function TodoList() {
   };
 
   const handleDeleteTodo = (id) => {
-    fetch(`http://localhost:5000/api/todos/${id}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/todos/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -104,7 +104,7 @@ function TodoList() {
       isCompleted: !todoToUpdate.isCompleted,
     };
 
-    fetch(`http://localhost:5000/api/todos/${id}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/todos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

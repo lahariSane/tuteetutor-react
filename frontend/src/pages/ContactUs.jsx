@@ -43,7 +43,7 @@ const ContactUs = () => {
 
     try {
       // Make sure API endpoint matches your backend route
-      const response = await axios.post("http://localhost:5000/api/contact/submit", formData);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/contact/submit`, formData);
       
       if (response.data.message === "Message sent successfully.") {
         // Success animation before redirect
