@@ -26,7 +26,7 @@ const stringToColor = (string) => {
   return color;
 };
 
-const UserCard = ({ user, token, onUserRemove, onEditUser }) => {
+const UserCard = ({ user, token, onUserRemove, onEditUser, userRole }) => {
   if (!user) return null;
 
   const handleDelete = async () => {
@@ -55,15 +55,17 @@ const UserCard = ({ user, token, onUserRemove, onEditUser }) => {
           <h3>{user.name}</h3>
           <p className="email">{user.email}</p>
         </div>
-        <div>
-          <button className="edit-button" onClick={() => onEditUser(user)}>
-            <EditIcon />
-            Edit
-          </button>
-          <button className="remove-button" onClick={handleDelete}>
-            <i className="fas fa-trash-alt"></i> Remove
-          </button>
-        </div>
+        (userRole !== "student" &&
+          <div>
+            <button className="edit-button" onClick={() => onEditUser(user)}>
+              <EditIcon />
+              Edit
+            </button>
+            <button className="remove-button" onClick={handleDelete}>
+              <i className="fas fa-trash-alt"></i> Remove
+            </button>
+          </div>
+        )
       </Box>
     </div>
   );
@@ -130,7 +132,7 @@ const UserList = () => {
       </FormControl>
       <Box className="faculty-list">
         {users.map((user, index) => (
-          <UserCard key={index} user={user} token={token} onUserRemove={handleUserRemove} onEditUser={handleEditUser} />
+          <UserCard key={index} user={user} token={token} onUserRemove={handleUserRemove} onEditUser={handleEditUser} userRole={userRole} />
         ))}
       </Box>
       <Fab
@@ -143,7 +145,8 @@ const UserList = () => {
         aria-label="add"
         sx={{ position: "absolute", bottom: "20px", right: "20px" }}
       >
-        <AddIcon sx={{ marginRight: "6px" }} /> Add User
+        (userRole === "admin" && <AddIcon sx={{ marginRight: "6px" }} /> Add User)
+        (userRole === "hod" && <AddIcon sx={{ marginRight: "6px" }} /> Add Faculty)
       </Fab>
     </>
   );
