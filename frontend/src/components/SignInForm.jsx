@@ -58,7 +58,7 @@ function SignInForm() {
 
   const navigateBasedOnRole = (token) => {
     const user = jwtDecode(token);
-    user.role === "student" ? navigate("/") : navigate("/");
+    user.role === "student" ? navigate("/coursesSelection") : navigate("/");
   };
 
   const handleOnSubmit = async (event) => {

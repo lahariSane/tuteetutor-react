@@ -119,7 +119,7 @@ function SignUpForm() {
       setError("");
       setLoading(true);
 
-      try {
+      try { 
         const response = await axios.post(
           `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5000"}/api/auth/google-login`,
           tokenResponse

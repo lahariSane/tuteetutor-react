@@ -81,7 +81,7 @@ const UserList = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/role?role=${selectedRole}`, {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/users/role?role=${selectedRole}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
